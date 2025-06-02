@@ -1,0 +1,21 @@
+#sidebar {
+  transition: width 0.3s;
+  width: 250px;
+}
+
+#sidebar.collapsed {
+  width: 60px;
+}
+
+#sidebar.collapsed .nav-link {
+  font-size: 0;
+}
+
+#sidebar.collapsed .nav-link::before {
+  font-size: 1rem;
+}
+
+#sidebar.collapsed span,
+#sidebar.collapsed button i {
+  display: none;
+}

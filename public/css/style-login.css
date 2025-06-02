@@ -1,0 +1,48 @@
+/* Fondo general con transición suave */
+body {
+  background-color: #f4f4f4;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* Estilo del botón flotante */
+#floating-btn {
+  z-index: 1050; /* Sobre el modal */
+  border-radius: 50%;
+  padding: 10px 14px;
+}
+
+/* Modal personalizado */
+.modal-backdrop.show {
+  opacity: 0.6;
+}
+
+/* Vista previa de los fondos */
+.background-option {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.background-option:hover {
+  transform: scale(1.05);
+}
+
+/* Estilo del input personalizado */
+#custom-bg-upload {
+  margin-top: 1rem;
+}
+
+#login-container {
+  background-color: rgba(255, 255, 255, 0.15); /* Transparencia */
+  backdrop-filter: blur(10px); /* Desenfoque de fondo */
+  -webkit-backdrop-filter: blur(10px); /* Safari */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.527);
+}
