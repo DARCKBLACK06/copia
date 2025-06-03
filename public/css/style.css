@@ -19,3 +19,11 @@
 #sidebar.collapsed button i {
   display: none;
 }
+
+.container-departamento {
+  background-color: #f8f9fa; /* Fondo claro */
+  width: 100%;
+  max-width: 400px; /* No más ancho que esto */
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}

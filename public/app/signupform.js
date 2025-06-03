@@ -1,38 +1,37 @@
-import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js"
-import { auth } from './firebase.js'
-import { showMessage } from './showMessage.js'
+// public/app/signupform.js
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
+import { auth } from './firebase.js';
+import { showMessage } from './showMessage.js';
 
-const signupform = document.querySelector('#signup-form')
+const signupform = document.querySelector('#signup-form');
 
-signupForm.addEventListener('submit', async (e) => {
-    e.preventDefault()
+signupform.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    const email = signupform['login-email'].value
-    const password = signupform['login-password'].value
+  const email = signupform['login-email'].value;
+  const password = signupform['login-password'].value;
 
-    console.log(email, password)
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-    try {    
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-    console.log(userCredential)
+    // Ocultar modal
+    const signupModal = document.querySelector('#signupModal');
+    const modal = bootstrap.Modal.getInstance(signupModal);
+    modal.hide();
 
-    // Ocultar modal de registro
-    const signupModal = document.querySelector('#signupModal')
-    const modal = bootstrao.Modal.getInstance(signupModal)
-    modal.hide()
+    showMessage('Registro exitoso: ' + userCredential.user.email, 'success');
 
-    showMessage('Registro exitoso' + userCredential.user.email) 
+    signupform.reset();
 
-    } catch (error) {
-        if (error.code === 'auth/invalid-email') {
-            showMessage("Correo no válido","error")
-        }else if (error.code === 'auth/weak-password') {
-            showMessage("Contraseña demasiado débil","error")
-        }else if (error.code === 'auth/email-already-in-use') {
-            showMessage("Correo ya en uso","error")
-        }else if (error.code) {
-            showMessage("Error inesperado","error")
-        }   
+  } catch (error) {
+    if (error.code === 'auth/invalid-email') {
+      showMessage("Correo no válido", "error");
+    } else if (error.code === 'auth/weak-password') {
+      showMessage("Contraseña demasiado débil", "error");
+    } else if (error.code === 'auth/email-already-in-use') {
+      showMessage("Correo ya en uso", "error");
+    } else {
+      showMessage("Error inesperado", "error");
     }
-
-})
+  }
+});
