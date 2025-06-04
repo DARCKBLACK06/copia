@@ -1,24 +1,20 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
-import { auth } from '../app/firebase.js'; // Asegúrate que 'auth' viene exportado desde aquí
+import { auth } from '../app/firebase.js';
 import '../app/loginform.js';
 
-import { initBackgroundSelector } from './modal.js';
-import '../js/wallpapersave.js';
+import { initBackgroundSelector } from '../js/wallpapersave.js'; // ← ¡CORRECTO!
 
-// Inicia el selector de fondo
+// Inicia el selector de fondo al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
-  initBackgroundSelector();
+  initBackgroundSelector(); // ← LLAMADA correcta
 });
 
 // Detectar usuario autenticado
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     console.log("Usuario autenticado:", user.email);
-    // Redirigir a la página principal
     window.location.href = "inicio.html";
   } else {
     console.log("No hay usuario autenticado");
   }
 });
-
-

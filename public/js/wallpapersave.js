@@ -1,5 +1,4 @@
-// Espera a que cargue todo el DOM
-document.addEventListener("DOMContentLoaded", () => {
+export function initBackgroundSelector() {
   const fondoImgs = document.querySelectorAll('.background-option');
   const fileInput = document.getElementById('custom-bg-upload');
   const modalElement = document.getElementById('staticBackdrop');
@@ -10,9 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Restaurar fondo desde localStorage
   const savedBg = localStorage.getItem("selectedBackground");
   if (savedBg) {
-    document.body.style.backgroundImage = `url('${savedBg}')`;
-    document.body.style.backgroundSize = 'cover';
-    document.body.style.backgroundPosition = 'center';
+    aplicarFondo(savedBg);
   }
 
   // Selección de fondos predefinidos
@@ -52,4 +49,4 @@ document.addEventListener("DOMContentLoaded", () => {
       alert('Selecciona o carga una imagen primero.');
     }
   });
-});
+}

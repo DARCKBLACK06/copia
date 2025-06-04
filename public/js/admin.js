@@ -18,3 +18,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("¡Bienvenido al panel de administración!");
 });
+
