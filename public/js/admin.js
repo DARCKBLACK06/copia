@@ -1,6 +1,7 @@
 import '../app/firebase.js';
 import '../app/logout.js';
 import '../app/session.js';
+import '../app/signupform.js';
 import { showMessage } from '../app/showMessage.js';
 
 document.addEventListener("DOMContentLoaded", () => {
