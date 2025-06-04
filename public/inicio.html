@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Administración</title>
 
   <!-- Icono -->
@@ -18,7 +19,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
   <script type="module" src="./js/admin.js"></script>
-  <script type="module" src="./js/departamentos.js"></script>
 </head>
 
 <body>
@@ -35,58 +35,68 @@
       <ul class="nav flex-column">
         <li class="nav-item"><a href="#" class="nav-link text-white">Inicio</a></li>
         <li class="nav-item"><a href="#" class="nav-link text-white">Gráficas</a></li>
-        <li class="nav-item"><a href="#" class="nav-link text-white">Reportes</a></li>
+        <li class="nav-item"><a href="formulario.html" class="nav-link text-white">Reportes</a></li>
         <li class="nav-item">
-          <a href="#" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#signupModal">Registrar Usuario</a>
+          <!-- Botón para registrar usuario -->
+          <a href="#" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#signupModal">Registrar
+            Usuario
+          </a>
+
+          <!-- Modal Registrar Usuario -->
+          <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content bg-dark text-white">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="signupModalLabel">Registrar Usuario</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                  <form id="signup-form">
+                    <div class="mb-3">
+                      <label for="login-email" class="form-label">Correo electrónico</label>
+                      <input type="email" class="form-control" id="login-email" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="login-password" class="form-label">Contraseña</label>
+                      <input type="password" class="form-control" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Registrar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- fin modal -->
+
+          <!-- fin botón para registrar usuario -->
+
+
         </li>
         <li class="nav-item"><a href="#" class="nav-link text-white" id="logout">Cerrar Sesión</a></li>
       </ul>
     </nav>
+    <!-- fin slidbar -->
 
-    <!-- Contenido principal -->
+    <!-- Mensaje de bienvenida -->
     <div class="flex-grow-1 p-4">
       <h1>Bienvenido al Panel Administrativo</h1>
       <p>Selecciona una opción del menú lateral para comenzar.</p>
+      <!--fin  Mensaje de bienvenida -->
 
-  <!-- Modal Registrar Usuario -->
-  <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-dark text-white">
-        <div class="modal-header">
-          <h5 class="modal-title" id="signupModalLabel">Registrar Usuario</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <form id="signup-form">
-            <div class="mb-3">
-              <label for="login-email" class="form-label">Correo electrónico</label>
-              <input type="email" class="form-control" id="login-email" required>
-            </div>
-            <div class="mb-3">
-              <label for="login-password" class="form-label">Contraseña</label>
-              <input type="password" class="form-control" id="login-password" required>
-            </div>
-            <button type="submit" class="btn btn-success w-100">Registrar</button>
-          </form>
-        </div>
+      <!-- contenedor de tarjetas -->
+      <!-- Contenedor general -->
+      <div class="tarjetas-grid">
+        <!-- Tarjetas vacías con ID único -->
+        <div id="dataUser" class="tarjeta-box"></div>
+        <div id="notifications" class="tarjeta-box"></div>
+        <div id="departamentos" class="tarjeta-box"></div>
+        <div id="" class="tarjeta-box"></div>
       </div>
-    </div>
-  </div>
 
-  <!-- Apartir de aqui codigo de sensores y mas-->
-
-  <div class="container-departamento p-3 border rounded shadow-sm bg-light" style="max-width: 400px;">
-  <label for="departamentoSelect" class="form-label fw-bold">Selecciona Departamento:</label>
-  <select id="departamentoSelect" class="form-select mb-3" aria-label="Selector de departamento">
-    <!-- Opciones generadas por JS -->
-  </select>
-
-  <div id="tarjeta-container">
-    <!-- Aquí se mostrará la tarjeta del departamento seleccionado -->
-  </div>
-</div>
+      <!--fin contenedor de tarjetas -->
 
 
-  <!-- fin de codigo -->
 </body>
+
 </html>

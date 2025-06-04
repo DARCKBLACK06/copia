@@ -20,10 +20,28 @@
   display: none;
 }
 
-.container-departamento {
-  background-color: #f8f9fa; /* Fondo claro */
-  width: 100%;
-  max-width: 400px; /* No más ancho que esto */
-  border-radius: 8px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+/*Contenedor general*/
+.tarjetas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+  grid-template-rows: repeat(2, 1fr);     /* 2 filas */
+  gap: 2rem; /* separación entre tarjetas (ajustable) */
+  padding: 2rem; /* espacio alrededor del grid */
+  max-width: 1000px; /* límite de ancho (ajustable) */
+  margin: 0 auto; /* centra el grid horizontalmente */
 }
+
+.tarjeta-box {
+  background-color: #f8f9fa; /* gris claro */
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 1.5rem;
+  min-height: 200px;
+  min-width: 200px;
+  /* Tamaño personalizado */
+  width: 100%;     /* se adapta a la celda */
+  height: 250px;   /* alto fijo, ajustable */
+  box-sizing: border-box;
+}
+
+/* fin tarjetas */

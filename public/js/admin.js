@@ -3,6 +3,13 @@ import '../app/logout.js';
 import '../app/session.js';
 import '../app/signupform.js';
 import { showMessage } from '../app/showMessage.js';
+import { inicializarFormularioDepartamento } from "./registrarDepartamento.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+  inicializarFormularioDepartamento();
+});
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggleSidebar");
