@@ -8,10 +8,22 @@ const MAX_DPTOS = 50;  // Número máximo de departamentos que puedes registrar
 
 const gridDptos = document.getElementById("gridDptos");
 const formDepartamento = document.getElementById("formDepartamento");
-const nivelInput = document.getElementById("nivelDepartamento");
+const nivelHiddenInput = document.getElementById("nivelDepartamento");
+const nivelDropdownBtn = document.getElementById("nivelDropdownBtn");
+const nivelDropdownItems = document.querySelectorAll("#nivelDropdownMenu .dropdown-item");
 
 let dptoSeleccionado = null;
 let departamentosRegistrados = new Set();
+
+// Inicializa el dropdown de nivel
+nivelDropdownItems.forEach(item => {
+  item.addEventListener("click", (e) => {
+    e.preventDefault();
+    const valor = item.getAttribute("data-value");
+    nivelHiddenInput.value = valor;
+    nivelDropdownBtn.textContent = `Piso ${valor}`;
+  });
+});
 
 // Genera botones para dptos y marca los ya registrados
 export async function inicializarRegistroDepartamento() {
@@ -75,9 +87,9 @@ formDepartamento.addEventListener("submit", async (e) => {
     return;
   }
 
-  const nivel = nivelInput.value.trim();
+  const nivel = parseInt(nivelHiddenInput.value);
   if (!nivel || isNaN(nivel) || nivel < 1) {
-    showMessage("Nivel inválido. Debe ser un número entero mayor o igual a 1", "error");
+    showMessage("Nivel inválido. Selecciona un piso válido", "error");
     return;
   }
 
@@ -92,7 +104,7 @@ formDepartamento.addEventListener("submit", async (e) => {
   // Preparar objeto para guardar
   const nuevoDepto = {
     numero: parseInt(dptoSeleccionado.replace("dpto", "")),
-    nivel: parseInt(nivel),
+    nivel: nivel,
     tieneSensores: tieneSensores
   };
 
@@ -102,6 +114,8 @@ formDepartamento.addEventListener("submit", async (e) => {
 
     // Reset formulario y selección
     formDepartamento.reset();
+    nivelDropdownBtn.textContent = "Seleccionar Piso";
+    nivelHiddenInput.value = "";
     dptoSeleccionado = null;
 
     // Recarga la cuadrícula para actualizar estados

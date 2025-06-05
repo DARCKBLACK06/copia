@@ -89,75 +89,97 @@
         <!-- Tarjetas vacías con ID único -->
 
         <!-- Tarjeta de usuario -->
-        <div id="dataUser" class="tarjeta-box"></div>
+        <div id="dataUser" class="tarjeta-box">
+          <h5 class="fw-bold mb-3"> Datos de Usuarios</h5>
+
+        </div>
         <!-- fin tarjeta de usuario -->
 
         <!-- Tarjeta de notificaciones -->
         <div id="notifications" class="tarjeta-box">
-            <h5 class="fw-bold mb-3">notificaciones</h5>
+          <h5 class="fw-bold mb-3">Notificaciones</h5>
 
         </div>
 
-        
+
         <!-- fin tarjeta de notificaciones -->
 
         <!-- Tarjeta de departamentos -->
-<div id="departamentos" class="tarjeta-box">
-  <h5 class="fw-bold mb-3">Departamentos</h5>
-  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
-    ➕ Registrar Departamento
-  </button>
-</div>
+        <div id="departamentos" class="tarjeta-box">
+          <h5 class="fw-bold mb-3">Departamentos</h5>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
+            ➕ Registrar Departamento
+          </button>
+        </div>
 
-<!-- Modal -->
-<div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalDepartamentoLabel">Registrar Departamento</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <form id="formDepartamento">
+        <!-- Modal -->
+        <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-white">
+              <div class="modal-header">
+                <h5 class="modal-title" id="modalDepartamentoLabel">Registrar Departamento</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                  aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <form id="formDepartamento">
 
-          <!-- Cuadrícula de departamentos -->
-          <div class="mb-3">
-            <label class="form-label">Selecciona un número de departamento:</label>
-            <div class="grid-dptos" id="gridDptos">
-              <!-- Botones generados por JS: dpto1, dpto2, etc. -->
+                  <!-- Cuadrícula de departamentos -->
+                  <div class="mb-3">
+                    <label class="form-label">Selecciona un número de departamento:</label>
+                    <div class="grid-dptos" id="gridDptos">
+                      <!-- Botones generados por JS: dpto1, dpto2, etc. -->
+                    </div>
+                  </div>
+
+                  <!-- Nivel -->
+                  <div class="mb-3">
+                    <label class="form-label">Nivel / Piso</label>
+                    <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle w-100" id="nivelDropdownBtn" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Seleccionar Piso
+                      </button>
+                      <ul class="dropdown-menu w-100" id="nivelDropdownMenu">
+                        <li><a class="dropdown-item" href="#" data-value="1">Piso 1</a></li>
+                        <li><a class="dropdown-item" href="#" data-value="2">Piso 2</a></li>
+                        <li><a class="dropdown-item" href="#" data-value="3">Piso 3</a></li>
+                      </ul>
+                    </div>
+                    <input type="hidden" id="nivelDepartamento" name="nivelDepartamento">
+                  </div>
+
+                  <!-- Sensores -->
+                  <div class="mb-3">
+                    <label class="form-label">¿Tiene sensores?</label>
+                    <div>
+                      <input type="radio" class="btn-check" name="tieneSensores" id="sensorSi" autocomplete="off"
+                        value="true" checked>
+                      <label class="btn btn-outline-success" for="sensorSi">Sí</label>
+
+                      <input type="radio" class="btn-check" name="tieneSensores" id="sensorNo" autocomplete="off"
+                        value="false">
+                      <label class="btn btn-outline-danger" for="sensorNo">No</label>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-success w-100">Registrar</button>
+                </form>
+              </div>
             </div>
           </div>
-
-          <!-- Nivel -->
-          <div class="mb-3">
-            <label for="nivelDepartamento" class="form-label">Nivel (piso)</label>
-            <input type="number" class="form-control" id="nivelDepartamento" min="1" required>
-          </div>
-
-          <!-- Sensores -->
-          <div class="mb-3">
-            <label class="form-label">¿Tiene sensores?</label>
-            <div>
-              <input type="radio" class="btn-check" name="tieneSensores" id="sensorSi" autocomplete="off" value="true" checked>
-              <label class="btn btn-outline-success" for="sensorSi">Sí</label>
-
-              <input type="radio" class="btn-check" name="tieneSensores" id="sensorNo" autocomplete="off" value="false">
-              <label class="btn btn-outline-danger" for="sensorNo">No</label>
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-success w-100">Registrar</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+        </div>
         <!-- fin tarjeta de departamentos -->
-         
+
         <!-- Tarjeta de reportes -->
-        <div id="reportes class="tarjeta-box"></div>
+
+        <div id="notifications" class="tarjeta-box">
+          <h5 class="fw-bold mb-3">Reportes</h5>
+
+        </div>
+        <!-- fin tarjeta de reportes -->
       </div>
-      <!-- fin tarjeta de reportes -->
 
       <!--fin contenedor de tarjetas -->
 
