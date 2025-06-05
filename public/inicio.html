@@ -107,12 +107,26 @@
         <!-- Tarjeta de departamentos -->
         <div id="departamentos" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Departamentos</h5>
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
-            ➕ Registrar Departamento
-          </button>
+          <div class="d-flex flex-wrap gap-2">
+            <!-- Botón: Registrar Departamento (abre modal) -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
+              ➕ Registrar Departamento
+            </button>
+
+            <!-- Botón: Registrar Inquilino (redirecciona a otra página) -->
+            <a href="formulario-inquilino.html" class="btn btn-success">
+              👤 Registrar Inquilino
+            </a>
+
+            <!-- Botón: Registrar Sensor (por ahora también modal, luego se separa) -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
+              🤖 Registrar Sensor
+            </button>
+          </div>
+
         </div>
 
-        <!-- Modal -->
+        <!-- Modal Registrar Departamento -->
         <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel"
           aria-hidden="true">
           <div class="modal-dialog modal-lg">
