@@ -4,12 +4,16 @@ import '../app/session.js';
 import '../app/signupform.js';
 import { showMessage } from '../app/showMessage.js';
 import { inicializarRegistroDepartamento } from './registrarDepartamento.js';
+import { cargarUsuarios } from './usuariosCard.js';
 
 window.addEventListener('DOMContentLoaded', () => {
   inicializarRegistroDepartamento();
 });
 
-
+window.addEventListener('DOMContentLoaded', () => {
+  inicializarRegistroDepartamento();
+  cargarUsuarios();
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggleSidebar");
