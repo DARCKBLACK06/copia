@@ -45,3 +45,22 @@
 }
 
 /* fin tarjetas */
+
+.grid-dptos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 10px;
+}
+
+.grid-dptos button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.grid-dptos button.selected {
+  background-color: #28a745;
+}
