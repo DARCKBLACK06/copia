@@ -5,6 +5,12 @@ import '../app/signupform.js';
 import { showMessage } from '../app/showMessage.js';
 import { inicializarRegistroDepartamento } from './registrarDepartamento.js';
 import { cargarUsuarios } from './usuariosCard.js';
+import { cargarNotificaciones } from './notifications.js';
+
+window.addEventListener('DOMContentLoaded', () => {
+  cargarNotificaciones();
+});
+
 
 window.addEventListener('DOMContentLoaded', () => {
   inicializarRegistroDepartamento();
