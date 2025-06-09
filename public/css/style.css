@@ -64,3 +64,11 @@
 .grid-dptos button.selected {
   background-color: #28a745;
 }
+
+#contenedorCarruselUsuarios {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 440px;
+  position: relative;
+}

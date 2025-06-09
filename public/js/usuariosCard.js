@@ -1,45 +1,111 @@
-// usuariosCard.js
 import { db } from "../app/firebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
-const contenedorUsuarios = document.getElementById("dataUser");
+const contenedorCarrusel = document.getElementById("contenedorCarruselUsuarios");
+const btnAnterior = document.getElementById("btnAnterior");
+const btnSiguiente = document.getElementById("btnSiguiente");
+
+let tarjetas = [];
+let indiceActual = 0;
 
 export async function cargarUsuarios() {
-  if (!contenedorUsuarios) return;
-  contenedorUsuarios.innerHTML = "Cargando usuarios...";
+  if (!contenedorCarrusel) return;
+  contenedorCarrusel.innerHTML = "Cargando usuarios...";
 
   try {
     const querySnapshot = await getDocs(collection(db, "inquilinos"));
+    tarjetas = [];
+
     if (querySnapshot.empty) {
-      contenedorUsuarios.innerHTML = "<p>No hay usuarios registrados.</p>";
+      contenedorCarrusel.innerHTML = "<p>No hay usuarios registrados.</p>";
       return;
     }
 
-    contenedorUsuarios.innerHTML = ""; // limpia para mostrar datos
+    contenedorCarrusel.innerHTML = ""; // Limpia antes de renderizar
+
     querySnapshot.forEach(doc => {
       const data = doc.data();
       const tarjeta = document.createElement("div");
-      tarjeta.classList.add("tarjeta-inquilino", "mb-3", "p-3", "border", "rounded", "bg-light");
+      tarjeta.classList.add(
+        "card",
+        "bg-light",
+        "p-3",
+        "position-absolute",
+        "top-0",
+        "start-50",
+        "translate-middle-x"
+      );
+      tarjeta.style.display = "none";
+      tarjeta.style.minHeight = "420px";
+      tarjeta.style.maxWidth = "400px";
+      tarjeta.style.width = "100%";
+      tarjeta.style.borderRadius = "12px";
+      tarjeta.style.boxShadow = "0 4px 10px rgba(0, 0, 0, 0.1)";
 
       tarjeta.innerHTML = `
-        <h6>${data.nombre}</h6>
-        <p><strong>Departamento:</strong> ${data.departamento}</p>
-        <p><strong>Teléfono:</strong> ${data.telefono}</p>
-        <button class="btn btn-sm btn-primary ver-detalles">Ver Detalles</button>
+        <div class="h-100 d-flex flex-column">
+          <h5 class="card-title text-center border-bottom pb-2 mb-3">Datos del inquilino</h5>
+          
+          <div class="flex-grow-1 overflow-auto">
+            <p><strong>Nombre:</strong> ${data.nombre}</p>
+            <p><strong>Departamento:</strong> ${data.departamento}</p>
+            <p><strong>Teléfono:</strong> ${data.telefono}</p>
+          </div>
+
+          <button class="btn btn-sm btn-primary ver-detalles mt-auto mb-2">Ver Detalles</button>
+
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-outline-secondary btn-sm btn-anterior">←</button>
+            <button class="btn btn-outline-secondary btn-sm btn-siguiente">→</button>
+          </div>
+        </div>
       `;
 
       tarjeta.querySelector(".ver-detalles").addEventListener("click", () => {
         mostrarModalDetalles(data);
       });
 
-      contenedorUsuarios.appendChild(tarjeta);
+      tarjeta.querySelector(".btn-anterior").addEventListener("click", () => {
+        if (tarjetas.length === 0) return;
+        indiceActual = (indiceActual - 1 + tarjetas.length) % tarjetas.length;
+        mostrarTarjeta(indiceActual);
+      });
+
+      tarjeta.querySelector(".btn-siguiente").addEventListener("click", () => {
+        if (tarjetas.length === 0) return;
+        indiceActual = (indiceActual + 1) % tarjetas.length;
+        mostrarTarjeta(indiceActual);
+      });
+
+      tarjetas.push(tarjeta);
+      contenedorCarrusel.appendChild(tarjeta);
     });
 
+    mostrarTarjeta(indiceActual);
+
   } catch (error) {
-    contenedorUsuarios.innerHTML = "<p>Error al cargar usuarios.</p>";
+    contenedorCarrusel.innerHTML = "<p>Error al cargar usuarios.</p>";
     console.error("Error cargando usuarios:", error);
   }
 }
+
+function mostrarTarjeta(indice) {
+  tarjetas.forEach((tarjeta, i) => {
+    tarjeta.style.display = i === indice ? "block" : "none";
+  });
+}
+
+btnAnterior?.addEventListener("click", () => {
+  if (tarjetas.length === 0) return;
+  indiceActual = (indiceActual - 1 + tarjetas.length) % tarjetas.length;
+  mostrarTarjeta(indiceActual);
+});
+
+btnSiguiente?.addEventListener("click", () => {
+  if (tarjetas.length === 0) return;
+  indiceActual = (indiceActual + 1) % tarjetas.length;
+  mostrarTarjeta(indiceActual);
+});
 
 function mostrarModalDetalles(data) {
   let modalHtml = `
@@ -67,13 +133,9 @@ function mostrarModalDetalles(data) {
     </div>
   `;
 
-  // Añadimos modal al body y luego lo mostramos
   const contenedorModalExistente = document.getElementById("modalDetallesUser");
-  if (contenedorModalExistente) {
-    contenedorModalExistente.remove();
-  }
+  if (contenedorModalExistente) contenedorModalExistente.remove();
   document.body.insertAdjacentHTML("beforeend", modalHtml);
-
   const modal = new bootstrap.Modal(document.getElementById("modalDetallesUser"));
   modal.show();
 }
