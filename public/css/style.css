@@ -23,12 +23,12 @@
 /*Contenedor general*/
 .tarjetas-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 columnas */
-  grid-template-rows: repeat(2, 1fr);     /* 2 filas */
-  gap: 2rem; /* separación entre tarjetas (ajustable) */
-  padding: 2rem; /* espacio alrededor del grid */
-  max-width: 1000px; /* límite de ancho (ajustable) */
-  margin: 0 auto; /* centra el grid horizontalmente */
+  grid-template-columns: repeat(2, 1fr); /* 👈 fuerza el 2 x 2 */
+  grid-auto-rows: auto;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .tarjeta-box {
@@ -38,9 +38,8 @@
   padding: 1.5rem;
   min-height: 200px;
   min-width: 200px;
-  /* Tamaño personalizado */
-  width: 100%;     /* se adapta a la celda */
-  height: 250px;   /* alto fijo, ajustable */
+  width: 100%;
+  height: 250px;
   box-sizing: border-box;
 }
 
@@ -71,4 +70,63 @@
   align-items: center;
   min-height: 440px;
   position: relative;
+}
+
+#data-user {
+  position: relative;
+  height: 250px;
+  padding-bottom: 60px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: #f8f9fa;
+}
+
+#datosUsuario {
+  height: calc(100% - 60px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+#botonesFijos {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#botonesFijos button {
+  min-width: 70px;
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tarjetas-grid {
+    grid-template-columns: 1fr;
+  }
+
+.tarjeta-box {
+  background-color: #f8f9fa;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  padding: 1.5rem;
+  min-height: 200px;
+  min-width: 200px;
+  width: 100%;
+  /* height: 250px;  👈 QUÍTALO */
+  box-sizing: border-box;
+}
+
+  #botonesFijos {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  #botonesFijos button {
+    flex: 1 1 auto;
+    max-width: 100px;
+  }
 }

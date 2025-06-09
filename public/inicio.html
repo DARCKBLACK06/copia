@@ -86,12 +86,24 @@
 
       <!-- contenedor de tarjetas -->
       <div class="tarjetas-grid">
+        
         <!-- Tarjetas vacías con ID único -->
 
         <!-- Tarjeta de usuario -->
-        <div id="dataUser">
-          <div id="contenedorCarruselUsuarios" class="position-relative"></div>
+        <div id="data-user" class="tarjeta-box">
+          <h5 class="fw-bold mb-3">Datos de Usuario</h5>
+
+          <div id="datosUsuario" style="min-height: 120px; overflow-y: auto;">
+            <!-- Aquí se cargarán los datos dinámicos -->
+          </div>
+
+          <div id="botonesFijos" style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button id="btnAnterior" class="btn btn-outline-primary btn-sm">|<</button>
+                <button id="btnDetalles" class="btn btn-outline-info btn-sm">Detalles</button>
+                <button id="btnSiguiente" class="btn btn-outline-primary btn-sm">>|</button>
+          </div>
         </div>
+
 
         <!-- fin tarjeta de usuario -->
 
@@ -100,6 +112,7 @@
           <h5 class="fw-bold mb-3">Notificaciones</h5>
 
         </div>
+
 
 
         <!-- fin tarjeta de notificaciones -->

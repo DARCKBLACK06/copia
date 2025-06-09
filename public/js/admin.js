@@ -36,3 +36,20 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("¡Bienvenido al panel de administración!");
 });
 
+function igualarAlturasDeTarjetas() {
+  const tarjetas = document.querySelectorAll('.tarjeta-box');
+  let alturaMax = 0;
+
+  // Reinicia la altura para no acumular errores
+  tarjetas.forEach(t => t.style.height = 'auto');
+
+  // Encuentra la altura máxima
+  tarjetas.forEach(t => {
+    const altura = t.offsetHeight;
+    if (altura > alturaMax) alturaMax = altura;
+  });
+
+  // Aplica la altura máxima a todas las tarjetas
+  tarjetas.forEach(t => t.style.height = alturaMax + 'px');
+}
+window.addEventListener('resize', igualarAlturasDeTarjetas);
