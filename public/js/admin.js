@@ -1,3 +1,5 @@
+// admin.js
+
 import '../app/firebase.js';
 import '../app/logout.js';
 import '../app/session.js';
@@ -9,24 +11,13 @@ import { cargarNotificaciones } from './notifications.js';
 import { inicializarRegistroSensor } from './registrarSensor.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Inicializaciones únicas y ordenadas
   inicializarRegistroSensor();
-});
-
-window.addEventListener('DOMContentLoaded', () => {
   cargarNotificaciones();
-});
-
-
-window.addEventListener('DOMContentLoaded', () => {
-  inicializarRegistroDepartamento();
-});
-
-window.addEventListener('DOMContentLoaded', () => {
   inicializarRegistroDepartamento();
   cargarUsuarios();
-});
 
-document.addEventListener("DOMContentLoaded", () => {
+  // Sidebar toggle
   const toggleBtn = document.getElementById("toggleSidebar");
   const sidebar = document.getElementById("sidebar");
 
@@ -38,23 +29,29 @@ document.addEventListener("DOMContentLoaded", () => {
     icon.classList.toggle("bi-chevron-right");
   });
 
+  // Ajuste de alturas en las tarjetas
+  igualarAlturasDeTarjetas();
+
   console.log("¡Bienvenido al panel de administración!");
 });
 
+// Igualar alturas de tarjetas dinámicamente
 function igualarAlturasDeTarjetas() {
   const tarjetas = document.querySelectorAll('.tarjeta-box');
   let alturaMax = 0;
 
-  // Reinicia la altura para no acumular errores
+  // Reinicia altura
   tarjetas.forEach(t => t.style.height = 'auto');
 
-  // Encuentra la altura máxima
+  // Encuentra la mayor
   tarjetas.forEach(t => {
     const altura = t.offsetHeight;
     if (altura > alturaMax) alturaMax = altura;
   });
 
-  // Aplica la altura máxima a todas las tarjetas
+  // Asigna la misma a todas
   tarjetas.forEach(t => t.style.height = alturaMax + 'px');
 }
+
+// También ajustar al redimensionar
 window.addEventListener('resize', igualarAlturasDeTarjetas);
