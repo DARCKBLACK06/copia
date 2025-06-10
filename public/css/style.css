@@ -1,37 +1,7 @@
-/* === RESET GENERAL === */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html, body {
-  height: 100%;
-  font-family: Arial, sans-serif;
-}
-
-/* === LAYOUT PRINCIPAL === */
-#main-wrapper {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* === SIDEBAR === */
-
-.d-flex {
-  min-height: 100vh; /* Que tome al menos toda la pantalla */
-}
-
+/* Sidebar */
 #sidebar {
-  height: auto; /* Que se adapte al contenido */
+  transition: width 0.3s ease;
   width: 250px;
-  transition: width 0.3s;
-  background-color: #343a40;
-  padding: 1rem;
-  color: white;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
 }
 
 #sidebar.collapsed {
@@ -51,118 +21,107 @@ html, body {
   display: none;
 }
 
-/* === CONTENIDO PRINCIPAL === */
-#main-content {
-  flex-grow: 1;
-  padding: 2rem;
-  background-color: #f1f1f1;
+/* Contenedor Principal */
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  transition: margin-left 0.3s ease;
+  padding: 2rem 1rem;
+  background-color: #fff;
+  color: #6b7280;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-/* === TARJETAS GRID === */
+/* Contenedor general de tarjetas */
 .tarjetas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr); /* 2 columnas fijas para desktop */
+  grid-auto-rows: auto;
   gap: 2rem;
-  width: 100%;
-  max-width: 1200px;
+  padding: 1rem 0;
   margin: 0 auto;
 }
 
+/* Estilos de cada tarjeta */
 .tarjeta-box {
   background-color: #f8f9fa;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.08);
   padding: 1.5rem;
-  min-height: 200px;
+  min-height: 280px;
   width: 100%;
-}
-
-/* === GRID DEPARTAMENTOS === */
-.grid-dptos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 10px;
-}
-
-.grid-dptos button {
-  padding: 10px;
-  border: 1px solid #ccc;
-  background-color: #333;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.grid-dptos button.selected {
-  background-color: #28a745;
-}
-
-/* === CARRUSEL Y DATOS DE USUARIO === */
-#contenedorCarruselUsuarios {
+  box-sizing: border-box;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 440px;
-  position: relative;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: box-shadow 0.3s ease;
 }
 
-#data-user {
-  position: relative;
-  height: 250px;
-  padding-bottom: 60px;
-  overflow: hidden;
-  background-color: #f8f9fa;
+.tarjeta-box:hover {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);
 }
 
-#datosUsuario {
-  height: calc(100% - 60px);
-  overflow-y: auto;
-  padding-right: 10px;
-}
-
-/* === BOTONES FIJOS === */
+/* Botones fijos */
 #botonesFijos {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
+  flex-wrap: nowrap; /* sin envoltura para mantener orden */
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
+/* Control de ancho botones para adaptar a tarjeta */
 #botonesFijos button {
-  flex: 1 1 auto;
-  min-width: 80px;
-  max-width: 120px;
+  flex: 1 1 0; /* crece y se encoge equitativamente */
+  min-width: 0; /* permite ajuste flexible */
   white-space: nowrap;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  transition: transform 0.25s ease;
 }
 
-/* === RESPONSIVE === */
+#botonesFijos button:hover, #botonesFijos button:focus {
+  transform: scale(1.05);
+}
+
+/* Media query para pantallas medianas y menores */
+@media (max-width: 992px) {
+  .tarjetas-grid {
+    grid-template-columns: repeat(2, 1fr); /* conserva 2 columnas en tablet */
+  }
+}
+
+/* Media query para pantallas pequeñas */
 @media (max-width: 768px) {
-  #sidebar {
-    position: fixed;
-    height: 100vh;
-    z-index: 1000;
-  }
-
-  #main-content {
-    margin-left: 60px; /* para que no tape el contenido si colapsa */
-  }
-
+  /* Cambiar a una columna */
   .tarjetas-grid {
     grid-template-columns: 1fr;
-    padding: 1rem;
+    gap: 1.5rem;
   }
 
-  .tarjeta-box {
-    min-height: 220px;
-  }
-
+  /* Botones: permiten envoltura y se ajustan al 100% */
   #botonesFijos {
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 0.75rem;
   }
 
   #botonesFijos button {
-    flex: 1 1 auto;
-    max-width: 100px;
+    flex: 1 1 45%; /* ocupan aproximadamente la mitad cada botón */
+    min-width: 120px;
+    max-width: none;
   }
 }
+
+/* Media query para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  #botonesFijos button {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+}
+

@@ -24,7 +24,7 @@
 <body>
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav id="sidebar" class="bg-dark text-white p-3">
+    <nav id="sidebar" class="bg-dark text-white  p-3">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <span class="fs-5 fw-bold">Administración</span>
         <button id="toggleSidebar" class="btn btn-sm btn-outline-light">
@@ -78,16 +78,13 @@
     </nav>
     <!-- fin slidbar -->
 
-    <!-- Mensaje de bienvenida -->
-    <div class="flex-grow-1 p-4">
+    <!-- Contenedor Principal -->
+    <div class="flex-grow-1 p-4 main-container">
       <h1>Bienvenido al Panel Administrativo</h1>
       <p>Selecciona una opción del menú lateral para comenzar.</p>
-      <!--fin  Mensaje de bienvenida -->
 
-      <!-- contenedor de tarjetas -->
+      <!-- Contenedor de tarjetas -->
       <div class="tarjetas-grid">
-        
-        <!-- Tarjetas vacías con ID único -->
 
         <!-- Tarjeta de usuario -->
         <div id="data-user" class="tarjeta-box">
@@ -98,21 +95,20 @@
           </div>
 
           <div id="botonesFijos" style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button id="btnAnterior" class="btn btn-outline-primary btn-sm">|<</button>
-                <button id="btnDetalles" class="btn btn-outline-info btn-sm">Detalles</button>
+            <button id="btnAnterior" class="btn btn-outline-primary btn-sm">|<< /button>
+                <button id="btnDetalles" class="btn btn-outline-info btn-sm">Details</button>
                 <button id="btnSiguiente" class="btn btn-outline-primary btn-sm">>|</button>
           </div>
         </div>
-
-
         <!-- fin tarjeta de usuario -->
 
         <!-- Tarjeta de notificaciones -->
-        <div id="notificaciones-container" class="tarjeta-box">
+        <div id="notifications" class="tarjeta-box">
+          <h5 class="fw-bold mb-3">Notificaciones</h5>
+          <div id="notifications-content">
+            <!-- Aquí se insertarán las notificaciones dinámicamente -->
+          </div>
         </div>
-
-
-
         <!-- fin tarjeta de notificaciones -->
 
         <!-- Tarjeta de departamentos -->
@@ -134,7 +130,6 @@
               🤖 Registrar Sensor
             </button>
           </div>
-
         </div>
 
         <!-- Modal Registrar Departamento -->
@@ -198,17 +193,16 @@
         <!-- fin tarjeta de departamentos -->
 
         <!-- Tarjeta de reportes -->
-
-        <div id="notifications" class="tarjeta-box">
+        <div id="reportes" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Reportes</h5>
-
         </div>
         <!-- fin tarjeta de reportes -->
+
       </div>
-
-      <!--fin contenedor de tarjetas -->
-
-
+      <!-- fin contenedor de tarjetas -->
+    </div>
+    <!-- Fin Contenedor Principal -->
+  </div>
 </body>
 
 </html>

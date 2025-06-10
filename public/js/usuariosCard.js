@@ -55,6 +55,7 @@ function mostrarUsuario(indice) {
     <p><strong>Nombre:</strong> ${user.nombre || "Sin nombre"}</p>
     <p><strong>Teléfono:</strong> ${user.telefono || "Sin teléfono"}</p>
     <p><strong>Departamento:</strong> ${user.departamento || "Sin departamento"}</p>
+    
   `;
 }
 

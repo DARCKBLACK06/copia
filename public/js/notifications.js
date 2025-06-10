@@ -10,7 +10,7 @@ import {
 
 // Función para cargar las notificaciones
 export async function cargarNotificaciones() {
-  const container = document.getElementById('notificaciones-container');
+  const container = document.getElementById('notifications-content'); // Apunta al nuevo contenedor interno
   if (!container) {
     console.error('❌ No se encontró el contenedor de notificaciones.');
     return;

@@ -52,4 +52,7 @@ function igualarAlturasDeTarjetas() {
   // Aplica la altura máxima a todas las tarjetas
   tarjetas.forEach(t => t.style.height = alturaMax + 'px');
 }
+
+// Llama a la función al cargar la página y al cambiar el tamaño de la ventana
+window.addEventListener('load', igualarAlturasDeTarjetas);
 window.addEventListener('resize', igualarAlturasDeTarjetas);
