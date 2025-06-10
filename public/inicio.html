@@ -24,7 +24,7 @@
 <body>
   <div class="d-flex">
     <!-- Sidebar -->
-    <nav id="sidebar" class="bg-dark text-white  p-3">
+    <nav id="sidebar" class="bg-dark text-white p-3">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <span class="fs-5 fw-bold">Administración</span>
         <button id="toggleSidebar" class="btn btn-sm btn-outline-light">
@@ -39,8 +39,7 @@
         <li class="nav-item">
           <!-- Botón para registrar usuario -->
           <a href="#" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#signupModal">Registrar
-            Usuario
-          </a>
+            Usuario</a>
 
           <!-- Modal Registrar Usuario -->
           <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
@@ -67,16 +66,11 @@
               </div>
             </div>
           </div>
-          <!-- fin modal -->
-
-          <!-- fin botón para registrar usuario -->
-
-
         </li>
         <li class="nav-item"><a href="#" class="nav-link text-white" id="logout">Cerrar Sesión</a></li>
       </ul>
     </nav>
-    <!-- fin slidbar -->
+    <!-- Fin Sidebar -->
 
     <!-- Contenedor Principal -->
     <div class="flex-grow-1 p-4 main-container">
@@ -89,119 +83,122 @@
         <!-- Tarjeta de usuario -->
         <div id="data-user" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Datos de Usuario</h5>
-
-          <div id="datosUsuario" style="min-height: 120px; overflow-y: auto;">
-            <!-- Aquí se cargarán los datos dinámicos -->
-          </div>
-
-          <div id="botonesFijos" style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button id="btnAnterior" class="btn btn-outline-primary btn-sm">|<< /button>
+          <div id="datosUsuario" style="min-height: 120px; overflow-y: auto;"></div>
+          <div id="botonesFijos" class="mt-3 d-flex justify-content-between">
+            <button id="btnAnterior" class="btn btn-outline-primary btn-sm">|<|</button>
                 <button id="btnDetalles" class="btn btn-outline-info btn-sm">Details</button>
-                <button id="btnSiguiente" class="btn btn-outline-primary btn-sm">>|</button>
+                <button id="btnSiguiente" class="btn btn-outline-primary btn-sm">|>|</button>
           </div>
         </div>
-        <!-- fin tarjeta de usuario -->
 
         <!-- Tarjeta de notificaciones -->
         <div id="notifications" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Notificaciones</h5>
-          <div id="notifications-content">
-            <!-- Aquí se insertarán las notificaciones dinámicamente -->
-          </div>
+          <div id="notifications-content"></div>
         </div>
-        <!-- fin tarjeta de notificaciones -->
 
         <!-- Tarjeta de departamentos -->
         <div id="departamentos" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Departamentos</h5>
           <div class="d-flex flex-wrap gap-2">
-            <!-- Botón: Registrar Departamento (abre modal) -->
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
-              ➕ Registrar Departamento
-            </button>
-
-            <!-- Botón: Registrar Inquilino (redirecciona a otra página) -->
-            <a href="formulario-inquilino.html" class="btn btn-success">
-              👤 Registrar Inquilino
-            </a>
-
-            <!-- Botón: Registrar Sensor (por ahora también modal, luego se separa) -->
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">
-              🤖 Registrar Sensor
-            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">➕ Registrar
+              Departamento</button>
+            <a href="formulario-inquilino.html" class="btn btn-success">👤 Registrar Inquilino</a>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistroSensor">🤖 Registrar
+              Sensor</button>
           </div>
         </div>
-
-        <!-- Modal Registrar Departamento -->
-        <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel"
-          aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content bg-dark text-white">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalDepartamentoLabel">Registrar Departamento</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                  aria-label="Cerrar"></button>
-              </div>
-              <div class="modal-body">
-                <form id="formDepartamento">
-
-                  <!-- Cuadrícula de departamentos -->
-                  <div class="mb-3">
-                    <label class="form-label">Selecciona un número de departamento:</label>
-                    <div class="grid-dptos" id="gridDptos">
-                      <!-- Botones generados por JS: dpto1, dpto2, etc. -->
-                    </div>
-                  </div>
-
-                  <!-- Nivel -->
-                  <div class="mb-3">
-                    <label class="form-label">Nivel / Piso</label>
-                    <div class="dropdown">
-                      <button class="btn btn-secondary dropdown-toggle w-100" id="nivelDropdownBtn" type="button"
-                        data-bs-toggle="dropdown" aria-expanded="false">
-                        Seleccionar Piso
-                      </button>
-                      <ul class="dropdown-menu w-100" id="nivelDropdownMenu">
-                        <li><a class="dropdown-item" href="#" data-value="1">Piso 1</a></li>
-                        <li><a class="dropdown-item" href="#" data-value="2">Piso 2</a></li>
-                        <li><a class="dropdown-item" href="#" data-value="3">Piso 3</a></li>
-                      </ul>
-                    </div>
-                    <input type="hidden" id="nivelDepartamento" name="nivelDepartamento">
-                  </div>
-
-                  <!-- Sensores -->
-                  <div class="mb-3">
-                    <label class="form-label">¿Tiene sensores?</label>
-                    <div>
-                      <input type="radio" class="btn-check" name="tieneSensores" id="sensorSi" autocomplete="off"
-                        value="true" checked>
-                      <label class="btn btn-outline-success" for="sensorSi">Sí</label>
-
-                      <input type="radio" class="btn-check" name="tieneSensores" id="sensorNo" autocomplete="off"
-                        value="false">
-                      <label class="btn btn-outline-danger" for="sensorNo">No</label>
-                    </div>
-                  </div>
-
-                  <button type="submit" class="btn btn-success w-100">Registrar</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- fin tarjeta de departamentos -->
 
         <!-- Tarjeta de reportes -->
         <div id="reportes" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Reportes</h5>
         </div>
-        <!-- fin tarjeta de reportes -->
-
       </div>
-      <!-- fin contenedor de tarjetas -->
     </div>
-    <!-- Fin Contenedor Principal -->
+  </div>
+
+  <!-- Modal para registrar sensor -->
+  <div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Registrar Sensor</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formSensor">
+            <div class="mb-3">
+              <label for="numeroDepartamento" class="form-label">Número de Departamento</label>
+              <input type="text" class="form-control" id="numeroDepartamento" required>
+            </div>
+            <div class="mb-3">
+              <label for="ssidWifi" class="form-label">SSID WiFi</label>
+              <input type="text" class="form-control" id="ssidWifi" required>
+            </div>
+            <div class="mb-3">
+              <label for="passwordWifi" class="form-label">Contraseña WiFi</label>
+              <input type="password" class="form-control" id="passwordWifi" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="btnGenerarCodigo" class="btn btn-success">Generar Código</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Registrar Departamento -->
+  <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark text-white">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalDepartamentoLabel">Registrar Departamento</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formDepartamento">
+            <div class="mb-3">
+              <label class="form-label">Selecciona un número de departamento:</label>
+              <div class="grid-dptos" id="gridDptos">
+                <!-- Botones generados por JS: dpto1, dpto2, etc. -->
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Nivel / Piso</label>
+              <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle w-100" id="nivelDropdownBtn" type="button"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  Seleccionar Piso
+                </button>
+                <ul class="dropdown-menu w-100" id="nivelDropdownMenu">
+                  <li><a class="dropdown-item" href="#" data-value="1">Piso 1</a></li>
+                  <li><a class="dropdown-item" href="#" data-value="2">Piso 2</a></li>
+                  <li><a class="dropdown-item" href="#" data-value="3">Piso 3</a></li>
+                </ul>
+              </div>
+              <input type="hidden" id="nivelDepartamento" name="nivelDepartamento">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">¿Tiene sensores?</label>
+              <div>
+                <input type="radio" class="btn-check" name="tieneSensores" id="sensorSi" autocomplete="off" value="true"
+                  checked>
+                <label class="btn btn-outline-success" for="sensorSi">Sí</label>
+                <input type="radio" class="btn-check" name="tieneSensores" id="sensorNo" autocomplete="off"
+                  value="false">
+                <label class="btn btn-outline-danger" for="sensorNo">No</label>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Registrar</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 

@@ -6,6 +6,11 @@ import { showMessage } from '../app/showMessage.js';
 import { inicializarRegistroDepartamento } from './registrarDepartamento.js';
 import { cargarUsuarios } from './usuariosCard.js';
 import { cargarNotificaciones } from './notifications.js';
+import { inicializarRegistroSensor } from './registrarSensor.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+  inicializarRegistroSensor();
+});
 
 window.addEventListener('DOMContentLoaded', () => {
   cargarNotificaciones();
@@ -52,7 +57,4 @@ function igualarAlturasDeTarjetas() {
   // Aplica la altura máxima a todas las tarjetas
   tarjetas.forEach(t => t.style.height = alturaMax + 'px');
 }
-
-// Llama a la función al cargar la página y al cambiar el tamaño de la ventana
-window.addEventListener('load', igualarAlturasDeTarjetas);
 window.addEventListener('resize', igualarAlturasDeTarjetas);
