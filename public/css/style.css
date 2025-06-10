@@ -1,6 +1,37 @@
+/* === RESET GENERAL === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* === LAYOUT PRINCIPAL === */
+#main-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* === SIDEBAR === */
+
+.d-flex {
+  min-height: 100vh; /* Que tome al menos toda la pantalla */
+}
+
 #sidebar {
-  transition: width 0.3s;
+  height: auto; /* Que se adapte al contenido */
   width: 250px;
+  transition: width 0.3s;
+  background-color: #343a40;
+  padding: 1rem;
+  color: white;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 #sidebar.collapsed {
@@ -20,31 +51,33 @@
   display: none;
 }
 
-/*Contenedor general*/
+/* === CONTENIDO PRINCIPAL === */
+#main-content {
+  flex-grow: 1;
+  padding: 2rem;
+  background-color: #f1f1f1;
+}
+
+/* === TARJETAS GRID === */
 .tarjetas-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 👈 fuerza el 2 x 2 */
-  grid-auto-rows: auto;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
-  padding: 2rem;
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .tarjeta-box {
-  background-color: #f8f9fa; /* gris claro */
+  background-color: #f8f9fa;
   border: 1px solid #ccc;
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 1.5rem;
   min-height: 200px;
-  min-width: 200px;
   width: 100%;
-  height: 250px;
-  box-sizing: border-box;
 }
 
-/* fin tarjetas */
-
+/* === GRID DEPARTAMENTOS === */
 .grid-dptos {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
@@ -64,6 +97,7 @@
   background-color: #28a745;
 }
 
+/* === CARRUSEL Y DATOS DE USUARIO === */
 #contenedorCarruselUsuarios {
   display: flex;
   justify-content: center;
@@ -76,7 +110,6 @@
   position: relative;
   height: 250px;
   padding-bottom: 60px;
-  box-sizing: border-box;
   overflow: hidden;
   background-color: #f8f9fa;
 }
@@ -87,42 +120,45 @@
   padding-right: 10px;
 }
 
+/* === BOTONES FIJOS === */
 #botonesFijos {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   gap: 10px;
 }
 
 #botonesFijos button {
-  min-width: 70px;
+  flex: 1 1 auto;
+  min-width: 80px;
+  max-width: 120px;
   white-space: nowrap;
 }
 
-/* Responsive */
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-  .tarjetas-grid {
-    grid-template-columns: 1fr;
+  #sidebar {
+    position: fixed;
+    height: 100vh;
+    z-index: 1000;
   }
 
-.tarjeta-box {
-  background-color: #f8f9fa;
-  border: 1px solid #ccc;
-  border-radius: 2px;
-  padding: 1.5rem;
-  min-height: 200px;
-  min-width: 200px;
-  width: 100%;
-  /* height: 250px;  👈 QUÍTALO */
-  box-sizing: border-box;
-}
+  #main-content {
+    margin-left: 60px; /* para que no tape el contenido si colapsa */
+  }
+
+  .tarjetas-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .tarjeta-box {
+    min-height: 220px;
+  }
 
   #botonesFijos {
-    flex-direction: row;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
   }
 
   #botonesFijos button {
