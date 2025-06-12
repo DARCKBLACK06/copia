@@ -6,7 +6,7 @@ import '../app/session.js';
 import '../app/signupform.js';
 import { showMessage } from '../app/showMessage.js';
 import { inicializarRegistroDepartamento } from './registrarDepartamento.js';
-import { cargarUsuarios } from './usuariosCard.js';
+import { mostrarUsuariosBasicos } from './usuariosCard.js';
 import { cargarNotificaciones } from './notifications.js';
 import { inicializarRegistroSensor } from './registrarSensor.js';
 
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarRegistroSensor();
   cargarNotificaciones();
   inicializarRegistroDepartamento();
-  cargarUsuarios();
+  mostrarUsuariosBasicos();
 
   // Sidebar toggle
   const toggleBtn = document.getElementById("toggleSidebar");

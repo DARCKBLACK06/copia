@@ -1,66 +1,25 @@
-import { db } from "../app/firebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-
-const datosUsuario = document.getElementById("datosUsuario");
-const btnAnterior = document.getElementById("btnAnterior");
-const btnSiguiente = document.getElementById("btnSiguiente");
-const btnDetalles = document.getElementById("btnDetalles");
-
-let usuarios = [];
-let indiceActual = 0;
-
-export async function cargarUsuarios() {
-  if (!datosUsuario || !btnAnterior || !btnSiguiente || !btnDetalles) return;
-
-  datosUsuario.innerHTML = "Cargando usuarios...";
-
+import { db } from '../app/firebase.js';
+export async function mostrarUsuariosBasicos() {
   try {
-    const querySnapshot = await getDocs(collection(db, "inquilinos"));
+    const inquilinosSnapshot = await getDocs(collection(db, 'inquilinos'));
+    inquilinosSnapshot.forEach(doc => {
+      const data = doc.data();
+      console.log("--- Inquilino ---");
+      console.log(data); // 👈 Muestra la estructura real
 
-    if (querySnapshot.empty) {
-      datosUsuario.innerHTML = "<p>No hay usuarios registrados.</p>";
-      return;
-    }
+      const nombre = data.nombre || "Sin nombre";
+      const telefono = data.telefono || "Sin teléfono";
+      const departamento = data.contrato?.departamento || "No asignado";
 
-    usuarios = [];
-    querySnapshot.forEach(doc => usuarios.push(doc.data()));
-    indiceActual = 0;
-    mostrarUsuario(indiceActual);
+      console.log("Nombre:", nombre);
+      console.log("Teléfono:", telefono);
+      console.log("Departamento:", departamento);
 
-    btnAnterior.onclick = () => {
-      indiceActual = (indiceActual - 1 + usuarios.length) % usuarios.length;
-      mostrarUsuario(indiceActual);
-    };
-
-    btnSiguiente.onclick = () => {
-      indiceActual = (indiceActual + 1) % usuarios.length;
-      mostrarUsuario(indiceActual);
-    };
-
-    btnDetalles.onclick = () => {
-      if (usuarios.length > 0) {
-        importarYMostrarModalDetalles(usuarios[indiceActual]);
-      }
-    };
-
+      console.log("-----------------");
+    });
   } catch (error) {
-    datosUsuario.innerHTML = "<p>Error al cargar usuarios.</p>";
-    console.error("Error cargando usuarios:", error);
+    console.error("Error al cargar usuarios:", error);
   }
 }
-
-function mostrarUsuario(indice) {
-  const user = usuarios[indice];
-  datosUsuario.innerHTML = `
-    <p><strong>Nombre:</strong> ${user.nombre || "Sin nombre"}</p>
-    <p><strong>Teléfono:</strong> ${user.telefono || "Sin teléfono"}</p>
-    <p><strong>Departamento:</strong> ${user.departamento || "Sin departamento"}</p>
-    
-  `;
-}
-
-// Aquí importamos la función del modal, en otro archivo
-async function importarYMostrarModalDetalles(user) {
-  const { mostrarModalDetalles } = await import('./modalDetalles.js');
-  mostrarModalDetalles(user);
-}
+console.log("Cargados usuarios");
