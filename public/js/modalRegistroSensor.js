@@ -1,51 +1,86 @@
-// public/js/modalRegistroSensor.js
+import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { db } from "../app/firebase.js";
+import { generarCodigoArduino } from "./registrarSensor.js";
 
-function mostrarModalRegistroSensor() {
-    // Inicializa el modal (si usas un framework)
-    // Por ejemplo, con Materialize:
-    // var modal = document.getElementById('modalRegistroSensor');
-    // M.Modal.init(modal);
-    // M.Modal.getInstance(modal).open();
+let modal;
 
-    // Muestra el modal (si no usas un framework)
-    document.getElementById('modalDepartamento').style.display = 'block';
-
-    document.getElementById('generarCodigoBtn').addEventListener('click', async () => {
-        const departamentoId = document.getElementById('departamentoId').value;
-        const wifiSSID = document.getElementById('wifiSSID').value;
-        const wifiPassword = document.getElementById('wifiPassword').value;
-
-        // Obtener los sensores seleccionados
-        const sensoresSeleccionados = Array.from(document.querySelectorAll('input[name="sensores"]:checked'))
-            .map(checkbox => checkbox.value);
-
-        try {
-            // Llama a la Cloud Function para generar el código
-            const generarCodigoArduino = firebase.functions().httpsCallable('generarCodigoArduino');
-            const result = await generarCodigoArduino({
-                departamentoId: departamentoId,
-                wifiSSID: wifiSSID,
-                wifiPassword: wifiPassword,
-                sensores: sensoresSeleccionados
-            });
-
-            // Muestra el código en un nuevo modal o en la misma ventana
-            mostrarCodigoArduino(result.data.codigoArduino);
-
-            // Cierra el modal de registro
-            document.getElementById('modalDepartamento').style.display = 'none';
-
-        } catch (error) {
-            console.error('Error al generar código:', error);
-            alert('Error al generar código: ' + error.message);
-        }
+async function cargarDepartamentosSinSensor() {
+  const select = document.getElementById('departamentoId');
+  select.innerHTML = '<option value="">Selecciona un departamento</option>';
+  try {
+    const snapshot = await getDocs(collection(db, "departamentos"));
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (!data.tieneSensores) {
+        const option = document.createElement('option');
+        option.value = docSnap.id;
+        option.textContent = `Dpto ${data.numero} - Nivel ${data.nivel}`;
+        select.appendChild(option);
+      }
     });
+  } catch (error) {
+    console.error("Error cargando departamentos:", error);
+  }
 }
 
-function mostrarCodigoArduino(codigoArduino) {
-    // Muestra el código en un nuevo modal o en la misma ventana
-    // Puedes usar un <textarea> para que el usuario pueda copiar el código
-    alert('Código Arduino:\n\n' + codigoArduino);
+function abrirModal() {
+  const modalEl = document.getElementById('modalRegistroSensor');
+  modal = new bootstrap.Modal(modalEl);
+  cargarDepartamentosSinSensor();
+  modal.show();
 }
 
-export { mostrarModalRegistroSensor };
+function cerrarModal() {
+  if (modal) modal.hide();
+}
+
+function inicializarEventoGenerarCodigo() {
+  const btn = document.getElementById('btnGenerarCodigo');
+  btn.addEventListener('click', async () => {
+    const departamentoId = document.getElementById('departamentoId').value;
+    const ssid = document.getElementById('wifiSSID').value.trim();
+    const password = document.getElementById('wifiPassword').value.trim();
+
+    if (!departamentoId || !ssid || !password) {
+      alert('Completa todos los campos');
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "departamentos", departamentoId);
+      const docSnap = await docRef.get();
+      if (!docSnap.exists()) {
+        alert('Departamento no encontrado');
+        return;
+      }
+      const data = docSnap.data();
+
+      // Generar código Arduino
+      const codigo = generarCodigoArduino(data.numero, ssid, password);
+
+      // Descargar archivo .ino
+      const blob = new Blob([codigo], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ESP32_dpto${data.numero}.ino`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Actualizar estado del departamento
+      await updateDoc(docRef, { tieneSensores: true });
+
+      cerrarModal();
+      alert('Código generado y estado actualizado.');
+    } catch (error) {
+      console.error("Error generando código o actualizando:", error);
+      alert('Error: ' + error.message);
+    }
+  });
+}
+
+function inicializarModalRegistroSensor() {
+  inicializarEventoGenerarCodigo();
+}
+
+export { abrirModal, inicializarModalRegistroSensor };

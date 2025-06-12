@@ -1,17 +1,5 @@
-export function inicializarRegistroSensor() {
-  const btnGenerarCodigo = document.getElementById('btnGenerarCodigo');
-
-  btnGenerarCodigo.addEventListener('click', () => {
-    const numeroDepartamento = document.getElementById('numeroDepartamento').value.trim();
-    const ssid = document.getElementById('ssidWifi').value.trim();
-    const password = document.getElementById('passwordWifi').value.trim();
-
-    if (!numeroDepartamento || !ssid || !password) {
-      alert("Por favor, completa todos los campos.");
-      return;
-    }
-
-    const codigo = `
+export function generarCodigoArduino(numeroDepartamento, ssid, password) {
+  return `
 // ============================================
 // Código generado para Departamento ${numeroDepartamento}
 // Requiere las siguientes bibliotecas:
@@ -103,18 +91,4 @@ void loop() {
   delay(1000);
 }
 `;
-
-    // Generar archivo para descarga
-    const blob = new Blob([codigo], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ESP32_dpto${numeroDepartamento}.ino`; // <- AQUÍ ESTABA EL ERROR
-    a.click();
-    URL.revokeObjectURL(url);
-
-    // Cerrar el modal después de descargar
-    const modal = bootstrap.Modal.getInstance(document.getElementById('modalRegistroSensor'));
-    modal.hide();
-  });
 }

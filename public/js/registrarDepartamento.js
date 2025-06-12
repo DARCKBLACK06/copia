@@ -94,6 +94,8 @@ formDepartamento.addEventListener("submit", async (e) => {
   }
 
   const tieneSensores = formDepartamento.tieneSensores.value === "true";
+  const disponible = formDepartamento.disponible.value === "true";
+
 
   // Validar si ya existe (por si hubo cambios en firestore después)
   if (departamentosRegistrados.has(dptoSeleccionado)) {
@@ -101,11 +103,14 @@ formDepartamento.addEventListener("submit", async (e) => {
     return;
   }
 
+
   // Preparar objeto para guardar
   const nuevoDepto = {
     numero: parseInt(dptoSeleccionado.replace("dpto", "")),
     nivel: nivel,
-    tieneSensores: tieneSensores
+    tieneSensores: tieneSensores,
+    disponible: disponible
+
   };
 
   try {
