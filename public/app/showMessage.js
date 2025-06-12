@@ -1,4 +1,4 @@
-export function showMessage(message,type = "success") {
+export function showMessage(message, type = "success") {
     Toastify({
         text: message,
         duration: 3000,
@@ -11,5 +11,5 @@ export function showMessage(message,type = "success") {
             background: type === "success" ? 'green' : 'red',
         },
         onClick: function(){} // Callback after click
-        }).showToast();
+    }).showToast();
 }

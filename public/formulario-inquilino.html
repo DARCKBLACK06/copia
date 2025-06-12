@@ -11,19 +11,20 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet">
   <link rel="icon" href="./favicon.ico" />
-  <!--Fin de Bootstrap CSS -->
 
-  <!-- JS de Bootstrap -->
+  <!-- JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
-  <script type="module" src="./js/registrarInquilino.js"></script>
+  <script type="module">
+  import { inicializarFormulario } from './js/formularioinit.js';
+  window.addEventListener('DOMContentLoaded', () => {
+    inicializarFormulario();
+  });
+</script>
+
 </head>
 
 <body class="bg-light">
-
-
-
-  <!-- NAVBAR -->
   <nav class="navbar navbar-dark bg-dark">
     <div class="container d-flex justify-content-between align-items-center">
       <span class="navbar-brand mb-0 h1">Registro de Inquilino</span>
@@ -32,109 +33,154 @@
       </a>
     </div>
   </nav>
-  <!-- NAVBAR -->
 
+  <div class="container py-5">
+    <h1 class="text-center mb-4">Registro de Inquilino</h1>
+    <form id="formulario-inquilino" class="bg-white p-4 rounded shadow-sm">
 
-  <!-- FORMULARIO -->
-  <div class="container mt-5 mb-5">
-    <div class="card shadow">
-      <div class="card-body">
-        <h2 class="card-title text-center mb-4">Registro de Nuevo Inquilino</h2>
-
-        <form id="formInquilino">
-          <!-- Datos personales -->
-          <h5 class="mb-3">Datos personales del inquilino</h5>
-          <div class="row g-3">
-            <div class="col-md-6"><input type="text" name="nombre" class="form-control" placeholder="Nombre completo"
-                required></div>
-            <div class="col-md-6"><input type="text" name="curp" class="form-control" placeholder="CURP" required></div>
-            <div class="col-md-6"><input type="date" name="fechaNacimiento" class="form-control" required></div>
-            <div class="col-md-6"><input type="tel" name="telefono" class="form-control" placeholder="Teléfono"
-                required></div>
-            <div class="col-md-6"><input type="email" name="correo" class="form-control"
-                placeholder="Correo electrónico" required></div>
-            <div class="col-md-6"><input type="text" name="identificacion" class="form-control"
-                placeholder="Identificación oficial" required></div>
-          </div>
-
-          <!-- Domicilio -->
-          <!-- Domicilio -->
-          <h5 class="mt-5 mb-3">Datos de domicilio y contrato</h5>
-          <div class="row g-3">
-            <div class="col-md-4">
-              <input type="text" name="departamento" class="form-control" placeholder="Departamento asignado" required>
-            </div>
-
-            <div class="col-md-4">
-              <input type="text" name="tipoContrato" class="form-control" placeholder="Tipo de contrato" required>
-            </div>
-
-            <div class="col-md-4">
-              <input type="date" name="inicioContrato" class="form-control" placeholder="Inicio del contrato" required>
-            </div>
-            <div class="col-md-4">
-              <input type="date" name="finContrato" class="form-control" placeholder="Fin del contrato" required>
-            </div>
-            <div class="col-md-4">
-              <input type="text" name="tiempoEstadia" class="form-control" placeholder="Tiempo de estadía (meses)"
-                required>
-            </div>
-
-            <div class="col-md-6">
-              <div class="input-group">
-                <span class="input-group-text">$</span>
-                <input type="text" name="montoRenta" class="form-control" placeholder="Monto de la renta mensual"
-                  pattern="^\d+(\.\d{1,2})?$" title="Ingresa solo números. Ejemplo: 2500 o 2500.75" required>
-              </div>
-            </div>
-
-
-            <div class="col-md-6">
-              <select name="personas" class="form-select" required>
-                <option value="" disabled selected>Número de personas viviendo</option>
-                <option value="1">1 persona</option>
-                <option value="2">2 personas</option>
-                <option value="3">3 personas</option>
-                <option value="4">4 personas</option>
-                <option value="5">5 personas</option>
-              </select>
-            </div>
-          </div>
-
-
-          <div class="col-md-12">
-            <input type="text" name="procedencia" class="form-control" placeholder="Lugar de procedencia (opcional)">
-          </div>
-
-          <div class="col-md-12">
-            <textarea name="observacionesContrato" class="form-control" rows="3"
-              placeholder="Observaciones del contrato (opcional)"></textarea>
-          </div>
-      </div>
-
-
-      <!-- Emergencia -->
-      <h5 class="mt-5 mb-3">Datos de emergencia</h5>
+      <!-- Datos Personales -->
+      <h5 class="mb-3">Datos Personales</h5>
       <div class="row g-3">
-        <div class="col-md-4"><input type="text" name="emergenciaNombre" class="form-control"
-            placeholder="Nombre del contacto" required></div>
-        <div class="col-md-4"><input type="text" name="emergenciaParentesco" class="form-control"
-            placeholder="Parentesco" required></div>
-        <div class="col-md-4"><input type="tel" name="emergenciaTelefono" class="form-control"
-            placeholder="Teléfono de emergencia" required></div>
+        <div class="col-md-6">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" class="form-control" name="nombre" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">CURP</label>
+          <input type="text" class="form-control" name="curp" pattern="^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z]{2}$"
+            required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-control" name="telefono" pattern="^\d{10}$" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" class="form-control" name="correo" required>
+        </div>
       </div>
 
-      <!-- Botón enviar -->
-      <div class="text-center mt-4">
-        <button type="submit" class="btn btn-primary px-5">Registrar inquilino</button>
+      <hr class="my-4">
+
+      <!-- Domicilio de Origen -->
+      <h5 class="mb-3">Domicilio de Origen</h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Calle</label>
+          <input type="text" class="form-control" name="calle" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Número</label>
+          <input type="text" class="form-control" name="numero" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Colonia</label>
+          <input type="text" class="form-control" name="colonia" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Municipio</label>
+          <input type="text" class="form-control" name="municipio" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Estado</label>
+          <input type="text" class="form-control" name="estado" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Código Postal</label>
+          <input type="text" class="form-control" name="cp" pattern="^\d{5}$" required>
+        </div>
       </div>
-      </form>
 
-      <p id="mensaje" class="mt-4 text-center text-success fw-semibold d-none">Inquilino registrado con éxito</p>
-    </div>
-  </div>
-  </div>
+      <hr class="my-4">
 
+      <!-- Contacto de Emergencia -->
+      <h5 class="mb-3">Contacto de Emergencia</h5>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Nombre del contacto</label>
+          <input type="text" class="form-control" name="nombreEmergencia" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Parentesco</label>
+          <select class="form-select" name="parentesco" required>
+            <option selected disabled>Seleccione</option>
+            <option value="Padre/Madre">Padre/Madre</option>
+            <option value="Hermano/a">Hermano/a</option>
+            <option value="Esposo/a">Esposo/a</option>
+            <option value="Amigo/a">Amigo/a</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-control" name="telefonoEmergencia" pattern="^\d{10}$" required>
+        </div>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Contrato y Departamento -->
+      <h5 class="mb-3">Contrato y Departamento</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Departamento</label>
+          <select class="form-select" name="departamento" id="departamentoSelect" required>
+            <option selected disabled>Seleccione un departamento</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Fecha de inicio</label>
+          <input type="date" class="form-control" name="fechaInicio" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Fecha de fin</label>
+          <input type="date" class="form-control" name="fechaFin" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Tiempo de estadía estimado</label>
+          <input type="text" class="form-control bg-light" name="tiempoEstadia" id="tiempoEstadia" readonly
+            style="max-width: 150px;">
+        </div>
+
+        <hr class="my-4">
+
+        <!-- Identificación -->
+        <h5 class="mb-3">Identificación Oficial</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Tipo de identificación</label>
+            <select class="form-select" name="tipoIdentificacion" required>
+              <option selected disabled>Seleccione</option>
+              <option value="INE">INE</option>
+              <option value="Pasaporte">Pasaporte</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Número de identificación</label>
+            <input type="text" class="form-control" name="numeroIdentificacion" required>
+          </div>
+        </div>
+        <!-- Opción de Pago sin flechas, solo enteros -->
+        <hr class="my-4">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Cantidad de pago</label>
+            <input type="text" class="form-control" name="cantidadPago" placeholder="Ejemplo: 1200" pattern="^\d+$"
+              title="Ingresa un número entero válido" required inputmode="numeric" autocomplete="off"
+              style="max-width: 150px;">
+          </div>
+        </div>
+
+        <hr class="my-4 text-muted">
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-save2-fill me-2"></i> Registrar Inquilino
+          </button>
+        </div>
+    </form>
+  </div>
 </body>
 
 </html>

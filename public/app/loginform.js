@@ -1,27 +1,25 @@
-// public/app/loginform.js
 import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { auth } from "./firebase.js";
 import { showMessage } from "../app/showMessage.js";
 
-// Asegúrate de que este ID coincida con tu formulario en HTML
 const loginForm = document.querySelector('#login-form');
 
 loginForm.addEventListener('submit', async e => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const email = loginForm['login-email'].value;
-    const password = loginForm['login-password'].value;
+  const email = loginForm['login-email'].value.trim();
+  const password = loginForm['login-password'].value.trim();
 
-    try {
-        const credentials = await signInWithEmailAndPassword(auth, email, password)
-        console.log('Sesión iniciada:', credentials)
-        // Redirige al panel administrativo después del login exitoso
-        setTimeout(() => {
-            window.location.href = 'inicio.html';
-        }, 1000);
+  try {
+    const credentials = await signInWithEmailAndPassword(auth, email, password);
+    console.log('Sesión iniciada:', credentials);
+    showMessage(`Bienvenido, ${credentials.user.email}`, "success");
+    setTimeout(() => {
+      window.location.href = 'inicio.html';
+    }, 1000);
 
-    } catch (error) {
-    console.error("Código de error:", error.code);
+  } catch (error) {
+    console.error("Código de error:", error.code, error.message);
 
     if (
       error.code === "auth/invalid-credential" ||
@@ -30,9 +28,7 @@ loginForm.addEventListener('submit', async e => {
     ) {
       showMessage('Correo o contraseña incorrectos', 'error');
     } else {
-      showMessage('Error inesperado: ' + error.message, 'error');
+      showMessage('Error inesperado. Intenta más tarde.', 'error');
     }
-}
-
-
-})
+  }
+});
