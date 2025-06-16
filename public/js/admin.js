@@ -4,32 +4,47 @@ import '../app/session.js';
 import '../app/signupform.js';
 import { showMessage } from '../app/showMessage.js';
 import { inicializarRegistroDepartamento } from './registrarDepartamento.js';
-import { cargarUsuarios } from './usuariosCard.js';
+import { mostrarUsuariosBasicos } from './usuariosCard.js';
 import { cargarNotificaciones } from './notifications.js';
-import { inicializarModalRegistroSensor, abrirModal } from './modalRegistroSensor.js';
+import { listarDepartamentosSinSensor } from './modalRegistroSensor.js';
+
 
 document.addEventListener('DOMContentLoaded', () => {
-  inicializarModalRegistroSensor();
+  // Inicializaciones principales
+    listarDepartamentosSinSensor();
   cargarNotificaciones();
   inicializarRegistroDepartamento();
-  cargarUsuarios();
+  mostrarUsuariosBasicos();
 
-  // Botón para abrir modal registro sensor
-  document.getElementById('btnAbrirModalRegistroSensor').addEventListener('click', abrirModal);
+  // Modal de Registro Sensor
+  const btnModalSensor = document.getElementById('btnAbrirModalRegistroSensor');
+  if (btnModalSensor) {
+  btnModalSensor.addEventListener('click', () => {
+    listarDepartamentosSinSensor(); // <-- Lo llamamos justo antes
+    abrirModal();
+  });
+}
 
-  // Sidebar toggle
+
+  // Sidebar Toggle
   const toggleBtn = document.getElementById("toggleSidebar");
   const sidebar = document.getElementById("sidebar");
 
-  toggleBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("collapsed");
-    const icon = toggleBtn.querySelector("i");
-    icon.classList.toggle("bi-chevron-left");
-    icon.classList.toggle("bi-chevron-right");
-  });
+  if (toggleBtn && sidebar) {
+    toggleBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("collapsed");
 
-  // Ajuste de alturas en tarjetas
+      const icon = toggleBtn.querySelector("i");
+      if (icon) {
+        icon.classList.toggle("bi-chevron-left");
+        icon.classList.toggle("bi-chevron-right");
+      }
+    });
+  }
+
+  // Igualar altura de tarjetas
   igualarAlturasDeTarjetas();
+  window.addEventListener('resize', igualarAlturasDeTarjetas);
 
   console.log("¡Bienvenido al panel de administración!");
 });
@@ -45,5 +60,3 @@ function igualarAlturasDeTarjetas() {
   });
   tarjetas.forEach(t => t.style.height = alturaMax + 'px');
 }
-
-window.addEventListener('resize', igualarAlturasDeTarjetas);

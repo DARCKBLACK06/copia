@@ -2,7 +2,8 @@ export function generarCodigoArduino(numeroDepartamento, ssid, password) {
   return `
 // ============================================
 // Código generado para Departamento ${numeroDepartamento}
-// Requiere las siguientes bibliotecas:
+// Sensor: DHT22
+// Bibliotecas necesarias:
 // - DHT sensor library by Adafruit
 // - Adafruit Unified Sensor
 // - Firebase ESP32 (by Mobizt)
@@ -16,10 +17,6 @@ export function generarCodigoArduino(numeroDepartamento, ssid, password) {
 #define DHTPIN 4         // Pin del sensor DHT22
 #define DHTTYPE DHT22
 
-#define MQ2_PIN 34       // Pin analógico del MQ-2
-#define FLOW_SENSOR 26   // YF-S201: pin digital (con interrupción)
-#define RELAY_PIN 27     // Relé para cerradura (activo en LOW)
-
 // --- WiFi ---
 #define WIFI_SSID "${ssid}"
 #define WIFI_PASSWORD "${password}"
@@ -31,64 +28,43 @@ export function generarCodigoArduino(numeroDepartamento, ssid, password) {
 FirebaseData firebaseData;
 DHT dht(DHTPIN, DHTTYPE);
 
-// --- Flujo de agua ---
-volatile int flujoPulsos = 0;
-unsigned long ultimoEnvio = 0;
-
-String basePath = "departamento_${numeroDepartamento}";
-
-void IRAM_ATTR contarPulso() {
-  flujoPulsos++;
-}
+// Ruta personalizada en Firebase
+String basePath = "/departamentos/${numeroDepartamento}";
 
 void setup() {
   Serial.begin(115200);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 
-  Serial.print("Conectando a WiFi...");
+  Serial.print("Conectando a WiFi");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("Conectado a WiFi");
+  Serial.println("\\nWiFi conectado");
 
   Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
   Firebase.reconnectWiFi(true);
 
   dht.begin();
-  pinMode(MQ2_PIN, INPUT);
-  pinMode(FLOW_SENSOR, INPUT_PULLUP);
-  pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, HIGH); // Cerradura cerrada por defecto
-
-  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR), contarPulso, RISING);
 }
 
 void loop() {
   float temperatura = dht.readTemperature();
   float humedad = dht.readHumidity();
-  int mq2_valor = analogRead(MQ2_PIN);
 
-  // Flujo en L/min aproximado
-  unsigned long tiempoActual = millis();
-  float flujoLmin = (flujoPulsos * 2.25);
-  if (tiempoActual - ultimoEnvio >= 5000) {
-    ultimoEnvio = tiempoActual;
-
-    // Enviar a Firebase
-    Firebase.setFloat(firebaseData, basePath + "/temperatura", temperatura);
-    Firebase.setFloat(firebaseData, basePath + "/humedad", humedad);
-    Firebase.setInt(firebaseData, basePath + "/gas", mq2_valor);
-    Firebase.setFloat(firebaseData, basePath + "/flujo_agua", flujoLmin);
-
-    // Lógica del relé (simulada aquí, deberías basarla en pago real)
-    bool pagoRealizado = true; // Esto debería venir de Firebase
-    digitalWrite(RELAY_PIN, pagoRealizado ? HIGH : LOW);
-    
-    flujoPulsos = 0; // Reset flujo
+  if (isnan(temperatura) || isnan(humedad)) {
+    Serial.println("Error leyendo del sensor DHT22");
+    return;
   }
 
-  delay(1000);
+  Serial.printf("Temperatura: %.2f °C | Humedad: %.2f %%\n", temperatura, humedad);
+
+  // Enviar datos a Firebase
+  Firebase.setFloat(firebaseData, basePath + "/temperatura", temperatura);
+  Firebase.setFloat(firebaseData, basePath + "/humedad", humedad);
+
+  delay(5000); // Envío cada 5 segundos
 }
+
 `;
 }

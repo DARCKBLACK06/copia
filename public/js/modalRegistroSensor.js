@@ -1,86 +1,101 @@
-import { collection, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+// modalRegistroSensor.js
+import { collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { db } from "../app/firebase.js";
 import { generarCodigoArduino } from "./registrarSensor.js";
+import { showMessage } from '../app/showMessage.js';
 
-let modal;
+const selectDeptos = document.getElementById("departamentoId");
+const checkbox = document.getElementById("confirmarRegistro");
+const botonGenerar = document.getElementById("btnGenerarCodigo");
 
-async function cargarDepartamentosSinSensor() {
-  const select = document.getElementById('departamentoId');
-  select.innerHTML = '<option value="">Selecciona un departamento</option>';
+// Listar departamentos sin sensor
+export async function listarDepartamentosSinSensor() {
   try {
-    const snapshot = await getDocs(collection(db, "departamentos"));
-    snapshot.forEach(docSnap => {
+    const departamentosRef = collection(db, "departamentos");
+    const q = query(departamentosRef, where("tieneSensores", "==", false));
+    const querySnapshot = await getDocs(q);
+
+    if (!selectDeptos) return;
+
+    selectDeptos.innerHTML = '<option value="">Selecciona un departamento</option>';
+
+    querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
-      if (!data.tieneSensores) {
-        const option = document.createElement('option');
-        option.value = docSnap.id;
-        option.textContent = `Dpto ${data.numero} - Nivel ${data.nivel}`;
-        select.appendChild(option);
-      }
+      const option = document.createElement("option");
+      option.value = docSnap.id;
+      option.textContent = `Depto ${data.numero} - Nivel ${data.nivel}`;
+      selectDeptos.appendChild(option);
     });
+
   } catch (error) {
-    console.error("Error cargando departamentos:", error);
+    console.error("Error listando departamentos sin sensor:", error);
+    showMessage("Error al cargar departamentos", "error");
   }
 }
 
-function abrirModal() {
-  const modalEl = document.getElementById('modalRegistroSensor');
-  modal = new bootstrap.Modal(modalEl);
-  cargarDepartamentosSinSensor();
-  modal.show();
-}
+// Habilitar o deshabilitar botón según checkbox
+function configurarCheckbox() {
+  if (!checkbox || !botonGenerar) return;
 
-function cerrarModal() {
-  if (modal) modal.hide();
-}
-
-function inicializarEventoGenerarCodigo() {
-  const btn = document.getElementById('btnGenerarCodigo');
-  btn.addEventListener('click', async () => {
-    const departamentoId = document.getElementById('departamentoId').value;
-    const ssid = document.getElementById('wifiSSID').value.trim();
-    const password = document.getElementById('wifiPassword').value.trim();
-
-    if (!departamentoId || !ssid || !password) {
-      alert('Completa todos los campos');
-      return;
-    }
-
-    try {
-      const docRef = doc(db, "departamentos", departamentoId);
-      const docSnap = await docRef.get();
-      if (!docSnap.exists()) {
-        alert('Departamento no encontrado');
-        return;
-      }
-      const data = docSnap.data();
-
-      // Generar código Arduino
-      const codigo = generarCodigoArduino(data.numero, ssid, password);
-
-      // Descargar archivo .ino
-      const blob = new Blob([codigo], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ESP32_dpto${data.numero}.ino`;
-      a.click();
-      URL.revokeObjectURL(url);
-
-      // Actualizar estado del departamento
-      await updateDoc(docRef, { tieneSensores: true });
-
-      cerrarModal();
-      alert('Código generado y estado actualizado.');
-    } catch (error) {
-      console.error("Error generando código o actualizando:", error);
-      alert('Error: ' + error.message);
-    }
+  checkbox.addEventListener("change", () => {
+    botonGenerar.disabled = !checkbox.checked;
   });
 }
 
-function inicializarModalRegistroSensor() {
-  inicializarEventoGenerarCodigo();
+// Descargar archivo .ino
+function descargarArchivo(nombreArchivo, contenido) {
+  const blob = new Blob([contenido], { type: "text/plain" });
+  const enlace = document.createElement("a");
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = nombreArchivo;
+  enlace.click();
+  URL.revokeObjectURL(enlace.href);
 }
 
-export { abrirModal, inicializarModalRegistroSensor };
+// Acción al dar click en "Generar Código"
+botonGenerar.addEventListener("click", async () => {
+  const departamentoId = selectDeptos.value;
+  const ssid = document.getElementById("wifiSSID").value.trim();
+  const password = document.getElementById("wifiPassword").value.trim();
+
+  if (!departamentoId || !ssid || !password) {
+    showMessage("Completa todos los campos antes de continuar.", "error");
+    return;
+  }
+
+  try {
+    // Actualizar Firestore
+    const deptoRef = doc(db, "departamentos", departamentoId);
+    await updateDoc(deptoRef, { tieneSensores: true });
+
+    // Generar código
+    const codigo = generarCodigoArduino(departamentoId, ssid, password);
+
+    // Descargar archivo
+    descargarArchivo(`sensor_depto_${departamentoId}.ino`, codigo);
+
+    // Actualizar lista en el select
+    await listarDepartamentosSinSensor();
+
+    // Cerrar modal con Bootstrap 5
+    const modalElement = document.getElementById("modalRegistroSensor");
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
+
+    // Resetear formulario y botón
+    document.getElementById("formSensor").reset();
+    botonGenerar.disabled = true;
+
+    showMessage("Sensor registrado y código generado con éxito.");
+
+  } catch (error) {
+    console.error("Error registrando sensor:", error);
+    showMessage("Error al registrar el sensor. Revisa consola.", "error");
+  }
+});
+
+// Ejecutar al cargar DOM
+document.addEventListener("DOMContentLoaded", async () => {
+  await listarDepartamentosSinSensor();
+  configurarCheckbox();
+});

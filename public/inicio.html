@@ -131,9 +131,10 @@
   </div>
 
 <!-- Modal para registrar sensor -->
+
 <div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content bg-dark text-white"> <!-- Fondo oscuro, texto blanco -->
+    <div class="modal-content bg-dark text-white">
 
       <div class="modal-header">
         <h5 class="modal-title" id="modalSensorLabel">Registrar Sensor</h5>
@@ -146,6 +147,7 @@
             <label for="departamentoId" class="form-label">Número de Departamento</label>
             <select class="form-select" id="departamentoId" required>
               <option value="">Selecciona un departamento</option>
+              <!-- Opciones cargadas dinámicamente -->
             </select>
           </div>
 
@@ -153,20 +155,29 @@
             <label for="wifiSSID" class="form-label">SSID WiFi</label>
             <input type="text" class="form-control" id="wifiSSID" required>
           </div>
+
           <div class="mb-3">
             <label for="wifiPassword" class="form-label">Contraseña WiFi</label>
             <input type="password" class="form-control" id="wifiPassword" required>
+          </div>
+
+          <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="confirmarRegistro" required>
+            <label class="form-check-label" for="confirmarRegistro">
+              Confirmo registrar un sensor en este departamento
+            </label>
           </div>
         </form>
       </div>
 
       <div class="modal-footer">
-        <button id="btnGenerarCodigo" class="btn btn-success">Generar Código</button>
+        <button id="btnGenerarCodigo" class="btn btn-success" disabled>Generar Código</button>
       </div>
 
     </div>
   </div>
 </div>
+
 <!-- Fin Modal Registrar Sensor -->
 
 
