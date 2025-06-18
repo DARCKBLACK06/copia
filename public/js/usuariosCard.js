@@ -8,11 +8,9 @@ let indiceActual = 0;
 export async function mostrarUsuariosBasicos() {
   try {
     const inquilinosSnapshot = await getDocs(collection(db, 'inquilinos'));
-    usuarios = [];  // Limpia arreglo antes de cargar
-
+    usuarios = [];
     inquilinosSnapshot.forEach(doc => {
-      const data = doc.data();
-      usuarios.push({ id: doc.id, ...data });
+      usuarios.push({ id: doc.id, ...doc.data() });
     });
 
     if (usuarios.length > 0) {
@@ -30,14 +28,10 @@ function mostrarUsuario(i) {
   const usuario = usuarios[i];
   if (!usuario) return;
 
-  const nombre = usuario.nombre || "Sin nombre";
-  const telefono = usuario.telefono || "Sin teléfono";
-  const departamento = usuario.contrato?.departamento || "No asignado";
-
   document.getElementById('datosUsuario').innerHTML = `
-    <p><strong>Nombre:</strong> ${nombre}</p>
-    <p><strong>Teléfono:</strong> ${telefono}</p>
-    <p><strong>Departamento:</strong> ${departamento}</p>
+    <p><strong>Nombre:</strong> ${usuario.nombre || "Sin nombre"}</p>
+    <p><strong>Teléfono:</strong> ${usuario.telefono || "Sin teléfono"}</p>
+    <p><strong>Departamento:</strong> ${usuario.contrato?.departamento || "No asignado"}</p>
   `;
 }
 
@@ -60,7 +54,6 @@ function configurarBotones() {
     const usuario = usuarios[indiceActual];
     if (usuario) {
       mostrarDetallesInquilino(usuario.id);
-      // Mostrar modal Bootstrap (asumiendo Bootstrap 5)
       const modalElement = document.getElementById('modalDetalles');
       const modal = new bootstrap.Modal(modalElement);
       modal.show();

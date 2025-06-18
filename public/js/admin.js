@@ -7,11 +7,23 @@ import { inicializarRegistroDepartamento } from './registrarDepartamento.js';
 import { mostrarUsuariosBasicos } from './usuariosCard.js';
 import { cargarNotificaciones } from './notifications.js';
 import { listarDepartamentosSinSensor } from './modalRegistroSensor.js';
+import { limpiarModal } from './modalDetalles.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+  mostrarUsuariosBasicos();
+
+  const modalElement = document.getElementById('modalDetalles');
+  modalElement.addEventListener('hidden.bs.modal', () => {
+    limpiarModal();
+  });
+
+  console.log("¡Bienvenido al panel de administración!");
+});
 
 
 document.addEventListener('DOMContentLoaded', () => {
   // Inicializaciones principales
-    listarDepartamentosSinSensor();
+  listarDepartamentosSinSensor();
   cargarNotificaciones();
   inicializarRegistroDepartamento();
   mostrarUsuariosBasicos();
@@ -19,12 +31,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Modal de Registro Sensor
   const btnModalSensor = document.getElementById('btnAbrirModalRegistroSensor');
   if (btnModalSensor) {
-  btnModalSensor.addEventListener('click', () => {
-    listarDepartamentosSinSensor(); // <-- Lo llamamos justo antes
-    abrirModal();
-  });
-}
-
+    btnModalSensor.addEventListener('click', () => {
+      listarDepartamentosSinSensor();
+      abrirModal();
+    });
+  }
 
   // Sidebar Toggle
   const toggleBtn = document.getElementById("toggleSidebar");

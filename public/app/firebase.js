@@ -1,6 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { getDatabase  } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js"
 // Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDt_zRk8puKQK843Ro9B_5SegOibMXFblY",
@@ -20,3 +21,6 @@ export const auth = getAuth(app);
 
 // Inicializar Firestore
 export const db = getFirestore(app);
+
+// Inicializar Realtime Database
+export const dbRealtime  = getDatabase(app); 

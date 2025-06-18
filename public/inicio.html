@@ -18,6 +18,7 @@
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script type="module" src="./js/admin.js"></script>
 </head>
 
@@ -35,7 +36,7 @@
       <ul class="nav flex-column">
         <li class="nav-item"><a href="#" class="nav-link text-white">Inicio</a></li>
         <li class="nav-item"><a href="#" class="nav-link text-white">Gráficas</a></li>
-        <li class="nav-item"><a href="formulario.html" class="nav-link text-white">Reportes</a></li>
+        <li class="nav-item"><a href="Ayuda-panel.html" class="nav-link text-white">Documentación</a></li>
         <li class="nav-item">
           <!-- Botón para registrar usuario -->
           <a href="#" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#signupModal">Registrar
@@ -130,55 +131,55 @@
     </div>
   </div>
 
-<!-- Modal para registrar sensor -->
+  <!-- Modal para registrar sensor -->
 
-<div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content bg-dark text-white">
+  <div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content bg-dark text-white">
 
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalSensorLabel">Registrar Sensor</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSensorLabel">Registrar Sensor</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <form id="formSensor">
+            <div class="mb-3">
+              <label for="departamentoId" class="form-label">Número de Departamento</label>
+              <select class="form-select" id="departamentoId" required>
+                <option value="">Selecciona un departamento</option>
+                <!-- Opciones cargadas dinámicamente -->
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="wifiSSID" class="form-label">SSID WiFi</label>
+              <input type="text" class="form-control" id="wifiSSID" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="wifiPassword" class="form-label">Contraseña WiFi</label>
+              <input type="password" class="form-control" id="wifiPassword" required>
+            </div>
+
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="confirmarRegistro" required>
+              <label class="form-check-label" for="confirmarRegistro">
+                Confirmo registrar un sensor en este departamento
+              </label>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button id="btnGenerarCodigo" class="btn btn-success" disabled>Generar Código</button>
+        </div>
+
       </div>
-
-      <div class="modal-body">
-        <form id="formSensor">
-          <div class="mb-3">
-            <label for="departamentoId" class="form-label">Número de Departamento</label>
-            <select class="form-select" id="departamentoId" required>
-              <option value="">Selecciona un departamento</option>
-              <!-- Opciones cargadas dinámicamente -->
-            </select>
-          </div>
-
-          <div class="mb-3">
-            <label for="wifiSSID" class="form-label">SSID WiFi</label>
-            <input type="text" class="form-control" id="wifiSSID" required>
-          </div>
-
-          <div class="mb-3">
-            <label for="wifiPassword" class="form-label">Contraseña WiFi</label>
-            <input type="password" class="form-control" id="wifiPassword" required>
-          </div>
-
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="confirmarRegistro" required>
-            <label class="form-check-label" for="confirmarRegistro">
-              Confirmo registrar un sensor en este departamento
-            </label>
-          </div>
-        </form>
-      </div>
-
-      <div class="modal-footer">
-        <button id="btnGenerarCodigo" class="btn btn-success" disabled>Generar Código</button>
-      </div>
-
     </div>
   </div>
-</div>
 
-<!-- Fin Modal Registrar Sensor -->
+  <!-- Fin Modal Registrar Sensor -->
 
 
   <!-- Modal Registrar Departamento -->
@@ -255,7 +256,7 @@
   <!-- Modal de detalles del inquilino -->
   <div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content bg-dark text-white"> <!-- ¡Aquí abrimos bien! -->
+      <div class="modal-content bg-dark text-white">
 
         <div class="modal-header">
           <h5 class="modal-title" id="modalDetallesLabel">Detalles del Inquilino</h5>
@@ -263,37 +264,57 @@
         </div>
 
         <div class="modal-body">
-          <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
-          <p><strong>Teléfono:</strong> <span id="modalTelefono"></span></p>
+          <!-- Contenedor libre para las gráficas, sin tarjetas ni cajas -->
+          <div id="contenedorGraficas" class="d-flex justify-content-around mb-4" style="gap: 2rem;">
+            <div>
+              <canvas id="graficaTemperatura" width="120" height="120"></canvas>
+              <div class="grafica-label">Temperatura</div>
+            </div>
+            <div>
+              <canvas id="graficaHumedad" width="120" height="120"></canvas>
+              <div class="grafica-label">Humedad</div>
+            </div>
+            <div>
+              <canvas id="graficaHumo" width="120" height="120"></canvas>
+              <div class="grafica-label">Humo</div>
+            </div>
+          </div>
 
-          <h6>Domicilio</h6>
-          <p><strong>Calle:</strong> <span id="modalCalle"></span></p>
-          <p><strong>Colonia:</strong> <span id="modalColonia"></span></p>
 
-          <h6>Contrato</h6>
-          <p><strong>Departamento:</strong> <span id="modalDepartamento"></span></p>
-          <p><strong>Fecha Inicio:</strong> <span id="modalFechaInicio"></span></p>
-          <p><strong>Fecha Fin:</strong> <span id="modalFechaFin"></span></p>
+          <!-- Información del usuario debajo de las gráficas -->
+          <div class="datos-grid">
+            <div><strong>Nombre:</strong> <span id="modalNombre"></span></div>
+            <div><strong>Teléfono:</strong> <span id="modalTelefono"></span></div>
+            <div><strong>Correo:</strong> <span id="modalCorreo"></span></div>
+            <div><strong>CURP:</strong> <span id="modalCurp"></span></div>
 
-          <h6>Identificación</h6>
-          <p><strong>Tipo:</strong> <span id="modalIdentificacionTipo"></span></p>
-          <p><strong>Número:</strong> <span id="modalIdentificacionNumero"></span></p>
+            <div><strong>Calle:</strong> <span id="modalCalle"></span></div>
+            <div><strong>Colonia:</strong> <span id="modalColonia"></span></div>
 
-          <h6>Contacto de Emergencia</h6>
-          <p><strong>Nombre:</strong> <span id="modalContactoNombre"></span></p>
-          <p><strong>Teléfono:</strong> <span id="modalContactoTelefono"></span></p>
-          <p><strong>Parentesco:</strong> <span id="modalContactoParentesco"></span></p>
+            <div><strong>Departamento:</strong> <span id="modalDepartamento"></span></div>
+            <div><strong>Fecha Inicio:</strong> <span id="modalFechaInicio"></span></div>
+            <div><strong>Fecha Fin:</strong> <span id="modalFechaFin"></span></div>
+
+            <div><strong>Identificación Tipo:</strong> <span id="modalIdentificacionTipo"></span></div>
+            <div><strong>Identificación Número:</strong> <span id="modalIdentificacionNumero"></span></div>
+
+            <div><strong>Contacto Nombre:</strong> <span id="modalContactoNombre"></span></div>
+            <div><strong>Contacto Teléfono:</strong> <span id="modalContactoTelefono"></span></div>
+            <div><strong>Contacto Parentesco:</strong> <span id="modalContactoParentesco"></span></div>
+          </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
 
-      </div> <!-- Fin de modal-content -->
+      </div>
     </div>
   </div>
+
   <!-- Fin Modal de detalles del inquilino -->
   </div>
+
 
 </body>
 
