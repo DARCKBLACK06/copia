@@ -186,50 +186,64 @@
   display: flex;
   justify-content: center;
   gap: 2rem;
-  flex-wrap: wrap;          /* Que las gráficas bajen si no caben */
-  max-width: 100%;          /* No exceder ancho modal */
+  flex-wrap: wrap;      /* permitir que en móviles se apilen */
+  min-height: 130px;
   box-sizing: border-box;
-  /* Quitamos cualquier overflow para evitar scroll interno */
-  overflow: visible;
 }
 
-/* Tamaño fijo para los canvas, limpio y claro */
+/* Contenedor individual para cada canvas */
+#contenedorGraficas > div {
+  flex: 0 0 auto;          /* sin crecer ni encoger */
+  width: 120px;            /* ancho fijo para todo el bloque */
+  height: 150px;           /* alto fijo para que quepa canvas + label si hay */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Canvas con tamaño fijo */
 #contenedorGraficas canvas {
-  width: 120px !important;   /* tamaño fijo para la gráfica */
+  width: 120px !important;
   height: 120px !important;
-  max-width: none !important; /* asegurar que no se restrinja */
-  display: block;             /* evitar espacios indeseados */
+  display: block;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
-/* ===== Etiquetas debajo de cada gráfica ===== */
+/* Etiqueta (si la usas) centrada y con tamaño fijo */
 .grafica-label {
   margin-top: 0.4rem;
-  margin-bottom: 0;
   text-align: center;
   font-weight: 600;
   color: #f8f9fa;
   font-size: 0.9rem;
+  width: 120px;
   user-select: none;
-  width: 120px;               /* ancho igual que el canvas para que quede centrado */
 }
 
-/* ===== Canvas ajuste para que no tenga scroll y se vea bien ===== */
-canvas {
-  display: block;
-  box-sizing: border-box;
+/* Mensaje sin sensores */
+#mensajeSinSensor {
+  text-align: center;
+  font-weight: bold;
+  color: #ffc107;
+  margin-top: 1rem;
 }
 
-/* ===== Responsividad: en móviles apilar y achicar ===== */
+/* Responsividad para móviles */
 @media (max-width: 480px) {
   #contenedorGraficas {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    flex-wrap: wrap;
   }
-
-  #contenedorGraficas canvas,
-  .grafica-label {
+  #contenedorGraficas > div {
+    width: 100px;
+    height: 130px;
+  }
+  #contenedorGraficas canvas {
     width: 100px !important;
     height: 100px !important;
+  }
+  .grafica-label {
+    width: 100px;
   }
 }

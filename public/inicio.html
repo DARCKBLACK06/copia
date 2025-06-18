@@ -263,9 +263,10 @@
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
 
+        <!-- Modal body -->
         <div class="modal-body">
           <!-- Contenedor libre para las gráficas, sin tarjetas ni cajas -->
-          <div id="contenedorGraficas" class="d-flex justify-content-around mb-4" style="gap: 2rem;">
+          <div id="contenedorGraficas" class="d-flex justify-content-center mb-4" style="gap: 2rem;">
             <div>
               <canvas id="graficaTemperatura" width="120" height="120"></canvas>
               <div class="grafica-label">Temperatura</div>
@@ -280,6 +281,11 @@
             </div>
           </div>
 
+
+          <!-- Mensaje si no hay sensores disponibles -->
+          <p id="mensajeSinSensor" style="display: none; color: #ffc107; text-align: center; font-weight: bold;">
+            ⚠️ No hay sensores registrados para este departamento.
+          </p>
 
           <!-- Información del usuario debajo de las gráficas -->
           <div class="datos-grid">

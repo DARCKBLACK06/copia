@@ -1,5 +1,5 @@
 import { dbRealtime } from '../app/firebase.js';
-import { ref, onValue, off } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 
 let unsubscribe = null;
 const chartInstances = {
@@ -8,14 +8,36 @@ const chartInstances = {
   humo: null
 };
 
-function crearGraficaDona(ctx, label, valorInicial) {
+function obtenerColor(valor, tipo) {
+  const rangos = {
+    temperatura: [
+      { limite: 18, color: '#28a745' },
+      { limite: 26, color: '#ffc107' },
+      { limite: Infinity, color: '#dc3545' }
+    ],
+    humedad: [
+      { limite: 40, color: '#dc3545' },
+      { limite: 60, color: '#ffc107' },
+      { limite: 100, color: '#28a745' }
+    ],
+    humo: [
+      { limite: 30, color: '#28a745' },
+      { limite: 60, color: '#ffc107' },
+      { limite: 100, color: '#dc3545' }
+    ]
+  };
+  return rangos[tipo].find(r => valor <= r.limite)?.color || '#6c757d';
+}
+
+function crearGraficaDona(ctx, label, valorInicial, tipo) {
+  const color = obtenerColor(valorInicial, tipo);
   return new Chart(ctx, {
     type: 'doughnut',
     data: {
       labels: [label],
       datasets: [{
         data: [valorInicial, 100 - valorInicial],
-        backgroundColor: ['#17a2b8', '#495057'], // gris menos oscuro que antes
+        backgroundColor: [color, '#343a40'],
         borderWidth: 0
       }]
     },
@@ -26,12 +48,7 @@ function crearGraficaDona(ctx, label, valorInicial) {
       plugins: {
         legend: { display: false },
         tooltip: { enabled: false },
-        title: {
-          display: true,
-          text: label,
-          color: '#ffffff',
-          font: { size: 14 }
-        }
+        title: { display: true, text: label, color: '#fff', font: { size: 14 } }
       }
     },
     plugins: [{
@@ -42,8 +59,6 @@ function crearGraficaDona(ctx, label, valorInicial) {
         ctx.save();
         ctx.font = 'bold 20px sans-serif';
         ctx.fillStyle = '#fff';
-        ctx.shadowColor = 'rgba(0,0,0,0.7)';
-        ctx.shadowBlur = 4;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(`${valor}`, width / 2, height / 2);
@@ -53,32 +68,44 @@ function crearGraficaDona(ctx, label, valorInicial) {
   });
 }
 
+function actualizarGrafica(idCanvas, label, valor, tipo) {
+  const ctx = document.getElementById(idCanvas);
+  if (!ctx) return;
+  const nuevoColor = obtenerColor(valor, tipo);
+  if (chartInstances[tipo]) {
+    chartInstances[tipo].data.datasets[0].data = [valor, 100 - valor];
+    chartInstances[tipo].data.datasets[0].backgroundColor[0] = nuevoColor;
+    chartInstances[tipo].update();
+  } else {
+    chartInstances[tipo] = crearGraficaDona(ctx, label, valor, tipo);
+  }
+}
+
 export function cargarGraficasSensor(departamentoId) {
   const rutaSensor = `departamentos/depto${departamentoId}/sensor_DHT22/datos_completos`;
   const sensorRef = ref(dbRealtime, rutaSensor);
+
+  const contenedor = document.getElementById('contenedorGraficas');
+  const aviso = document.getElementById('mensajeSinSensor');
 
   if (unsubscribe) unsubscribe();
 
   unsubscribe = onValue(sensorRef, snapshot => {
     const datos = snapshot.val();
-    if (!datos) return;
 
-    actualizarGrafica('graficaTemperatura', 'Temperatura', Number(datos.temperatura) || 0, 'temperatura');
-    actualizarGrafica('graficaHumedad', 'Humedad', Number(datos.humedad) || 0, 'humedad');
-    actualizarGrafica('graficaHumo', 'Humo', Number(datos.humo) || 0, 'humo');
+    if (!datos) {
+      if (aviso) aviso.style.display = 'block';
+      if (contenedor) contenedor.style.visibility = 'hidden';
+      return;
+    }
+
+    if (aviso) aviso.style.display = 'none';
+    if (contenedor) contenedor.style.visibility = 'visible';
+
+    actualizarGrafica('graficaTemperatura', 'Temperatura', datos.temperatura || 0, 'temperatura');
+    actualizarGrafica('graficaHumedad', 'Humedad', datos.humedad || 0, 'humedad');
+    actualizarGrafica('graficaHumo', 'Humo', datos.humo || 0, 'humo');
   });
-}
-
-function actualizarGrafica(idCanvas, label, valor, tipo) {
-  const ctx = document.getElementById(idCanvas);
-  if (!ctx) return;
-
-  if (chartInstances[tipo]) {
-    chartInstances[tipo].data.datasets[0].data = [valor, 100 - valor];
-    chartInstances[tipo].update();
-  } else {
-    chartInstances[tipo] = crearGraficaDona(ctx, label, valor);
-  }
 }
 
 export function detenerActualizacion() {
