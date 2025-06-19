@@ -5,7 +5,8 @@ let unsubscribe = null;
 const chartInstances = {
   temperatura: null,
   humedad: null,
-  humo: null
+  humo: null,
+  agua: null
 };
 
 function obtenerColor(valor, tipo) {
@@ -24,6 +25,12 @@ function obtenerColor(valor, tipo) {
       { limite: 30, color: '#28a745' },
       { limite: 60, color: '#ffc107' },
       { limite: 100, color: '#dc3545' }
+    ],
+    agua: [
+      { limite: 0.1, color: '#6c757d' },  // casi sin agua
+      { limite: 5, color: '#28a745' },    // verde bueno
+      { limite: 10, color: '#ffc107' },   // amarillo
+      { limite: Infinity, color: '#dc3545' } // rojo malo, mucho agua
     ]
   };
   return rangos[tipo].find(r => valor <= r.limite)?.color || '#6c757d';
@@ -82,10 +89,11 @@ function actualizarGrafica(idCanvas, label, valor, tipo) {
 }
 
 export function cargarGraficasSensor(departamentoId) {
-  const rutaSensor = `departamentos/depto${departamentoId}/sensor_DHT22/datos_completos`;
+  const rutaSensor = `departamentos/depto${departamentoId}/sensores/datos_completos`;
   const sensorRef = ref(dbRealtime, rutaSensor);
 
   const contenedor = document.getElementById('contenedorGraficas');
+  const contenedorAgua = document.getElementById('contenedorAgua');
   const aviso = document.getElementById('mensajeSinSensor');
 
   if (unsubscribe) unsubscribe();
@@ -96,17 +104,21 @@ export function cargarGraficasSensor(departamentoId) {
     if (!datos) {
       if (aviso) aviso.style.display = 'block';
       if (contenedor) contenedor.style.visibility = 'hidden';
+      if (contenedorAgua) contenedorAgua.style.visibility = 'hidden';
       return;
     }
 
     if (aviso) aviso.style.display = 'none';
     if (contenedor) contenedor.style.visibility = 'visible';
+    if (contenedorAgua) contenedorAgua.style.visibility = 'visible';
 
     actualizarGrafica('graficaTemperatura', 'Temperatura', datos.temperatura || 0, 'temperatura');
     actualizarGrafica('graficaHumedad', 'Humedad', datos.humedad || 0, 'humedad');
     actualizarGrafica('graficaHumo', 'Humo', datos.humo || 0, 'humo');
+    actualizarGrafica('graficaAgua', 'Agua (L)', datos.agua || 0, 'agua');
   });
 }
+
 
 export function detenerActualizacion() {
   if (unsubscribe) {

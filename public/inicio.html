@@ -266,20 +266,29 @@
         <!-- Modal body -->
         <div class="modal-body">
           <!-- Contenedor libre para las gráficas, sin tarjetas ni cajas -->
-          <div id="contenedorGraficas" class="d-flex justify-content-center mb-4" style="gap: 2rem;">
-            <div>
+          <div id="contenedorGraficas" class="d-flex justify-content-center mb-2" style="gap: 2rem; flex-wrap: wrap;">
+            <div class="grafica-item">
               <canvas id="graficaTemperatura" width="120" height="120"></canvas>
               <div class="grafica-label">Temperatura</div>
             </div>
-            <div>
+            <div class="grafica-item">
               <canvas id="graficaHumedad" width="120" height="120"></canvas>
               <div class="grafica-label">Humedad</div>
             </div>
-            <div>
+            <div class="grafica-item">
               <canvas id="graficaHumo" width="120" height="120"></canvas>
               <div class="grafica-label">Humo</div>
             </div>
+
+            <!-- Agua forzada en una fila aparte centrada -->
+            <div class="grafica-item" style="width: 100%; display: flex; justify-content: center;">
+              <div>
+                <canvas id="graficaAgua" width="120" height="120"></canvas>
+                <div class="grafica-label">Agua</div>
+              </div>
+            </div>
           </div>
+
 
 
           <!-- Mensaje si no hay sensores disponibles -->

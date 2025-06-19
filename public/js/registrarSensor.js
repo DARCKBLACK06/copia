@@ -1,77 +1,79 @@
 export function generarCodigoArduino(numeroDepartamento, ssid, password) {
   return `
 // ============================================
-// Código generado para Departamento ${numeroDepartamento}
-// Sensores: DHT22 (Temperatura y Humedad), MQ-2 (Humo)
-// Librería Firebase ESP Client by Mobizt (Firebase_ESP_Client.h)
+// Código para Departamento ${numeroDepartamento}
+// Sensores: DHT22, MQ-2, YF-S201 (flujo de agua)
+// Librería Firebase ESP Client by Mobizt
 // ============================================
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 #include "DHT.h"
 
-// Configuración WiFi 
+// Config WiFi
 #define WIFI_SSID "${ssid}"
 #define WIFI_PASSWORD "${password}"
 
-// Configuración Firebase
+// Config Firebase
 #define FIREBASE_HOST "mi-proyecto-iot-b161b-default-rtdb.firebaseio.com"
 #define FIREBASE_SECRET "qnb6YxukBZMFfJKgrUS5KxVwmIkQeQUPYsfbLsTR"
 
-// Configuración DHT22
-#define DHTPIN 4        // Pin del sensor
-#define DHTTYPE DHT22   // Tipo de sensor DHT22
+// Pines sensores
+#define DHTPIN 4
+#define DHTTYPE DHT22
 
-// Configuración MQ-2
-#define MQ2_PIN 34      // Pin analógico para MQ-2 (GPIO34 recomendado en ESP32)
+#define MQ2_PIN 34    // sensor de humo (analógico)
+#define FLOW_SENSOR_PIN 14  // pin del YF-S201 (puedes ajustar)
 
-// Configuración LED
-#define LED_PIN 2       // Pin del LED integrado (o usa otro GPIO)
+// Variables globales para flujo agua
+volatile int pulseCount;  
+float flowRate;
+unsigned long oldTime = 0;
 
-DHT dht(DHTPIN, DHTTYPE); // Objeto DHT
+DHT dht(DHTPIN, DHTTYPE);
 FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String basePath = "/departamentos/depto${numeroDepartamento}/sensor_DHT22";
+// Corregido aquí: ruta sin 'dpto' duplicado
+String basePath = "/departamentos/depto${numeroDepartamento}/sensores";
 
 unsigned long sendDataPrevMillis = 0;
+
+void IRAM_ATTR pulseCounter() {
+  pulseCount++;  // incrementa el pulso del sensor de flujo
+}
 
 void setup() {
   Serial.begin(115200);
   dht.begin();
-  pinMode(LED_PIN, OUTPUT); // Configurar el pin del LED como salida
-  pinMode(MQ2_PIN, INPUT);  // Pin analógico MQ-2
+  pinMode(MQ2_PIN, INPUT);
+  pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
 
-  // Conexión WiFi
+  // Interrupción para contar pulsos del sensor de flujo
+  pulseCount = 0;
+  attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, RISING);
+
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Conectando al WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    digitalWrite(LED_PIN, !digitalRead(LED_PIN)); // LED parpadeando durante conexión
   }
-  Serial.println();
-  Serial.print("¡Conectado! IP: ");
-  Serial.println(WiFi.localIP());
-  digitalWrite(LED_PIN, HIGH); // LED encendido al conectar
+  Serial.println("Conectado al WiFi");
 
-  // Configurar Firebase
   config.host = FIREBASE_HOST;
   config.signer.tokens.legacy_token = FIREBASE_SECRET;
-  
+
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
   delay(1000);
-  digitalWrite(LED_PIN, LOW); // LED apagado después de configurar Firebase
 }
 
 void loop() {
   if (Firebase.ready() && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)) {
     sendDataPrevMillis = millis();
-    
-    digitalWrite(LED_PIN, HIGH); // Indicar inicio de lectura
 
-    // Leer datos DHT22
+    // Leer DHT22
     float h = dht.readHumidity();
     float t = dht.readTemperature();
 
@@ -79,64 +81,45 @@ void loop() {
     int humoRaw = analogRead(MQ2_PIN);
     float humo = map(humoRaw, 0, 4095, 0, 100);
 
+    // Calcular flujo de agua (litros por minuto)
+    unsigned long currentTime = millis();
+    unsigned long deltaTime = currentTime - oldTime;
+
+    // Calcular flowRate solo si ha pasado 1 segundo para evitar ruido
+    if (deltaTime >= 1000) {
+      detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
+      flowRate = (pulseCount / 7.5);  // fórmula típica YF-S201: pulses per liter
+      pulseCount = 0;
+      oldTime = currentTime;
+      attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, RISING);
+    }
+
     if (isnan(h) || isnan(t)) {
-      Serial.println("¡Error leyendo el DHT22! Revisa conexiones.");
-      digitalWrite(LED_PIN, LOW);
+      Serial.println("Error leyendo DHT22");
       return;
     }
 
-    Serial.print("Humedad: ");
-    Serial.print(h);
-    Serial.print("% | Temperatura: ");
-    Serial.print(t);
-    Serial.print("°C | Humo: ");
-    Serial.print(humo);
-    Serial.println("%");
+    Serial.printf("Humedad: %.2f%% | Temp: %.2fC | Humo: %.2f%% | Agua: %.3f L/min\\n", h, t, humo, flowRate);
 
     bool sendSuccess = true;
 
-    if (!Firebase.RTDB.setFloat(&fbdo, basePath + "/humedad", h)) {
-      Serial.println("Error en humedad: " + fbdo.errorReason());
-      sendSuccess = false;
-    }
-    if (!Firebase.RTDB.setFloat(&fbdo, basePath + "/temperatura", t)) {
-      Serial.println("Error en temperatura: " + fbdo.errorReason());
-      sendSuccess = false;
-    }
-    if (!Firebase.RTDB.setFloat(&fbdo, basePath + "/humo", humo)) {
-      Serial.println("Error en humo: " + fbdo.errorReason());
-      sendSuccess = false;
-    }
-
+    // Guardar solo dentro de datos_completos para evitar redundancia
     FirebaseJson json;
     json.set("humedad", h);
     json.set("temperatura", t);
     json.set("humo", humo);
+    json.set("agua", flowRate);
     json.set("timestamp", millis() / 1000);
 
     if (!Firebase.RTDB.setJSON(&fbdo, basePath + "/datos_completos", &json)) {
-      Serial.println("Error en JSON: " + fbdo.errorReason());
+      Serial.println("Error enviando JSON: " + fbdo.errorReason());
       sendSuccess = false;
     }
 
-    // Feedback LED
     if (sendSuccess) {
-      for (int i = 0; i < 3; i++) {
-        digitalWrite(LED_PIN, HIGH);
-        delay(100);
-        digitalWrite(LED_PIN, LOW);
-        delay(100);
-      }
       Serial.println("Datos enviados correctamente a Firebase");
-    } else {
-      for (int i = 0; i < 2; i++) {
-        digitalWrite(LED_PIN, HIGH);
-        delay(500);
-        digitalWrite(LED_PIN, LOW);
-        delay(500);
-      }
     }
   }
 }
-`;
+  `;
 }
