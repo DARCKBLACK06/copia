@@ -1,5 +1,5 @@
 import { dbRealtime } from '../app/firebase.js';
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
+import { ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
 
 let unsubscribe = null;
 const chartInstances = {
@@ -27,10 +27,10 @@ function obtenerColor(valor, tipo) {
       { limite: 100, color: '#dc3545' }
     ],
     agua: [
-      { limite: 0.1, color: '#6c757d' },  // casi sin agua
-      { limite: 5, color: '#28a745' },    // verde bueno
-      { limite: 10, color: '#ffc107' },   // amarillo
-      { limite: Infinity, color: '#dc3545' } // rojo malo, mucho agua
+      { limite: 0.1, color: '#6c757d' },
+      { limite: 5, color: '#28a745' },
+      { limite: 10, color: '#ffc107' },
+      { limite: Infinity, color: '#dc3545' }
     ]
   };
   return rangos[tipo].find(r => valor <= r.limite)?.color || '#6c757d';
@@ -89,12 +89,21 @@ function actualizarGrafica(idCanvas, label, valor, tipo) {
 }
 
 export function cargarGraficasSensor(departamentoId) {
-  const rutaSensor = `departamentos/depto${departamentoId}/sensores/datos_completos`;
+  const rutaSensor = `departamentos/depto${departamentoId}/sensores/lecturas-sensores`;
+  const rutaEstadoCerradura = `departamentos/depto${departamentoId}/sensores/cerradura`;
+
   const sensorRef = ref(dbRealtime, rutaSensor);
+  const cerraduraRef = ref(dbRealtime, rutaEstadoCerradura);
 
   const contenedor = document.getElementById('contenedorGraficas');
-  const contenedorAgua = document.getElementById('contenedorAgua');
+  const contenedorAgua = document.getElementById('contenedorAgua'); // 🧃 Viva el agua
   const aviso = document.getElementById('mensajeSinSensor');
+
+  const iconoCerradura = document.getElementById('iconoCerradura');
+  const textoCerradura = document.getElementById('textoCerradura');
+  const estadoPagado = document.getElementById('estadoPagado');
+  const estadoNoPagado = document.getElementById('estadoNoPagado');
+  const btnGuardarEstado = document.getElementById('btnGuardarEstado');
 
   if (unsubscribe) unsubscribe();
 
@@ -117,8 +126,43 @@ export function cargarGraficasSensor(departamentoId) {
     actualizarGrafica('graficaHumo', 'Humo', datos.humo || 0, 'humo');
     actualizarGrafica('graficaAgua', 'Agua (L)', datos.agua || 0, 'agua');
   });
-}
 
+  onValue(cerraduraRef, snapshot => {
+    const estado = snapshot.val();
+    if (!estado) return;
+
+    // Icono y texto visuales
+    if (iconoCerradura && textoCerradura) {
+      if (estado === 'pagado') {
+        iconoCerradura.textContent = '🔓';
+        iconoCerradura.style.color = '#28a745';
+        textoCerradura.textContent = 'Acceso permitido';
+      } else {
+        iconoCerradura.textContent = '🔒';
+        iconoCerradura.style.color = '#dc3545';
+        textoCerradura.textContent = 'Acceso denegado';
+      }
+    }
+
+    // Selección de radio buttons
+    if (estadoPagado) estadoPagado.checked = estado === 'pagado';
+    if (estadoNoPagado) estadoNoPagado.checked = estado === 'no pagado';
+  });
+
+  // Botón de guardar estado
+  if (btnGuardarEstado) {
+    btnGuardarEstado.onclick = () => {
+      const nuevoEstado = document.querySelector('input[name="estadoCerradura"]:checked')?.value;
+      if (nuevoEstado) {
+        set(cerraduraRef, nuevoEstado)
+          .then(() => {
+            console.log(`✅ Estado actualizado a ${nuevoEstado}`);
+          })
+          .catch(err => console.error('❌ Error al guardar estado:', err));
+      }
+    };
+  }
+}
 
 export function detenerActualizacion() {
   if (unsubscribe) {

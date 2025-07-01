@@ -23,7 +23,7 @@ export async function mostrarUsuariosBasicos() {
     console.error("Error al cargar usuarios:", error);
   }
 }
-
+ 
 function mostrarUsuario(i) {
   const usuario = usuarios[i];
   if (!usuario) return;

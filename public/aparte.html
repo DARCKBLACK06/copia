@@ -1,227 +1,146 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard Modal</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Monitor de Sensores</title>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #1f1c2c, #928dab);
-      margin: 0;
-      padding: 0;
-      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 20px;
     }
 
-    .modal {
-      position: fixed;
-      top: 5%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90%;
-      max-width: 1000px;
-      background: rgba(30, 30, 60, 0.95);
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-      padding: 20px;
-      z-index: 1000;
-    }
-
-    .modal h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #e0e0e0;
-    }
-
-    .cards {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      gap: 20px;
-    }
-
-    .card {
-      background: linear-gradient(145deg, #2c2a4a, #1e1d3b);
-      border-radius: 15px;
-      padding: 20px;
-      flex: 1 1 200px;
-      max-width: 220px;
-      text-align: center;
-      position: relative;
-    }
-
-    canvas {
-      max-width: 100%;
-      margin: auto;
-    }
-
-    .status {
-      font-size: 1.2em;
-      margin-top: 10px;
-    }
-
-    .status.green {
-      color: #ff8000;
-    }
-
-    .status.red {
-      color: #55ff9c;
-    }
-
-    .user-info {
-      margin-top: 30px;
+    .sensor-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
       padding: 15px;
-      border-top: 1px solid #aaa;
-      font-size: 1em;
-      background-color: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
+      margin: 10px 0;
+      width: 300px;
     }
 
-    .user-info p {
-      margin: 8px 0;
-    }
-
-    .donut-label {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .alert {
+      color: red;
       font-weight: bold;
-      font-size: 1.2em;
-      color: #fff;
-      pointer-events: none;
     }
 
-    .canvas-container {
-      position: relative;
-      width: 100%;
-      height: 200px;
+    .relay-on {
+      color: green;
+    }
+
+    .relay-off {
+      color: red;
     }
   </style>
 </head>
+
 <body>
+  <h1>Monitor de Sensores en Tiempo Real</h1>
 
-<div class="modal">
-  <h2>Panel de Sensores</h2>
-  <div class="cards">
-    <!-- Temperatura -->
-    <div class="card">
-      <div class="canvas-container">
-        <canvas id="tempChart"></canvas>
-        <div class="donut-label" id="tempLabel">0°C</div>
-      </div>
-      <div class="status" id="tempStatus">Temperatura</div>
-    </div>
-
-    <!-- Humedad -->
-    <div class="card">
-      <div class="canvas-container">
-        <canvas id="humChart"></canvas>
-        <div class="donut-label" id="humLabel">0%</div>
-      </div>
-      <div class="status" id="humStatus">Humedad</div>/div>
-    </div>
-
-    <!-- Humo -->
-    <div class="card">
-      <div class="canvas-container">
-        <canvas id="smokeChart"></canvas>
-        <div class="donut-label" id="smokeLabel">0%</div>
-      </div>
-      <div class="status" id="smokeStatus">Humo</div>
-    </div>
-
-    <!-- Agua -->
-    <div class="card">
-      <canvas id="waterChart"></canvas>
-      <div class="status">Consumo mensual</div>
-    </div>
-
-    <!-- Cerradura -->
-    <div class="card">
-      <div class="status" id="lockStatus">Estado: Cerrado</div>
-      <button onclick="toggleLock()" style="margin-top:15px;padding:10px 20px;border:none;border-radius:8px;background:#555;color:white;cursor:pointer;">
-        Cambiar estado
-      </button>
-    </div>
+  <div class="sensor-card">
+    <h3>Temperatura</h3>
+    <p id="temperature">-- °C</p>
   </div>
 
-  <div class="user-info">
-    <h3>Información del usuario</h3>
-    <p><strong>Nombre:</strong> Juan Pérez</p>
-    <p><strong>Correo:</strong> juanperez@ejemplo.com</p>
-    <p><strong>ID Departamento:</strong> 001</p>
-    <p><strong>Dirección:</strong> Calle Falsa 123, Ciudad</p>
+  <div class="sensor-card">
+    <h3>Humedad</h3>
+    <p id="humidity">-- %</p>
   </div>
-</div>
 
-<script>
-  const tempValue = 32;
-  const humValue = 90;
-  const smokeValue = 45;
-  const waterData = [30, 50, 40, 60, 70, 90, 80]; // ejemplo en litros
+  <div class="sensor-card">
+    <h3>Nivel de Gas</h3>
+    <p id="gas">--</p>
+  </div>
 
-  const createDonut = (id, value, max, labelId, unidad, statusId) => {
-    const color = value >= max ? '#ff3b3b' : '#3bff9e';
-    const ctx = document.getElementById(id).getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        datasets: [{
-          data: [value, 100 - value],
-          backgroundColor: [color, '#3a3a55'],
-          borderWidth: 0
-        }]
-      },
-      options: {
-        cutout: '75%',
-        responsive: true,
-        plugins: {
-          tooltip: { enabled: false },
-          legend: { display: false }
-        }
+  <div class="sensor-card">
+    <h3>Caudal</h3>
+    <p id="flowRate">-- L/min</p>
+    <p>Total: <span id="totalFlow">--</span> litros</p>
+  </div>
+
+  <div class="sensor-card">
+    <h3>Estado del Relé</h3>
+    <p id="relayStatus">--</p>
+  </div>
+
+  <div class="sensor-card" id="alertBox" style="display: none;">
+    <h3>¡ALERTA!</h3>
+    <p id="alertMessage"></p>
+  </div>
+
+  <script>
+    // Configuración Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCXKWpkb5rR8WFss0PyVwExjLrO_OI30Tg",
+      authDomain: "prueba-5a1c4.firebaseapp.com",
+      projectId: "prueba-5a1c4",
+      storageBucket: "prueba-5a1c4.firebasestorage.app",
+      messagingSenderId: "186842339356",
+      appId: "1:186842339356:web:6cc8811965afe7c84d67d9"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Referencias a los datos
+    const tempRef = database.ref('sensors/temperature');
+    const humidityRef = database.ref('sensors/humidity');
+    const gasRef = database.ref('sensors/gas');
+    const flowRateRef = database.ref('sensors/flow_rate');
+    const totalFlowRef = database.ref('sensors/total_flow');
+    const relayRef = database.ref('relay/status');
+    const alertRef = database.ref('alerts/last_alert');
+
+    // Actualizar datos en tiempo real
+    tempRef.on('value', (snapshot) => {
+      document.getElementById('temperature').textContent = snapshot.val() + ' °C';
+    });
+
+    humidityRef.on('value', (snapshot) => {
+      document.getElementById('humidity').textContent = snapshot.val() + ' %';
+    });
+
+    gasRef.on('value', (snapshot) => {
+      document.getElementById('gas').textContent = snapshot.val();
+      if (snapshot.val() > 300) {
+        document.getElementById('gas').className = 'alert';
+      } else {
+        document.getElementById('gas').className = '';
       }
     });
-    document.getElementById(labelId).textContent = `${value}${unidad}`;
-    document.getElementById(statusId).textContent = value >= max ? 'Alerta' : 'Correcto';
-    document.getElementById(statusId).className = 'status ' + (value >= max ? 'red' : 'green');
-  };
 
-  createDonut("tempChart", tempValue, 40, "tempLabel", "°C", "tempStatus");
-  createDonut("humChart", humValue, 100, "humLabel", "%", "humStatus");
-  createDonut("smokeChart", smokeValue, 70, "smokeLabel", "%", "smokeStatus");
+    flowRateRef.on('value', (snapshot) => {
+      document.getElementById('flowRate').textContent = snapshot.val().toFixed(2) + ' L/min';
+    });
 
-  new Chart(document.getElementById("waterChart").getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul"],
-      datasets: [{
-        label: 'Litros',
-        data: waterData,
-        backgroundColor: '#0099ff'
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
+    totalFlowRef.on('value', (snapshot) => {
+      document.getElementById('totalFlow').textContent = snapshot.val().toFixed(2);
+    });
+
+    relayRef.on('value', (snapshot) => {
+      const statusElement = document.getElementById('relayStatus');
+      if (snapshot.val()) {
+        statusElement.textContent = 'ENCENDIDO';
+        statusElement.className = 'relay-on';
+      } else {
+        statusElement.textContent = 'APAGADO';
+        statusElement.className = 'relay-off';
       }
-    }
-  });
+    });
 
-  function toggleLock() {
-    const lock = document.getElementById("lockStatus");
-    if (lock.textContent.includes("Cerrado")) {
-      lock.textContent = "Estado: Abierto";
-      lock.classList.remove("green");
-      lock.classList.add("red");
-    } else {
-      lock.textContent = "Estado: Cerrado";
-      lock.classList.remove("red");
-      lock.classList.add("green");
-    }
-  }
-</script>
+    alertRef.on('value', (snapshot) => {
+      const alertBox = document.getElementById('alertBox');
+      const alertMsg = document.getElementById('alertMessage');
+
+      if (snapshot.val()) {
+        alertMsg.textContent = snapshot.val();
+        alertBox.style.display = 'block';
+      } else {
+        alertBox.style.display = 'none';
+      }
+    });
+  </script>
 </body>
+
 </html>
