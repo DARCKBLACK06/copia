@@ -1,8 +1,15 @@
+// ===========================================
+// firebase.js
+// Inicializa Firebase App, Auth, Firestore y Realtime Database
+// ===========================================
+
+// === Importación de módulos desde Firebase CDN ===
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-database.js";
-// Configuración de Firebase
+
+// === Configuración del proyecto Firebase ===
 const firebaseConfig = {
   apiKey: "AIzaSyDt_zRk8puKQK843Ro9B_5SegOibMXFblY",
   authDomain: "mi-proyecto-iot-b161b.firebaseapp.com",
@@ -13,14 +20,10 @@ const firebaseConfig = {
   appId: "1:302108382685:web:3666bc3b9250059704d234"
 };
 
-// Inicializar Firebase
+// === Inicialización del núcleo de Firebase ===
 export const app = initializeApp(firebaseConfig);
 
-// Inicializar Auth
-export const auth = getAuth(app);
-
-// Inicializar Firestore
-export const db = getFirestore(app);
-
-// Inicializar Realtime Database
-export const dbRealtime  = getDatabase(app); 
+// === Inicialización de servicios específicos ===
+export const auth = getAuth(app);          // Autenticación de usuarios
+export const db = getFirestore(app);       // Firestore (base de datos tipo documento)
+export const dbRealtime = getDatabase(app); // Realtime Database (para sensores)

@@ -1,9 +1,12 @@
+// === Importa función para registrar un nuevo inquilino ===
 import { registrarInquilino } from './registrarinquilino.js';
+
+// === Importa función para cargar lista de departamentos disponibles ===
 import { cargarDeptos } from './cargarDeptos.js';
 
-
+// === Función principal que inicializa el formulario de inquilino ===
 export async function inicializarFormulario() {
-  await cargarDeptos();
+  await cargarDeptos(); // Llena el select de departamentos disponibles al iniciar
 
   const form = document.getElementById('formulario-inquilino');
   if (!form) {
@@ -11,7 +14,7 @@ export async function inicializarFormulario() {
     return;
   }
 
-  // Función para calcular días y actualizar el input
+  // === Calcula los días entre fechaInicio y fechaFin, y actualiza campo visible ===
   function calcularDiasEstadia() {
     const inicio = form.querySelector('input[name="fechaInicio"]').value;
     const fin = form.querySelector('input[name="fechaFin"]').value;
@@ -33,17 +36,19 @@ export async function inicializarFormulario() {
     }
   }
 
-  // Añadir listeners para que se recalculen los días al cambiar fechas
+  // === Listeners para recalcular días automáticamente cuando cambien las fechas ===
   form.querySelector('input[name="fechaInicio"]').addEventListener('change', calcularDiasEstadia);
   form.querySelector('input[name="fechaFin"]').addEventListener('change', calcularDiasEstadia);
 
+  // === Envío del formulario ===
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
+    e.preventDefault(); // Evita que se recargue la página
+    const formData = new FormData(form); // Captura todos los datos del formulario
 
-    const resultado = await registrarInquilino(formData);
+    const resultado = await registrarInquilino(formData); // Llama a función de registro
 
     if(resultado.success){
+      // Notificación verde de éxito
       Toastify({
         text: resultado.message,
         duration: 3000,
@@ -52,10 +57,12 @@ export async function inicializarFormulario() {
         style: { background: "green" }
       }).showToast();
 
+      // Limpiar formulario tras registro exitoso
       form.reset();
-      form.querySelector('#tiempoEstadia').value = ''; // Limpia tiempo de estadía
+      form.querySelector('#tiempoEstadia').value = '';
 
     } else {
+      // Notificación roja de error
       Toastify({
         text: resultado.message,
         duration: 3000,
@@ -67,4 +74,5 @@ export async function inicializarFormulario() {
   });
 }
 
+// === Mensaje de verificación en consola ===
 console.log('Inicializando formulario...');

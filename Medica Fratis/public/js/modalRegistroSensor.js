@@ -1,24 +1,35 @@
-// modalRegistroSensor.js
-import { collection, query, where, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-import { db } from "../app/firebase.js";
-import { generarCodigoArduino } from "./registrarSensor.js";
-import { showMessage } from '../app/showMessage.js';
+// === Importaciones necesarias ===
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
+import { db } from "../app/firebase.js"; // Conexión a Firestore
+import { generarCodigoArduino } from "./registrarSensor.js"; // Función que genera código .ino personalizado
+import { showMessage } from '../app/showMessage.js'; // Para mostrar mensajes tipo Toast
+
+// === Referencias a elementos del DOM ===
 const selectDeptos = document.getElementById("departamentoId");
 const checkbox = document.getElementById("confirmarRegistro");
 const botonGenerar = document.getElementById("btnGenerarCodigo");
 
-// Listar departamentos sin sensor
+// === Función: lista departamentos sin sensores ===
 export async function listarDepartamentosSinSensor() {
   try {
     const departamentosRef = collection(db, "departamentos");
-    const q = query(departamentosRef, where("tieneSensores", "==", false));
+    const q = query(departamentosRef, where("tieneSensores", "==", false)); // Solo los que no tienen sensores
     const querySnapshot = await getDocs(q);
 
     if (!selectDeptos) return;
 
+    // Limpia las opciones previas
     selectDeptos.innerHTML = '<option value="">Selecciona un departamento</option>';
 
+    // Llena el <select> con departamentos disponibles
     querySnapshot.forEach(docSnap => {
       const data = docSnap.data();
       const option = document.createElement("option");
@@ -33,56 +44,57 @@ export async function listarDepartamentosSinSensor() {
   }
 }
 
-// Habilitar o deshabilitar botón según checkbox
+// === Habilita o deshabilita el botón según el checkbox de confirmación ===
 function configurarCheckbox() {
   if (!checkbox || !botonGenerar) return;
 
   checkbox.addEventListener("change", () => {
-    botonGenerar.disabled = !checkbox.checked;
+    botonGenerar.disabled = !checkbox.checked; // Solo se habilita si está marcado
   });
 }
 
-// Descargar archivo .ino
+// === Función para descargar un archivo .ino con el código generado ===
 function descargarArchivo(nombreArchivo, contenido) {
   const blob = new Blob([contenido], { type: "text/plain" });
   const enlace = document.createElement("a");
   enlace.href = URL.createObjectURL(blob);
   enlace.download = nombreArchivo;
   enlace.click();
-  URL.revokeObjectURL(enlace.href);
+  URL.revokeObjectURL(enlace.href); // Limpieza de memoria
 }
 
-// Acción al dar click en "Generar Código"
+// === Evento principal: al hacer clic en "Generar Código" ===
 botonGenerar.addEventListener("click", async () => {
   const departamentoId = selectDeptos.value;
   const ssid = document.getElementById("wifiSSID").value.trim();
   const password = document.getElementById("wifiPassword").value.trim();
 
+  // Validación de campos
   if (!departamentoId || !ssid || !password) {
     showMessage("Completa todos los campos antes de continuar.", "error");
     return;
   }
 
   try {
-    // Actualizar Firestore
+    // === Actualiza el campo "tieneSensores" en Firestore ===
     const deptoRef = doc(db, "departamentos", departamentoId);
     await updateDoc(deptoRef, { tieneSensores: true });
 
-    // Generar código
+    // === Genera el código Arduino usando datos de WiFi y depto ===
     const codigo = generarCodigoArduino(departamentoId, ssid, password);
 
-    // Descargar archivo
+    // === Inicia la descarga del archivo .ino generado ===
     descargarArchivo(`sensor_depto_${departamentoId}.ino`, codigo);
 
-    // Actualizar lista en el select
+    // === Recarga la lista de departamentos disponibles ===
     await listarDepartamentosSinSensor();
 
-    // Cerrar modal con Bootstrap 5
+    // === Cierra el modal de registro con Bootstrap 5 ===
     const modalElement = document.getElementById("modalRegistroSensor");
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance.hide();
 
-    // Resetear formulario y botón
+    // === Reinicia el formulario y desactiva botón ===
     document.getElementById("formSensor").reset();
     botonGenerar.disabled = true;
 
@@ -94,8 +106,8 @@ botonGenerar.addEventListener("click", async () => {
   }
 });
 
-// Ejecutar al cargar DOM
+// === Inicialización automática al cargar el DOM ===
 document.addEventListener("DOMContentLoaded", async () => {
-  await listarDepartamentosSinSensor();
-  configurarCheckbox();
+  await listarDepartamentosSinSensor(); // Llenar el select al abrir modal
+  configurarCheckbox(); // Activar lógica del checkbox
 });

@@ -3,30 +3,31 @@ export function generarCodigoArduino(numeroDepartamento, ssid, password) {
 // ============================================
 // Código para Departamento ${numeroDepartamento}
 // Sensores: DHT22, MQ-2, YF-S201 (flujo de agua)
-// Librería Firebase ESP Client by Mobizt
+// Control de cerradura y LED de estado
+// Librería: Firebase ESP Client by Mobizt
 // ============================================
+
 #include <WiFi.h>
 #include <Firebase_ESP_Client.h>
 #include "DHT.h"
 
-// Config WiFi
+// =================== CONFIGURACIÓN ===================
 #define WIFI_SSID "${ssid}"
 #define WIFI_PASSWORD "${password}"
-
-// Config Firebase
 #define FIREBASE_HOST "mi-proyecto-iot-b161b-default-rtdb.firebaseio.com"
 #define FIREBASE_SECRET "qnb6YxukBZMFfJKgrUS5KxVwmIkQeQUPYsfbLsTR"
 
-// Pines sensores
+// === Pines ===
 #define DHTPIN 4
 #define DHTTYPE DHT22
+#define MQ2_PIN 34
+#define FLOW_SENSOR_PIN 14
+#define RELAY_PIN 25
+#define LED_AZUL 2
 
-#define MQ2_PIN 34    // sensor de humo (analógico)
-#define FLOW_SENSOR_PIN 14  // pin del YF-S201 (puedes ajustar)
-
-// Variables globales para flujo agua
-volatile int pulseCount;  
-float flowRate;
+// =================== VARIABLES ===================
+volatile int pulseCount = 0;
+float flowRate = 0;
 unsigned long oldTime = 0;
 
 DHT dht(DHTPIN, DHTTYPE);
@@ -34,92 +35,104 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-// Corregido aquí: ruta sin 'dpto' duplicado
 String basePath = "/departamentos/depto${numeroDepartamento}/sensores";
-
 unsigned long sendDataPrevMillis = 0;
 
+// =================== INTERRUPCIÓN ===================
 void IRAM_ATTR pulseCounter() {
-  pulseCount++;  // incrementa el pulso del sensor de flujo
+  pulseCount++;
 }
 
+// =================== SETUP ===================
 void setup() {
   Serial.begin(115200);
   dht.begin();
   pinMode(MQ2_PIN, INPUT);
   pinMode(FLOW_SENSOR_PIN, INPUT_PULLUP);
+  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(LED_AZUL, OUTPUT);
 
-  // Interrupción para contar pulsos del sensor de flujo
-  pulseCount = 0;
+  // Estado inicial apagado
+  digitalWrite(RELAY_PIN, LOW);
+  digitalWrite(LED_AZUL, LOW);
+
   attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, RISING);
 
+  // Conexión WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Conectando al WiFi...");
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
-  Serial.println("Conectado al WiFi");
+  Serial.println(" Conectado ✅");
 
+  // Firebase
   config.host = FIREBASE_HOST;
   config.signer.tokens.legacy_token = FIREBASE_SECRET;
-
   Firebase.begin(&config, &auth);
   Firebase.reconnectWiFi(true);
   delay(1000);
 }
 
+// =================== LOOP ===================
 void loop() {
   if (Firebase.ready() && (millis() - sendDataPrevMillis > 5000 || sendDataPrevMillis == 0)) {
     sendDataPrevMillis = millis();
 
-    // Leer DHT22
+    // === Lecturas ===
     float h = dht.readHumidity();
     float t = dht.readTemperature();
-
-    // Leer MQ-2 analógico y mapear a porcentaje 0-100
     int humoRaw = analogRead(MQ2_PIN);
     float humo = map(humoRaw, 0, 4095, 0, 100);
 
-    // Calcular flujo de agua (litros por minuto)
+    // Flujo de agua
     unsigned long currentTime = millis();
     unsigned long deltaTime = currentTime - oldTime;
-
-    // Calcular flowRate solo si ha pasado 1 segundo para evitar ruido
     if (deltaTime >= 1000) {
       detachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN));
-      flowRate = (pulseCount / 7.5);  // fórmula típica YF-S201: pulses per liter
+      flowRate = (pulseCount / 7.5);
       pulseCount = 0;
       oldTime = currentTime;
       attachInterrupt(digitalPinToInterrupt(FLOW_SENSOR_PIN), pulseCounter, RISING);
     }
 
+    // Validar DHT22
     if (isnan(h) || isnan(t)) {
       Serial.println("Error leyendo DHT22");
       return;
     }
 
-    Serial.printf("Humedad: %.2f%% | Temp: %.2fC | Humo: %.2f%% | Agua: %.3f L/min\\n", h, t, humo, flowRate);
+    // === Estado de cerradura ===
+    String relayState = "apagado";
+    if (Firebase.RTDB.getString(&fbdo, basePath + "/datos_completos/cerradura")) {
+      relayState = fbdo.stringData();
+      digitalWrite(RELAY_PIN, relayState == "encendido" ? LOW : HIGH);  // LOW activa el relé
+      Serial.println("Estado cerradura: " + relayState);
+    } else {
+      Serial.println("Error leyendo cerradura: " + fbdo.errorReason());
+    }
 
-    bool sendSuccess = true;
-
-    // Guardar solo dentro de datos_completos para evitar redundancia
+    // === Crear y enviar JSON ===
     FirebaseJson json;
     json.set("humedad", h);
     json.set("temperatura", t);
     json.set("humo", humo);
     json.set("agua", flowRate);
+    json.set("cerradura", relayState);
     json.set("timestamp", millis() / 1000);
 
-    if (!Firebase.RTDB.setJSON(&fbdo, basePath + "/datos_completos", &json)) {
-      Serial.println("Error enviando JSON: " + fbdo.errorReason());
-      sendSuccess = false;
-    }
+    bool enviado = Firebase.RTDB.setJSON(&fbdo, basePath + "/datos_completos", &json);
 
-    if (sendSuccess) {
-      Serial.println("Datos enviados correctamente a Firebase");
+    if (enviado) {
+      Serial.println("Datos enviados correctamente ✅");
+      digitalWrite(LED_AZUL, HIGH);
+      delay(200);
+      digitalWrite(LED_AZUL, LOW);
+    } else {
+      Serial.println("Error al enviar: " + fbdo.errorReason());
     }
   }
 }
-  `;
+`;
 }

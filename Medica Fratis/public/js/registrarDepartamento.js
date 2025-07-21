@@ -1,21 +1,22 @@
-// registrarDepartamento.js
-
+// === Importaciones necesarias para Firestore y funciones auxiliares ===
 import { collection, doc, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { db } from "../app/firebase.js";
-import { showMessage } from '../app/showMessage.js';
+import { showMessage } from '../app/showMessage.js'; // Función para mostrar notificaciones
 
-const MAX_DPTOS = 50;  // Número máximo de departamentos que puedes registrar
+// === Constantes y referencias del DOM ===
+const MAX_DPTOS = 50;  // Número máximo de departamentos disponibles
 
-const gridDptos = document.getElementById("gridDptos");
-const formDepartamento = document.getElementById("formDepartamento");
-const nivelHiddenInput = document.getElementById("nivelDepartamento");
-const nivelDropdownBtn = document.getElementById("nivelDropdownBtn");
-const nivelDropdownItems = document.querySelectorAll("#nivelDropdownMenu .dropdown-item");
+const gridDptos = document.getElementById("gridDptos");               // Contenedor visual de botones de departamentos
+const formDepartamento = document.getElementById("formDepartamento"); // Formulario principal
+const nivelHiddenInput = document.getElementById("nivelDepartamento"); // Input oculto para guardar el valor seleccionado del piso
+const nivelDropdownBtn = document.getElementById("nivelDropdownBtn"); // Botón que muestra el piso seleccionado
+const nivelDropdownItems = document.querySelectorAll("#nivelDropdownMenu .dropdown-item"); // Opciones del dropdown
 
-let dptoSeleccionado = null;
-let departamentosRegistrados = new Set();
+// === Variables internas del módulo ===
+let dptoSeleccionado = null; // Almacena qué departamento fue seleccionado
+let departamentosRegistrados = new Set(); // Conjunto para evitar registros duplicados
 
-// Inicializa el dropdown de nivel
+// === Inicializa el dropdown de pisos ===
 nivelDropdownItems.forEach(item => {
   item.addEventListener("click", (e) => {
     e.preventDefault();
@@ -25,15 +26,13 @@ nivelDropdownItems.forEach(item => {
   });
 });
 
-// Genera botones para dptos y marca los ya registrados
+// === Función principal: genera botones de departamentos y marca los ocupados ===
 export async function inicializarRegistroDepartamento() {
-  // Limpia grid antes de crear botones
-  gridDptos.innerHTML = "";
+  gridDptos.innerHTML = ""; // Limpia el grid antes de llenarlo
 
-  // Carga departamentos registrados de Firestore
-  await cargarDepartamentosRegistrados();
+  await cargarDepartamentosRegistrados(); // Carga departamentos ya ocupados
 
-  // Crear botones para dptos del 1 a MAX_DPTOS
+  // Crea 50 botones, del 1 al 50
   for (let i = 1; i <= MAX_DPTOS; i++) {
     const dptoId = `dpto${i}`;
     const btn = document.createElement("button");
@@ -53,14 +52,14 @@ export async function inicializarRegistroDepartamento() {
   }
 }
 
-// Carga departamentos existentes para evitar duplicados
+// === Carga los departamentos registrados actualmente desde Firestore ===
 async function cargarDepartamentosRegistrados() {
-  departamentosRegistrados.clear();
+  departamentosRegistrados.clear(); // Limpia el conjunto
 
   try {
     const snapshot = await getDocs(collection(db, "departamentos"));
     snapshot.forEach(doc => {
-      departamentosRegistrados.add(doc.id);
+      departamentosRegistrados.add(doc.id); // Agrega el ID al conjunto
     });
   } catch (error) {
     console.error("Error cargando departamentos:", error);
@@ -68,20 +67,20 @@ async function cargarDepartamentosRegistrados() {
   }
 }
 
-// Marca un departamento seleccionado y desmarca los otros
+// === Función para seleccionar un botón de departamento ===
 function seleccionarDpto(button, dptoId) {
-  // Deseleccionar previos
+  // Deselecciona cualquier botón anterior
   [...gridDptos.children].forEach(btn => btn.classList.remove("selected"));
 
-  // Seleccionar este
-  button.classList.add("selected");
+  button.classList.add("selected"); // Marca el botón actual
   dptoSeleccionado = dptoId;
 }
 
-// Maneja el envío del formulario
+// === Evento: manejar envío del formulario de registro de departamento ===
 formDepartamento.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  e.preventDefault(); // Previene recarga
 
+  // Validaciones previas
   if (!dptoSeleccionado) {
     showMessage("Debes seleccionar un número de departamento", "error");
     return;
@@ -96,37 +95,34 @@ formDepartamento.addEventListener("submit", async (e) => {
   const tieneSensores = formDepartamento.tieneSensores.value === "true";
   const disponible = formDepartamento.disponible.value === "true";
 
-
-  // Validar si ya existe (por si hubo cambios en firestore después)
+  // Validación extra por si hubo un cambio reciente en la base
   if (departamentosRegistrados.has(dptoSeleccionado)) {
     showMessage("Este departamento ya está registrado", "error");
     return;
   }
 
-
-  // Preparar objeto para guardar
+  // Construcción del objeto a guardar en Firestore
   const nuevoDepto = {
     numero: parseInt(dptoSeleccionado.replace("dpto", "")),
     nivel: nivel,
     tieneSensores: tieneSensores,
     disponible: disponible
-
   };
 
   try {
-    await setDoc(doc(db, "departamentos", dptoSeleccionado), nuevoDepto);
+    await setDoc(doc(db, "departamentos", dptoSeleccionado), nuevoDepto); // Guarda en Firestore
     showMessage(`Departamento ${nuevoDepto.numero} registrado con éxito`, "success");
 
-    // Reset formulario y selección
+    // Reset del formulario
     formDepartamento.reset();
     nivelDropdownBtn.textContent = "Seleccionar Piso";
     nivelHiddenInput.value = "";
     dptoSeleccionado = null;
 
-    // Recarga la cuadrícula para actualizar estados
+    // Refresca los botones
     await inicializarRegistroDepartamento();
 
-    // Cierra modal (asumiendo Bootstrap 5)
+    // Cierra el modal (requiere Bootstrap 5)
     const modalEl = document.getElementById("modalDepartamento");
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     modalInstance.hide();

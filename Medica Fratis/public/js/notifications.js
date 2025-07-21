@@ -1,43 +1,45 @@
-// notifications.js
+// === Importación de conexión a Firestore y utilidades ===
 import { db } from '../app/firebase.js';
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  Timestamp
-} from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js';
+import { collection, getDocs, query, where, Timestamp } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js';
 
-// Función para cargar las notificaciones
+// === Función principal para cargar las notificaciones de pagos próximos ===
 export async function cargarNotificaciones() {
-  const container = document.getElementById('notifications-content'); // Apunta al nuevo contenedor interno
+  // Obtiene el contenedor donde se mostrarán las notificaciones
+  const container = document.getElementById('notifications-content');
+
+  // Si no existe el contenedor, muestra un error y sale
   if (!container) {
     console.error('❌ No se encontró el contenedor de notificaciones.');
     return;
   }
 
   try {
-    const hoy = new Date();
-    const limite = new Date();
-    limite.setDate(hoy.getDate() + 5); // Pagos próximos en los próximos 5 días
+    // === Definición del rango de fechas ===
+    const hoy = new Date();           // Fecha actual
+    const limite = new Date();        // Fecha límite para considerar pagos
+    limite.setDate(hoy.getDate() + 5); // Pagos dentro de los próximos 5 días
 
-    const pagosRef = collection(db, 'pagos');
+    // === Consulta a la colección "pagos" en Firestore ===
+    const pagosRef = collection(db, 'pagos'); // Referencia a la colección
     const q = query(
       pagosRef,
-      where('fecha', '>=', Timestamp.fromDate(hoy)),
-      where('fecha', '<=', Timestamp.fromDate(limite))
+      where('fecha', '>=', Timestamp.fromDate(hoy)),     // Solo pagos desde hoy
+      where('fecha', '<=', Timestamp.fromDate(limite))   // Hasta 5 días adelante
     );
 
-    const querySnapshot = await getDocs(q);
-    container.innerHTML = ''; // Limpiar anteriores
+    const querySnapshot = await getDocs(q); // Ejecuta la consulta
+    container.innerHTML = '';               // Limpia notificaciones anteriores
 
+    // === Si no hay pagos próximos ===
     if (querySnapshot.empty) {
       container.innerHTML = `<p class="text-muted">No hay pagos próximos.</p>`;
     } else {
+      // === Recorre los documentos encontrados ===
       querySnapshot.forEach((doc) => {
         const pago = doc.data();
-        const fechaPago = pago.fecha.toDate().toLocaleDateString();
+        const fechaPago = pago.fecha.toDate().toLocaleDateString(); // Formato legible
 
+        // HTML para cada notificación
         const notiHTML = `
           <div class="alert alert-warning d-flex align-items-center" role="alert">
             <i class="bi bi-exclamation-circle-fill me-2"></i>
@@ -45,7 +47,7 @@ export async function cargarNotificaciones() {
           </div>
         `;
 
-        container.insertAdjacentHTML('beforeend', notiHTML);
+        container.insertAdjacentHTML('beforeend', notiHTML); // Inserta notificación en el contenedor
       });
     }
 

@@ -2,47 +2,57 @@
 <html lang="es">
 
 <head>
+  <!-- Metadatos básicos de la página -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel de Administración</title>
+  <title>Dashboard</title>
 
-  <!-- Icono -->
+  <!-- Icono de pestaña del navegador -->
   <link rel="icon" href="./favicon.ico" type="image/x-icon">
 
-  <!-- Estilos -->
-  <link rel="stylesheet" href="./css/style.css">
+  <!-- Estilos externos: diseño y componentes -->
+  <link rel="stylesheet" href="./css/style.css"> <!-- Estilo general del sistema -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <!-- Íconos Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <!-- Notificaciones tipo Toast -->
 
-  <!-- Scripts -->
+  <!-- Scripts JS para funcionalidades -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="./js/admin.js"></script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script> <!-- Librería Toastify -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Librería Chart.js para gráficas -->
+  <script type="module" src="./js/admin.js"></script> <!-- Script principal del dashboard (JS modular) -->
 </head>
 
+
 <body>
-  <div class="d-flex">
-    <!-- Sidebar -->
+  <div class="d-flex"> <!-- Contenedor principal dividido entre Sidebar y contenido -->
+
+    <!-- ===== SIDEBAR ===== -->
     <nav id="sidebar" class="bg-dark text-white p-3">
+      <!-- Encabezado del menú lateral -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <span class="fs-5 fw-bold">Administración</span>
         <button id="toggleSidebar" class="btn btn-sm btn-outline-light">
-          <i class="bi bi-chevron-left"></i>
+          <i class="bi bi-chevron-left"></i> <!-- Ícono de colapsar menú -->
         </button>
       </div>
 
+      <!-- Menú de navegación lateral -->
       <ul class="nav flex-column">
         <li class="nav-item"><a href="#" class="nav-link text-white">Inicio</a></li>
         <li class="nav-item"><a href="#" class="nav-link text-white">Gráficas</a></li>
         <li class="nav-item"><a href="Ayuda-panel.html" class="nav-link text-white">Documentación</a></li>
+
+        <!-- Registro de usuario con modal -->
         <li class="nav-item">
-          <!-- Botón para registrar usuario -->
           <a href="#" class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#signupModal">Registrar
             Usuario</a>
 
-          <!-- Modal Registrar Usuario -->
+          <!-- Modal para registrar nuevo usuario -->
           <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
             <div class="modal-dialog">
               <div class="modal-content bg-dark text-white">
@@ -68,315 +78,332 @@
             </div>
           </div>
         </li>
+
+        <!-- Cerrar sesión -->
         <li class="nav-item"><a href="#" class="nav-link text-white" id="logout">Cerrar Sesión</a></li>
       </ul>
     </nav>
-    <!-- Fin Sidebar -->
+    <!-- ===== FIN SIDEBAR ===== -->
 
-    <!-- Contenedor Principal -->
+
+    <!-- ===== CONTENEDOR PRINCIPAL ===== -->
     <div class="flex-grow-1 p-4 main-container">
       <h1>Bienvenido al Panel Administrativo</h1>
       <p>Selecciona una opción del menú lateral para comenzar.</p>
 
-      <!-- Contenedor de tarjetas -->
+      <!-- ===== GRID DE TARJETAS ===== -->
       <div class="tarjetas-grid">
 
-        <!-- Tarjeta de usuario -->
+        <!-- === TARJETA: DATOS DE USUARIO === -->
         <div id="data-user" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Datos de Usuario</h5>
           <div id="datosUsuario" style="min-height: 120px; overflow-y: auto;"></div>
 
+          <!-- Botones para navegar entre usuarios -->
           <div id="botonesFijos" class="mt-3 d-flex justify-content-between align-items-center">
-            <!-- Botón Anterior con ícono -->
             <button id="btnAnterior" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
               <i class="bi bi-chevron-double-left"></i> Anterior
             </button>
-
-            <!-- Botón Siguiente con ícono -->
             <button id="btnSiguiente" class="btn btn-primary btn-sm d-flex align-items-center gap-1">
               Siguiente <i class="bi bi-chevron-double-right"></i>
             </button>
           </div>
 
-
-          <!-- Botón Detalles más elegante -->
+          <!-- Botón para abrir el modal con detalles del inquilino -->
           <button id="btnDetalles"
-            class="btn btn-info btn-sm d-flex align-items-center gap-1 text-white align-items-center height-100 justify-content-center ">
+            class="btn btn-info btn-sm d-flex align-items-center gap-1 text-white align-items-center height-100 justify-content-center">
             <i class="bi bi-info-circle-fill text-white"></i>Detalles
           </button>
-
         </div>
-        <!-- fin tarjeta de usuario -->
+        <!-- === FIN TARJETA: DATOS DE USUARIO === -->
 
-
-
-
-        <!-- Tarjeta de notificaciones -->
+        <!-- === TARJETA: NOTIFICACIONES === -->
         <div id="notifications" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Notificaciones</h5>
-          <div id="notifications-content"></div>
+          <div id="notifications-content"></div> <!-- Se llena dinámicamente con mensajes del sistema -->
         </div>
 
-        <!-- Tarjeta de departamentos -->
+        <!-- === TARJETA: DEPARTAMENTOS === -->
         <div id="departamentos" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Departamentos</h5>
           <div class="d-flex flex-wrap gap-2">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">➕ Registrar
               Departamento</button>
-            <a href="formulario-inquilino.html" class="btn btn-success">👤 Registrar Inquilino</a>
+            <a href="formulario-inquilino.html" class="btn btn-success">👤 Registrar Usuario</a>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistroSensor">🤖 Registrar
               Sensor</button>
           </div>
         </div>
 
-        <!-- Tarjeta de reportes -->
+        <!-- === TARJETA: REPORTES === -->
         <div id="reportes" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Reportes</h5>
+          <!-- Aquí se pueden agregar gráficas, exportaciones o indicadores -->
+        </div>
+
+      </div> <!-- Fin de tarjetas -->
+    </div>
+
+
+    <!-- === MODAL: REGISTRAR SENSOR === -->
+    <div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel"
+      aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+
+          <!-- Título del modal -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalSensorLabel">Registrar Sensor</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+              aria-label="Cerrar"></button>
+          </div>
+
+          <!-- Formulario para registrar sensor -->
+          <div class="modal-body">
+            <form id="formSensor">
+              <!-- Selección del departamento -->
+              <div class="mb-3">
+                <label for="departamentoId" class="form-label">Número de Departamento</label>
+                <select class="form-select" id="departamentoId" required>
+                  <option value="">Selecciona un departamento</option>
+                  <!-- Opciones generadas por JS -->
+                </select>
+              </div>
+
+              <!-- Datos WiFi del sensor -->
+              <div class="mb-3">
+                <label for="wifiSSID" class="form-label">SSID WiFi</label>
+                <input type="text" class="form-control" id="wifiSSID" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="wifiPassword" class="form-label">Contraseña WiFi</label>
+                <input type="password" class="form-control" id="wifiPassword" required>
+              </div>
+
+              <!-- Confirmación -->
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="confirmarRegistro" required>
+                <label class="form-check-label" for="confirmarRegistro">
+                  Confirmo registrar un sensor en este departamento
+                </label>
+              </div>
+            </form>
+          </div>
+
+          <!-- Botón para generar el código -->
+          <div class="modal-footer">
+            <button id="btnGenerarCodigo" class="btn btn-success" disabled>Generar Código</button>
+          </div>
+
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Modal para registrar sensor -->
-
-  <div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content bg-dark text-white">
-
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalSensorLabel">Registrar Sensor</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-
-        <div class="modal-body">
-          <form id="formSensor">
-            <div class="mb-3">
-              <label for="departamentoId" class="form-label">Número de Departamento</label>
-              <select class="form-select" id="departamentoId" required>
-                <option value="">Selecciona un departamento</option>
-                <!-- Opciones cargadas dinámicamente -->
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="wifiSSID" class="form-label">SSID WiFi</label>
-              <input type="text" class="form-control" id="wifiSSID" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="wifiPassword" class="form-label">Contraseña WiFi</label>
-              <input type="password" class="form-control" id="wifiPassword" required>
-            </div>
-
-            <div class="mb-3 form-check">
-              <input type="checkbox" class="form-check-input" id="confirmarRegistro" required>
-              <label class="form-check-label" for="confirmarRegistro">
-                Confirmo registrar un sensor en este departamento
-              </label>
-            </div>
-          </form>
-        </div>
-
-        <div class="modal-footer">
-          <button id="btnGenerarCodigo" class="btn btn-success" disabled>Generar Código</button>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- Fin Modal Registrar Sensor -->
+    <!-- Fin Modal Registrar Sensor -->
 
 
-  <!-- Modal Registrar Departamento -->
+    <!-- === MODAL: REGISTRAR DEPARTAMENTO === -->
+    <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
 
-  <div class="modal fade" id="modalDepartamento" tabindex="-1" aria-labelledby="modalDepartamentoLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content bg-dark text-white">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalDepartamentoLabel">Registrar Departamento</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <form id="formDepartamento">
-            <div class="mb-3">
-              <label class="form-label">Selecciona un número de departamento:</label>
-              <div class="grid-dptos" id="gridDptos">
-                <!-- Botones generados por JS: dpto1, dpto2, etc. -->
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalDepartamentoLabel">Registrar Departamento</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body">
+            <form id="formDepartamento">
+              <!-- Selección de número de departamento -->
+              <div class="mb-3">
+                <label class="form-label">Selecciona un número de departamento:</label>
+                <div class="grid-dptos" id="gridDptos">
+                  <!-- Botones generados por JS -->
+                </div>
               </div>
-            </div>
 
-            <div class="mb-3">
-              <label class="form-label">Nivel / Piso</label>
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle w-100" id="nivelDropdownBtn" type="button"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Seleccionar Piso
-                </button>
-                <ul class="dropdown-menu w-100" id="nivelDropdownMenu">
-                  <li><a class="dropdown-item" href="#" data-value="1">Piso 1</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="2">Piso 2</a></li>
-                  <li><a class="dropdown-item" href="#" data-value="3">Piso 3</a></li>
-                </ul>
+              <!-- Selección de nivel/piso -->
+              <div class="mb-3">
+                <label class="form-label">Nivel / Piso</label>
+                <div class="dropdown">
+                  <button class="btn btn-secondary dropdown-toggle w-100" id="nivelDropdownBtn" type="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Seleccionar Piso
+                  </button>
+                  <ul class="dropdown-menu w-100" id="nivelDropdownMenu">
+                    <li><a class="dropdown-item" href="#" data-value="1">Piso 1</a></li>
+                    <li><a class="dropdown-item" href="#" data-value="2">Piso 2</a></li>
+                    <li><a class="dropdown-item" href="#" data-value="3">Piso 3</a></li>
+                  </ul>
+                </div>
+                <input type="hidden" id="nivelDepartamento" name="nivelDepartamento">
               </div>
-              <input type="hidden" id="nivelDepartamento" name="nivelDepartamento">
-            </div>
 
-            <div class="mb-3">
-              <label class="form-label">¿Tiene sensores?</label>
-              <div>
-                <input type="radio" class="btn-check" name="tieneSensores" id="sensorSi" autocomplete="off" value="true"
-                  checked>
-                <label class="btn btn-outline-success" for="sensorSi">Sí</label>
-                <input type="radio" class="btn-check" name="tieneSensores" id="sensorNo" autocomplete="off"
-                  value="false">
-                <label class="btn btn-outline-danger" for="sensorNo">No</label>
+              <!-- ¿Tiene sensores? -->
+              <div class="mb-3">
+                <label class="form-label">¿Tiene sensores?</label>
+                <div>
+                  <input type="radio" class="btn-check" name="tieneSensores" id="sensorSi" value="true" checked>
+                  <label class="btn btn-outline-success" for="sensorSi">Sí</label>
+
+                  <input type="radio" class="btn-check" name="tieneSensores" id="sensorNo" value="false">
+                  <label class="btn btn-outline-danger" for="sensorNo">No</label>
+                </div>
               </div>
-            </div>
 
-            <div class="mb-3">
-              <label class="form-label">¿Disponible?</label>
-              <div>
-                <input type="radio" class="btn-check" name="disponible" id="disponibleSi" autocomplete="off"
-                  value="true" checked>
-                <label class="btn btn-outline-success" for="disponibleSi">Sí</label>
+              <!-- ¿Disponible? -->
+              <div class="mb-3">
+                <label class="form-label">¿Disponible?</label>
+                <div>
+                  <input type="radio" class="btn-check" name="disponible" id="disponibleSi" value="true" checked>
+                  <label class="btn btn-outline-success" for="disponibleSi">Sí</label>
 
-                <input type="radio" class="btn-check" name="disponible" id="disponibleNo" autocomplete="off"
-                  value="false">
-                <label class="btn btn-outline-danger" for="disponibleNo">No</label>
+                  <input type="radio" class="btn-check" name="disponible" id="disponibleNo" value="false">
+                  <label class="btn btn-outline-danger" for="disponibleNo">No</label>
+                </div>
               </div>
-            </div>
 
+              <!-- Botón para enviar formulario -->
+              <button type="submit" class="btn btn-success w-100">Registrar</button>
+            </form>
+          </div>
 
-            <button type="submit" class="btn btn-success w-100">Registrar</button>
-          </form>
         </div>
       </div>
     </div>
+    <!-- Fin Modal Registrar Departamento -->
 
-  </div>
+    <!-- === MODAL: DETALLES DEL INQUILINO === -->
+    <div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content bg-dark text-white">
 
-  <!-- Fin Modal Registrar Departamento -->
+          <!-- Encabezado del modal -->
+          <div class="modal-header d-flex align-items-center justify-content-between position-relative">
+            <!-- Título del modal -->
+            <h5 class="modal-title" id="modalDetallesLabel">Detalles del Usuario</h5>
 
-  <!-- Modal de detalles del inquilino -->
-  <div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content bg-dark text-white">
-
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalDetallesLabel">Detalles del Inquilino</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-          <!-- Contenedor libre para las gráficas, sin tarjetas ni cajas -->
-          <div id="contenedorGraficas" class="d-flex justify-content-center mb-2" style="gap: 2rem; flex-wrap: wrap;">
-            <div class="grafica-item">
-              <canvas id="graficaTemperatura" width="120" height="120"></canvas>
-              <div class="grafica-label">Temperatura</div>
-            </div>
-            <div class="grafica-item">
-              <canvas id="graficaHumedad" width="120" height="120"></canvas>
-              <div class="grafica-label">Humedad</div>
-            </div>
-            <div class="grafica-item">
-              <canvas id="graficaHumo" width="120" height="120"></canvas>
-              <div class="grafica-label">Humo</div>
+            <!-- Indicador de estado de pago (color y texto) -->
+            <div id="estadoPagoIndicador" class="estado-pago-indicador">
+              <span id="pagoFoco" class="estado-pago-foco"></span>
+              <span id="pagoTexto" class="estado-pago-texto">Cargando...</span>
             </div>
 
-            <!-- Agua forzada en una fila aparte centrada -->
-            <div class="grafica-item" style="width: 100%; display: flex; justify-content: center;">
-              <div>
+
+            <!-- Botón de cerrar modal -->
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+              aria-label="Cerrar"></button>
+          </div>
+
+          <!-- Cuerpo del modal -->
+          <div class="modal-body">
+
+            <!-- === GRÁFICAS SENSORIALES === -->
+            <div id="contenedorGraficas" class="d-flex justify-content-center mb-2" style="gap: 2rem; flex-wrap: wrap;">
+              <!-- Temperatura -->
+              <div class="grafica-item">
+                <canvas id="graficaTemperatura" width="120" height="120"></canvas>
+                <div class="grafica-label">Temperatura</div>
+              </div>
+              <!-- Humedad -->
+              <div class="grafica-item">
+                <canvas id="graficaHumedad" width="120" height="120"></canvas>
+                <div class="grafica-label">Humedad</div>
+              </div>
+              <!-- Humo -->
+              <div class="grafica-item">
+                <canvas id="graficaHumo" width="120" height="120"></canvas>
+                <div class="grafica-label">Humo</div>
+              </div>
+              <!-- Agua -->
+              <div class="grafica-item">
                 <canvas id="graficaAgua" width="120" height="120"></canvas>
                 <div class="grafica-label">Agua</div>
               </div>
             </div>
-          </div>
 
-          <!-- Botón de acceso -->
-          <div class="p-3 rounded-4 mb-3 position-relative border border-secondary" id="contenedorSwitchCerradura"
-            style="background-color: #212529;">
+            <!-- === ESTADO DE CERRADURA / ACCESO === -->
+            <div class="p-3 rounded-4 mb-3 position-relative border border-secondary" id="contenedorSwitchCerradura"
+              style="background-color: #212529;">
+              <!-- Vista actual del estado -->
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="text-center w-100">
+                  <div id="iconoCerradura" style="font-size: 2rem; color: #ffc107;">🔒</div>
+                  <div id="textoCerradura" class="fw-bold mt-2">Acceso denegado</div>
+                </div>
 
-            <div class="d-flex justify-content-between align-items-center">
-              <div class="text-center w-100">
-                <div id="iconoCerradura" style="font-size: 2rem; color: #ffc107;">🔒</div>
-                <div id="textoCerradura" class="fw-bold mt-2">Acceso denegado</div>
+                <!-- Menú para cambiar estado -->
+                <div class="dropdown">
+                  <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-dark p-3" style="min-width: 200px;">
+                    <li class="mb-2 fw-bold">Editar Estado</li>
+                    <li>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="estadoCerradura" id="estadoPagado"
+                          value="encendido">
+                        <label class="form-check-label" for="estadoPagado">Encendido</label>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="estadoCerradura" id="estadoNoPagado"
+                          value="apagado">
+                        <label class="form-check-label" for="estadoNoPagado">Apagado</label>
+                      </div>
+                    </li>
+                    <li class="mt-3 text-center">
+                      <button id="btnGuardarEstado" class="btn btn-success btn-sm">Guardar</button>
+                    </li>
+                  </ul>
+                </div>
               </div>
+            </div>
 
-              <!-- Botón desplegable -->
-              <div class="dropdown">
-                <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-dark p-3" style="min-width: 200px;">
-                  <li class="mb-2 fw-bold">Editar Estado</li>
-                  <li>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="estadoCerradura" id="estadoPagado"
-                        value="pagado">
-                      <label class="form-check-label" for="estadoPagado">Encendido (Pagado)</label>
-                    </div>
-                  </li>
-                  <li>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="estadoCerradura" id="estadoNoPagado"
-                        value="no pagado">
-                      <label class="form-check-label" for="estadoNoPagado">Apagado (No pagado)</label>
-                    </div>
-                  </li>
-                  <li class="mt-3 text-center">
-                    <button id="btnGuardarEstado" class="btn btn-success btn-sm">Guardar</button>
-                  </li>
-                </ul>
-              </div>
+            <!-- === MENSAJE SI NO HAY SENSORES === -->
+            <div id="contenedorMensajeSinSensor"
+              style="display: none; min-height: 120px; align-items: center; justify-content: center;">
+              <p id="mensajeSinSensor" style="color: #ffc107; font-weight: bold; text-align: center;">
+                ⚠️ No hay sensores registrados para este departamento.
+              </p>
+            </div>
+
+            <!-- === INFORMACIÓN PERSONAL DEL INQUILINO === -->
+            <div class="datos-grid">
+              <div><strong>Nombre:</strong> <span id="modalNombre"></span></div>
+              <div><strong>Teléfono:</strong> <span id="modalTelefono"></span></div>
+              <div><strong>Correo:</strong> <span id="modalCorreo"></span></div>
+              <div><strong>CURP:</strong> <span id="modalCurp"></span></div>
+
+              <div><strong>Calle:</strong> <span id="modalCalle"></span></div>
+              <div><strong>Colonia:</strong> <span id="modalColonia"></span></div>
+
+              <div><strong>Departamento:</strong> <span id="modalDepartamento"></span></div>
+              <div><strong>Fecha Inicio:</strong> <span id="modalFechaInicio"></span></div>
+              <div><strong>Fecha Fin:</strong> <span id="modalFechaFin"></span></div>
+
+              <div><strong>Identificación Tipo:</strong> <span id="modalIdentificacionTipo"></span></div>
+              <div><strong>Identificación Número:</strong> <span id="modalIdentificacionNumero"></span></div>
+
+              <div><strong>Contacto Nombre:</strong> <span id="modalContactoNombre"></span></div>
+              <div><strong>Contacto Teléfono:</strong> <span id="modalContactoTelefono"></span></div>
+              <div><strong>Contacto Parentesco:</strong> <span id="modalContactoParentesco"></span></div>
             </div>
           </div>
 
-
-
-
-
-
-          <!-- Mensaje si no hay sensores disponibles -->
-          <p id="mensajeSinSensor" style="display: none; color: #ffc107; text-align: center; font-weight: bold;">
-            ⚠️ No hay sensores registrados para este departamento.
-          </p>
-
-          <!-- Información del usuario debajo de las gráficas -->
-          <div class="datos-grid">
-            <div><strong>Nombre:</strong> <span id="modalNombre"></span></div>
-            <div><strong>Teléfono:</strong> <span id="modalTelefono"></span></div>
-            <div><strong>Correo:</strong> <span id="modalCorreo"></span></div>
-            <div><strong>CURP:</strong> <span id="modalCurp"></span></div>
-
-            <div><strong>Calle:</strong> <span id="modalCalle"></span></div>
-            <div><strong>Colonia:</strong> <span id="modalColonia"></span></div>
-
-            <div><strong>Departamento:</strong> <span id="modalDepartamento"></span></div>
-            <div><strong>Fecha Inicio:</strong> <span id="modalFechaInicio"></span></div>
-            <div><strong>Fecha Fin:</strong> <span id="modalFechaFin"></span></div>
-
-            <div><strong>Identificación Tipo:</strong> <span id="modalIdentificacionTipo"></span></div>
-            <div><strong>Identificación Número:</strong> <span id="modalIdentificacionNumero"></span></div>
-
-            <div><strong>Contacto Nombre:</strong> <span id="modalContactoNombre"></span></div>
-            <div><strong>Contacto Teléfono:</strong> <span id="modalContactoTelefono"></span></div>
-            <div><strong>Contacto Parentesco:</strong> <span id="modalContactoParentesco"></span></div>
+          <!-- Pie del modal con botón Cerrar -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
-        </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
-
       </div>
     </div>
-  </div>
-  <!-- Fin Modal de detalles del inquilino -->
-  </div>
+    <!-- === FIN MODAL DETALLES === -->
+
 
 
 </body>
