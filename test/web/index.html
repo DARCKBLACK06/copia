@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Sensores ESP32</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+
+<body>
+  <h1>Monitoreo de Sensores</h1>
+
+  <!-- Estado de Pago -->
+  <div id="estado-pago" class="pago-box">
+    <span id="texto-estado-pago">Estado Desconocido</span>
+  </div>
+  <!-- Modo Manual -->
+  <!-- Botón de modo automático/manual -->
+  <div class="modo-manual-box">
+    <button id="btn-modo-toggle" class="modo-toggle automatico">
+      🟢 🛠 Modo automatico
+    </button>
+    <div id="menu-modo-toggle" class="modo-menu hidden">
+      <p class="modo-titulo">Selecciona el modo de control:</p>
+      <div class="modo-opciones">
+        <!-- Opción manual indefinido -->
+        <button type="button" id="opcion-indefinido" class="modo-opcion manual-indefinido">
+          <span class="check"></span> Manual indefinido
+        </button>
+        <!-- Opción manual personalizado -->
+        <button type="button" id="opcion-personalizado" class="modo-opcion manual-personalizado">
+          <span class="check"></span> Manual hasta una hora
+        </button>
+      </div>
+      <!-- Selector de hora para modo personalizado -->
+      <div id="modo-hora-box" class="modo-hora-box hidden">
+        <label for="modo-hora-input">Hora de expiración:</label>
+        <input type="time" id="modo-hora-input" />
+      </div>
+      <button id="btn-guardar-modo" class="modo-guardar-btn automatico">Guardar cambios</button>
+    </div>
+  </div>
+
+<!-- Control de Cerradura -->
+<div class="relay-card">
+  <div id="relay-group" class="relay-group apagado">
+    
+    <!-- Botón de estado de cerradura con tooltip bonito -->
+    <div class="tooltip-container">
+      <button id="lock-status" class="btn-status apagado tooltip-btn" disabled>🔒 Cerrado</button>
+      <span class="custom-tooltip">Modo automático: no se puede modificar manualmente</span>
+    </div>
+
+    <!-- Botón de engranaje con tooltip bonito -->
+    <div class="tooltip-container">
+      <button id="relay-edit" class="btn-edit tooltip-btn" disabled>⚙️</button>
+      <span class="custom-tooltip">Modo bloqueado: solo lectura en automático</span>
+    </div>
+
+  </div>
+
+  <div id="relay-menu" class="relay-dropdown hidden">
+    <button data-action="encendido">
+      🔓 Abrir <span class="checkmark">✔️</span>
+    </button>
+    <button data-action="apagado">
+      🔒 Cerrar <span class="checkmark">✔️</span>
+    </button>
+    <button id="save-relay" class="save-btn">Guardar</button>
+  </div>
+</div>
+
+
+
+  <a href="formulario.html" class="btn-formulario">Formulario</a>
+  
+  <div class="container">
+    <!-- Gráficas -->
+    <div class="charts-grid">
+      <div class="chart-box"><canvas id="tempChart"></canvas>
+        <p>Temperatura</p>
+      </div>
+      <div class="chart-box"><canvas id="humChart"></canvas>
+        <p>Humedad</p>
+      </div>
+      <div class="chart-box"><canvas id="mq2Chart"></canvas>
+        <p>Gas</p>
+      </div>
+      <div class="chart-box"><canvas id="flowChar"></canvas>
+        <p>Agua</p>
+      </div>
+    </div>
+  </div>
+  <script src="main.js" type="module"></script>
+</body>
+
+</html>
