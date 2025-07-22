@@ -169,7 +169,21 @@ body {
   user-select: none;
 }
 
+
 /* ===== 8. MENSAJE DE ALERTA SI NO HAY SENSOR ===== */
+
+#contenedorMensajeSinSensor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  border-radius: 0.75rem;
+  margin: 1.5rem 0;
+  border: 1px solid #ffc10744;
+  box-sizing: border-box;
+}
 
 #mensajeSinSensor {
   font-size: 1rem;
@@ -177,7 +191,6 @@ body {
   font-weight: bold;
   text-align: center;
 }
-
 
 
 /* ===== 9. GRID DE DATOS DEL INQUILINO ===== */

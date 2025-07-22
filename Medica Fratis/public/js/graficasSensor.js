@@ -109,64 +109,63 @@ export function cargarGraficasSensor(departamentoId) {
   const contenedor = document.getElementById('contenedorGraficas');
   const contenedorMensaje = document.getElementById('contenedorMensajeSinSensor');
   const contenedorCerradura = document.getElementById('contenedorSwitchCerradura');
+  const contenedorModo = document.getElementById('contenedorModoAutomatico');
+  const contenedorControles = document.getElementById('contenedorControlesUsuario');
   const iconoCerradura = document.getElementById('iconoCerradura');
   const textoCerradura = document.getElementById('textoCerradura');
-  const estadoPagado = document.getElementById('estadoencendido');
-  const estadoNoPagado = document.getElementById('estadoapagado');
+  const estadoPagado = document.getElementById('estadoPagado');
+  const estadoNoPagado = document.getElementById('estadoNoPagado');
   const btnGuardarEstado = document.getElementById('btnGuardarEstado');
 
   unsubscribe = onValue(sensorRef, snapshot => {
     const datos = snapshot.val();
 
-    // Si no hay datos o están vacíos -> mostrar solo el mensaje
     if (!datos || Object.keys(datos).length === 0) {
-      contenedor.style.display = 'none';
-      contenedorCerradura.style.display = 'none';
-      contenedorMensaje.style.display = 'flex';
+      // No hay sensores: mostrar mensaje
+      contenedor.classList.add('d-none');
+      contenedorCerradura.classList.add('d-none');
+      contenedorControles.classList.add('d-none');
+      contenedorModo.classList.add('d-none');
+      contenedorMensaje.classList.remove('d-none');
 
-      // 💥 Destruir gráficas y ocultar sus contenedores
       Object.keys(chartInstances).forEach(key => {
         if (chartInstances[key]) {
           chartInstances[key].destroy();
           chartInstances[key] = null;
         }
 
-        // Ocultar visualmente cada .grafica-item individual
         const canvas = document.getElementById(`grafica${key.charAt(0).toUpperCase() + key.slice(1)}`);
         const graficaItem = canvas?.closest('.grafica-item');
         if (graficaItem) {
-          graficaItem.style.display = 'none';
+          graficaItem.classList.add('d-none');
         }
       });
 
       return;
     }
 
-    // Si hay datos -> mostrar gráficas y estado de cerradura
-    contenedor.style.display = 'flex';
-    contenedorCerradura.style.display = 'block';
-    contenedorMensaje.style.display = 'none';
+    // Hay sensores: mostrar gráficas y estado
+    contenedor.classList.remove('d-none');
+    contenedorCerradura.classList.remove('d-none')
+    contenedorControles.classList.remove('d-none');;
+    contenedorModo.classList.remove('d-none');
+    contenedorMensaje.classList.add('d-none');
 
-    // 🧼 Asegurar que se muestren todas las gráficas (por si estaban ocultas)
     document.querySelectorAll('.grafica-item').forEach(item => {
-      item.style.display = 'flex';
+      item.classList.remove('d-none');
     });
 
-    // Actualiza gráficas con los datos del sensor
     actualizarGrafica('graficaTemperatura', 'Temperatura', datos.temperatura || 0, 'temperatura');
     actualizarGrafica('graficaHumedad', 'Humedad', datos.humedad || 0, 'humedad');
     actualizarGrafica('graficaHumo', 'Humo', datos.humo || 0, 'humo');
     actualizarGrafica('graficaAgua', 'Agua (L)', datos.agua || 0, 'agua');
   });
 
-
-
-  // === Suscripción a estado de cerradura ===
+  // === Estado de cerradura ===
   onValue(cerraduraRef, snapshot => {
     const estado = snapshot.val();
     if (!estado) return;
 
-    // Cambia ícono y texto visual del estado
     if (iconoCerradura && textoCerradura) {
       if (estado === 'encendido') {
         iconoCerradura.textContent = '🔓';
@@ -179,12 +178,11 @@ export function cargarGraficasSensor(departamentoId) {
       }
     }
 
-    // Cambia el botón seleccionado (radio)
     if (estadoPagado) estadoPagado.checked = estado === 'encendido';
     if (estadoNoPagado) estadoNoPagado.checked = estado === 'apagado';
   });
 
-  // === Permite editar estado de cerradura manualmente ===
+  // === Guardar manualmente el estado ===
   if (btnGuardarEstado) {
     btnGuardarEstado.onclick = () => {
       const nuevoEstado = document.querySelector('input[name="estadoCerradura"]:checked')?.value;
