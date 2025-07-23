@@ -322,38 +322,54 @@
                 <div class="grafica-label">Agua</div>
               </div>
             </div>
+
             <!-- CONTENEDOR PRINCIPAL DE CONTROLES -->
             <div id="contenedorControlesUsuario"
               class="rounded-4 border border-secondary p-3 d-flex flex-column flex-md-row gap-3 justify-content-center mb-3"
               style="background-color: #1f1f22;">
-
               <!-- MODO AUTOMÁTICO -->
               <div id="contenedorModoAutomatico"
                 class="d-flex align-items-center border border-secondary rounded-4 px-3 py-2 flex-fill position-relative"
                 style="background-color: #2a2d31; min-width: 260px;">
+
+                <!-- Estado e icono -->
                 <div class="d-flex align-items-center gap-2 me-2">
-                  <div style="font-size: 1.5rem; color: #b18aff;">🛠️</div>
-                  <div class="fw-bold text-white">Modo automático</div>
+                  <span id="estado-circulo" style="background-color: #22c55e;"></span>
+                  <div id="iconoModo" style="font-size: 1.5rem; color: #b18aff;">🛠️</div>
+                  <div id="textoModo" class="fw-bold text-white">Modo automático</div>
                 </div>
-                <button id="btn-modo-toggle" class="btn btn-sm btn-outline-light ms-auto"
-                  title="Editar modo">✏️</button>
 
-                <!-- MENÚ DE MODO MANUAL/AUTOMÁTICO -->
-                <div id="menu-modo-toggle"
-                  class="dropdown-menu dropdown-menu-dark p-3 mt-2 hidden position-absolute end-0"
-                  style="min-width: 240px; top: 100%;">
-                  <div class="fw-bold mb-2">Seleccionar modo:</div>
-                  <div id="opcion-indefinido" class="mb-2 btn btn-outline-light w-100">Manual indefinido</div>
-                  <div id="opcion-personalizado" class="mb-2 btn btn-outline-light w-100">Manual por tiempo</div>
+                <!-- Botón de edición SIN data-bs-toggle -->
+                <div class="dropdown ms-auto">
+                  <button id="btn-modo-toggle" class="btn btn-sm btn-outline-light dropdown-toggle" type="button">
+                    ✏️
+                  </button>
 
-                  <div id="modo-hora-box" class="mb-2 hidden">
-                    <label for="modo-hora-input" class="form-label text-white">Hora de expiración:</label>
-                    <input id="modo-hora-input" type="time" class="form-control">
+                  <!-- MENÚ DE CAMBIO DE MODO -->
+                  <div id="menu-modo-toggle" class="custom-menu p-3 mt-2 hidden position-absolute end-0"
+                    style="min-width: 240px; top: 100%; background-color: #343a40; z-index: 999;">
+
+                    <div class="fw-bold mb-2 text-white">Selecciona el modo de control:</div>
+
+                    <!-- Opciones de modo manual -->
+                    <div id="opcion-indefinido" class="mb-2 modo-opcion">Manual indefinido</div>
+                    <div id="opcion-personalizado" class="mb-2 modo-opcion">Manual hasta una hora</div>
+
+                    <!-- Opción de volver a automático (solo visible si ya estás en manual) -->
+                    <div id="opcion-automatico" class="mb-2 modo-opcion hidden">Automático</div>
+
+                    <!-- Input de hora visible solo en modo personalizado -->
+                    <div id="modo-hora-box" class="mb-2 hidden">
+                      <label for="modo-hora-input" class="form-label text-white">Hora de expiración:</label>
+                      <input id="modo-hora-input" type="time" class="form-control">
+                    </div>
+
+                    <!-- Botón guardar -->
+                    <button id="btn-guardar-modo" class="btn w-100 btn-guardar-automatico">Guardar cambios</button>
                   </div>
-
-                  <button id="btn-guardar-modo" class="btn btn-success w-100">Guardar cambios</button>
                 </div>
               </div>
+
 
               <!-- CERRADURA -->
               <div id="contenedorSwitchCerradura"
@@ -393,7 +409,6 @@
               </div>
             </div>
 
-
             <!-- MENSAJE DE SIN SENSOR -->
             <div id="contenedorMensajeSinSensor" class="alert alert-warning d-none text-center fw-bold" role="alert">
               ⚠️ No hay sensores registrados para este departamento.
@@ -431,8 +446,6 @@
       </div>
     </div>
     <!-- === FIN MODAL DETALLES === -->
-
-
 
 </body>
 

@@ -3,6 +3,7 @@ import { db } from '../app/firebase.js'; // Conexión a Firestore
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js"; // Obtener documento por ID
 import { cargarGraficasSensor, detenerActualizacion } from './graficasSensor.js'; // Gráficas del sensor y su control
 import { mostrarEstadoPago } from './estadoPago.js'; // Mostrar estado de pago del inquilino
+import {initModoControl} from './modoControl.js'; // Modo de control
 
 // === Función principal: muestra la información completa de un inquilino en el modal ===
 export async function mostrarDetallesInquilino(idInquilino) {
@@ -42,7 +43,9 @@ export async function mostrarDetallesInquilino(idInquilino) {
       if (departamentoId) {
         cargarGraficasSensor(departamentoId); // Llama función de `graficasSensor.js`
         mostrarEstadoPago(idInquilino);
+        initModoControl(idInquilino); // Inicializa el modo de control
       }
+      
 
     } else {
       console.log("No se encontró el documento con ID:", idInquilino);

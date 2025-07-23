@@ -201,7 +201,88 @@ body {
   margin-top: 1rem;
 }
 
-/* ===== 10. MEDIA QUERIES ===== */
+/* ===== 10. MODO DE CONTROL: AUTOMÁTICO / MANUAL ===== */
+
+/* Círculo de color junto al icono 🛠️ */
+#estado-circulo {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Menú desplegable del modo de control */
+#menu-modo-toggle {
+  z-index: 1055; /* Mayor que las tarjetas y otros elementos */
+}
+
+/* Asegúrate que el contenedor padre tenga posición relativa */
+#contenedorModoAutomatico {
+  position: relative; /* ya lo tiene, pero asegúrate que no se sobreescriba */
+  z-index: 1; /* Puede ser opcional, si el dropdown aún queda debajo */
+}
+
+
+/* Botones de opción de modo */
+.modo-opcion {
+  background-color: #343a40;
+  color: white;
+  border: 2px solid transparent;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.3s ease;
+}
+
+.modo-opcion:hover {
+  background-color: #343a40;
+}
+
+/* Bordes cuando está activo */
+.modo-indefinido-activo {
+  border-color: #dc2626 !important;
+}
+
+.modo-personalizado-activo {
+  border-color: #facc15 !important;
+}
+
+.modo-automatico-activo {
+  border-color: #22c55e !important;
+}
+
+/* Botones de guardar personalizados */
+.btn-guardar-indefinido {
+  background-color: #dc2626 !important;
+  border: none !important;
+  color: white !important;
+}
+
+.btn-guardar-personalizado {
+  background-color: #facc15 !important;
+  border: none !important;
+  color: black !important;
+}
+
+.btn-guardar-automatico {
+  background-color: #198754 !important; /* mismo verde de Bootstrap */
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-guardar-automatico:hover {
+  background-color: #157347 !important;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* ===== 11. MEDIA QUERIES ===== */
 @media (max-width: 992px) {
   .tarjetas-grid {
     grid-template-columns: repeat(2, 1fr);
