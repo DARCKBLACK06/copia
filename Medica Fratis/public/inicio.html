@@ -375,16 +375,34 @@
               <div id="contenedorSwitchCerradura"
                 class="d-flex align-items-center border border-secondary rounded-4 px-3 py-2 flex-fill position-relative"
                 style="background-color: #2a2d31; min-width: 260px;">
+
+                <!-- Ícono y texto del estado de la cerradura -->
                 <div class="d-flex align-items-center gap-2 me-2">
-                  <div id="iconoCerradura" style="font-size: 1.5rem; color: #ffc107;">🔒</div>
-                  <div id="textoCerradura" class="fw-bold text-white">Acceso denegado</div>
+                  <!-- Tooltip sobre el estado actual de la cerradura -->
+                  <div id="iconoCerradura" style="font-size: 1.5rem; color: #ffc107;" data-bs-toggle="tooltip"
+                    data-bs-placement="top" title="Estado de la cerradura">
+                    🔒
+                  </div>
+                  <div id="textoCerradura" class="fw-bold text-white">
+                    Acceso denegado
+                  </div>
                 </div>
 
+                <!-- Dropdown de edición de estado -->
                 <div class="dropdown ms-auto">
-                  <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                  <!-- 
+      Botón de engrane:
+      - data-bs-toggle="dropdown" para desplegar el menú
+      - data-bs-toggle="tooltip" para el tooltip "Editar estado"
+      - se habilita o bloquea dinámicamente con JS (disabled + quitar/poner data-bs-toggle)
+    -->
+                  <button id="btnDropdownCerradura" class="btn btn-sm btn-outline-light dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown" data-bs-boundary="viewport" aria-expanded="false" data-bs-toggle="tooltip"
+                    data-bs-placement="top" title="Editar estado">
                     ⚙️
                   </button>
+
+                  <!-- Menú de opciones: Encendido/Apagado -->
                   <ul class="dropdown-menu dropdown-menu-dark p-3" style="min-width: 200px;">
                     <li class="mb-2 fw-bold">Editar Estado</li>
                     <li>
@@ -407,6 +425,8 @@
                   </ul>
                 </div>
               </div>
+
+
             </div>
 
             <!-- MENSAJE DE SIN SENSOR -->
