@@ -1,5 +1,5 @@
 // === Importa función para registrar un nuevo inquilino ===
-import { registrarInquilino } from './registrarinquilino.js';
+import { registrarInquilino } from './registrarInquilino.js';
 
 // === Importa función para cargar lista de departamentos disponibles ===
 import { cargarDeptos } from './cargarDeptos.js';

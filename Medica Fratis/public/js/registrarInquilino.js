@@ -82,3 +82,4 @@ export async function registrarInquilino(formData) {
     return { success: false, message: 'Error en el registro' };
   }
 }
+console.log('Registrar inquilino script cargado correctamente.');
