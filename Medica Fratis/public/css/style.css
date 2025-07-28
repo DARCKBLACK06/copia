@@ -338,3 +338,47 @@ body {
     min-width: 0;
   }
 }
+
+.alert-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  border-left: 5px solid #dd0808; /* se sobrescribe con JS */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 12px 16px;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #555;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.alert-box .icon {
+  color: #888;
+  margin-right: 8px;
+}
+
+.alert-box .text {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;         /* ✅ permite saltar de línea si hace falta */
+  gap: 4px;                /* ✅ espacio entre elementos */
+  line-height: 1.4;
+  word-break: break-word;  /* ✅ evita que palabras largas revienten la línea */
+}
+
+
+.alert-box .close-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #aaa;
+  margin-left: 12px;
+}
+
+.alert-box .close-btn:hover {
+  color: #555;
+}

@@ -17,7 +17,7 @@ export async function mostrarEstadoPago(inquilinoId) {
       return;
     }
 
-    const estado = docSnap.data().estadoPago?.toLowerCase(); // ✅ Traemos directamente el campo
+    const estado = docSnap.data().statusControl?.estadoPago?.toLowerCase(); // ✅ Traemos directamente el campo
 
     switch (estado) {
       case 'pagado':

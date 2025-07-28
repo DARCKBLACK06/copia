@@ -99,8 +99,13 @@ function actualizarGrafica(idCanvas, label, valor, tipo) {
 
 // === Función principal: carga y muestra gráficas del sensor en tiempo real ===
 export function cargarGraficasSensor(departamentoId) {
-  const rutaSensor = `departamentos/depto${departamentoId}/sensores/datos_completos`;
-  const rutaEstadoCerradura = `departamentos/depto${departamentoId}/sensores/datos_completos/cerradura`;
+  const rutaSensor = `departamentos/depto${departamentoId}/sensores/telemetria_actual`;
+  const rutaEstadoCerradura = `departamentos/depto${departamentoId}/sensores/telemetria_actual/cerradura`;
+  // Referencias a la base de datos
+  console.log(`🔗 Conectando a Firebase Realtime Database en ruta: ${rutaSensor}`);
+
+  
+
 
   const sensorRef = ref(dbRealtime, rutaSensor);
   const cerraduraRef = ref(dbRealtime, rutaEstadoCerradura);

@@ -228,7 +228,7 @@ export async function initModoControl(idInquilino) {
     const datos = snap.data() || {};
     const depto = datos.contrato?.departamento || datos.departamentoId;
     if (depto) {
-      const path = `/departamentos/depto${depto}/sensores/datos_completos/cerradura`;
+      const path = `/departamentos/depto${depto}/sensores/telemetria_actual/cerradura`;
       await set(ref(dbRealtime, path), nuevoEstado);
     }
 

@@ -1,58 +1,77 @@
-// === Importación de conexión a Firestore y utilidades ===
 import { db } from '../app/firebase.js';
-import { collection, getDocs, query, where, Timestamp } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js';
 
-// === Función principal para cargar las notificaciones de pagos próximos ===
-export async function cargarNotificaciones() {
-  // Obtiene el contenedor donde se mostrarán las notificaciones
-  const container = document.getElementById('notifications-content');
+function calcularDiasRestantes(fechaStr) {
+  const hoy = new Date().toISOString().split('T')[0];       // "2025-07-28"
+  const pago = new Date(fechaStr).toISOString().split('T')[0];
 
-  // Si no existe el contenedor, muestra un error y sale
-  if (!container) {
-    console.error('❌ No se encontró el contenedor de notificaciones.');
-    return;
+  const hoyDate = new Date(hoy);
+  const pagoDate = new Date(pago);
+
+  const diff = (pagoDate - hoyDate) / (1000 * 60 * 60 * 24);
+  return Math.round(diff);
+}
+
+
+function crearAlertaVisual(depto, diasRestantes, nombre, estadoPago) {
+  let color, mensaje;
+
+  if (diasRestantes >= 4 && diasRestantes <= 7) {
+    color = '#ffa500'; // naranja
+    mensaje = `El pago vence en <strong>${diasRestantes} días</strong>`;
+  } else if (diasRestantes >= 1 && diasRestantes <= 3) {
+    color = '#dd0808'; // rojo
+    mensaje = `El pago vence en <strong>${diasRestantes} días</strong>`;
+  } else if (diasRestantes === 0) {
+    color = '#000000'; // negro
+    mensaje = `<strong>Hoy</strong> es la fecha límite de pago`;
+  } else {
+    color = '#000000'; // negro también
+    mensaje = `<strong>Pago vencido</strong>`;
   }
 
-  try {
-    // === Definición del rango de fechas ===
-    const hoy = new Date();           // Fecha actual
-    const limite = new Date();        // Fecha límite para considerar pagos
-    limite.setDate(hoy.getDate() + 5); // Pagos dentro de los próximos 5 días
+  const alerta = document.createElement('div');
+  alerta.className = 'alert-box';
+  alerta.style.borderLeft = `5px solid ${color}`;
+  alerta.innerHTML = `
+    <div class="text">
+      <span class="material-icons icon">notifications</span>
+      <strong>${depto}:</strong>&nbsp;
+      <span>${mensaje}</span><br>
+      <span>Usuario <strong>${nombre}</strong></span>
+    </div>
+  `;
 
-    // === Consulta a la colección "pagos" en Firestore ===
-    const pagosRef = collection(db, 'pagos'); // Referencia a la colección
-    const q = query(
-      pagosRef,
-      where('fecha', '>=', Timestamp.fromDate(hoy)),     // Solo pagos desde hoy
-      where('fecha', '<=', Timestamp.fromDate(limite))   // Hasta 5 días adelante
-    );
+  const contenedor = document.getElementById('notifications-content');
+  if (contenedor) contenedor.appendChild(alerta);
+}
 
-    const querySnapshot = await getDocs(q); // Ejecuta la consulta
-    container.innerHTML = '';               // Limpia notificaciones anteriores
+export async function mostrarNotificacionesPago() {
+  const contenedor = document.getElementById('notifications-content');
+  if (!contenedor) return;
 
-    // === Si no hay pagos próximos ===
-    if (querySnapshot.empty) {
-      container.innerHTML = `<p class="text-muted">No hay pagos próximos.</p>`;
-    } else {
-      // === Recorre los documentos encontrados ===
-      querySnapshot.forEach((doc) => {
-        const pago = doc.data();
-        const fechaPago = pago.fecha.toDate().toLocaleDateString(); // Formato legible
+  contenedor.innerHTML = ''; // Limpiar alertas anteriores
 
-        // HTML para cada notificación
-        const notiHTML = `
-          <div class="alert alert-warning d-flex align-items-center" role="alert">
-            <i class="bi bi-exclamation-circle-fill me-2"></i>
-            🔔 Se aproxima el pago de <strong>${pago.inquilino}</strong> por <strong>$${pago.monto}</strong> el <strong>${fechaPago}</strong>
-          </div>
-        `;
+  const snapshot = await getDocs(collection(db, 'inquilinos'));
 
-        container.insertAdjacentHTML('beforeend', notiHTML); // Inserta notificación en el contenedor
-      });
-    }
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const depto = data.contrato?.departamento || doc.id;
+    const estadoPago = data.statusControl?.estadoPago?.toLowerCase() || '';
+    const fechaPago = data.contrato?.fechaPago;
 
-    console.log('✅ Notificaciones cargadas correctamente desde Firestore.');
-  } catch (error) {
-    console.error('❌ Error al cargar notificaciones:', error);
-  }
+    if (!fechaPago) return;
+
+    const fechaObj = fechaPago.toDate ? fechaPago.toDate() : new Date(fechaPago);
+    const diasRestantes = calcularDiasRestantes(fechaObj);
+
+    if (estadoPago === 'pagado') return;
+    if (diasRestantes > 7) return;
+
+    const nombre = (data.infoPersonal?.nombre || 'Sin nombre')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    crearAlertaVisual(depto, diasRestantes, nombre, estadoPago);
+  });
 }

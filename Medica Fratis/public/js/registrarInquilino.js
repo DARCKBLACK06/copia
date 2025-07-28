@@ -1,85 +1,102 @@
-// === Importación de configuración de Firebase ===
 import { db } from '../app/firebase.js';
+import {
+  collection,
+  doc,
+  setDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
-// === Importación de funciones necesarias de Firestore ===
-import { collection, doc, getDocs, setDoc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+// === Función para calcular días entre fechas ===
+function calcularDias(fechaInicioStr, fechaFinStr) {
+  const inicio = new Date(fechaInicioStr);
+  const fin = new Date(fechaFinStr);
+  if (isNaN(inicio) || isNaN(fin)) return 0;
 
-// === Referencias a colecciones de Firestore ===
-const inquilinosCol = collection(db, 'inquilinos');         // Colección donde se guardan los inquilinos
-const departamentosCol = collection(db, 'departamentos');   // Colección de departamentos
-
-// === Función utilitaria: Calcula los días entre dos fechas ===
-function calcularDias(fechaInicio, fechaFin) {
-  const inicio = new Date(fechaInicio);
-  const fin = new Date(fechaFin);
-  const diffTime = fin - inicio;
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Diferencia en días
-  return diffDays > 0 ? diffDays : 0; // Si es negativa, retorna 0
+  const diff = fin - inicio;
+  return diff >= 0
+    ? Math.floor(diff / (1000 * 60 * 60 * 24)) + 1
+    : 0;
 }
 
-// === Función principal: Registra un nuevo inquilino y actualiza su departamento ===
+// === Función principal ===
 export async function registrarInquilino(formData) {
   try {
-    // === Obtener el número actual de inquilinos para generar un ID único ===
-    const snapshot = await getDocs(inquilinosCol);
-    const count = snapshot.size + 1; // Ejemplo: si hay 5, será "inquilinodpto6"
-    const idInquilino = `inquilinodpto${count}`;
+    const departamento = formData.get('departamento')?.trim();
+    const idInquilino = `inquilino${departamento}`;
 
-    // === Construir objeto con todos los datos del formulario ===
-    const datosInquilino = {
-      nombre: formData.get('nombre'),
-      curp: formData.get('curp'),
-      telefono: formData.get('telefono'),
-      correo: formData.get('correo'),
+    const fechaInicio = formData.get('fechaInicio');
+    const fechaFin = formData.get('fechaFin');
+    const tiempoEstadia = calcularDias(fechaInicio, fechaFin);
 
-      domicilio: {
-        calle: formData.get('calle'),
-        numero: formData.get('numero'),
-        colonia: formData.get('colonia'),
-        municipio: formData.get('municipio'),
-        estado: formData.get('estado'),
-        cp: formData.get('cp'),
-      },
+    if (tiempoEstadia <= 0) {
+      return { success: false, message: '⚠️ La fecha final debe ser posterior a la inicial.' };
+    }
 
-      contactoEmergencia: {
-        nombre: formData.get('nombreEmergencia'),
-        parentesco: formData.get('parentesco'),
-        telefono: formData.get('telefonoEmergencia'),
+    const fechaPago = formData.get('fechaPago');
+    if (!fechaPago) {
+      return { success: false, message: '⚠️ Debes seleccionar una fecha de pago.' };
+    }
+
+    const datos = {
+      infoPersonal: {
+        nombre: formData.get('nombre')?.trim(),
+        curp: formData.get('curp')?.trim(),
+        telefono: formData.get('telefono')?.trim(),
+        correo: formData.get('correo')?.trim(),
+        domicilio: {
+          calle: formData.get('calle')?.trim(),
+          numero: formData.get('numero')?.trim(),
+          colonia: formData.get('colonia')?.trim(),
+          municipio: formData.get('municipio')?.trim(),
+          estado: formData.get('estado')?.trim(),
+          cp: formData.get('cp')?.trim()
+        },
+        contactoEmergencia: {
+          nombre: formData.get('nombreEmergencia')?.trim(),
+          parentesco: formData.get('parentesco')?.trim(),
+          telefono: formData.get('telefonoEmergencia')?.trim()
+        },
+        identificacion: {
+          tipo: formData.get('tipoIdentificacion')?.trim(),
+          numero: formData.get('numeroIdentificacion')?.trim()
+        }
       },
 
       contrato: {
-        departamento: formData.get('departamento'),
-        fechaInicio: formData.get('fechaInicio'),
-        fechaFin: formData.get('fechaFin'),
-        tiempoEstadia: calcularDias(
-          formData.get('fechaInicio'),
-          formData.get('fechaFin')
-        ),
+        departamento,
+        fechaInicio,
+        fechaFin,
+        tiempoEstadia,
         cantidadPago: parseInt(formData.get('cantidadPago'), 10),
+        fechaPago
       },
 
-      identificacion: {
-        tipo: formData.get('tipoIdentificacion'),
-        numero: formData.get('numeroIdentificacion'),
-      },
-
-      creadoEn: new Date().toISOString(), // Marca de tiempo ISO
+      statusControl: {
+        estadoPago: "pagado",
+        modoControl: "automatico",
+        manualExpira: null,
+        creadoEn: new Date().toISOString(),
+        sensores: {
+          aguaMax: { valor: 0, fecha: null },
+          temperaturaMax: { valor: 0, fecha: null },
+          humedadMax: { valor: 0, fecha: null },
+          humoMax: { valor: 0, fecha: null }
+        }
+      }
     };
 
-    // === Guardar el nuevo inquilino en Firestore ===
-    await setDoc(doc(db, 'inquilinos', idInquilino), datosInquilino);
+    await setDoc(doc(db, 'inquilinos', idInquilino), datos);
+    await updateDoc(doc(db, 'departamentos', departamento), {
+      disponible: false
+    });
 
-    // === Marcar el departamento como NO disponible ===
-    const departamentoRef = doc(db, 'departamentos', datosInquilino.contrato.departamento);
-    await updateDoc(departamentoRef, { disponible: false });
-
-    console.log('Inquilino registrado y departamento actualizado sin problemas.');
-    return { success: true, message: 'Registro exitoso' };
+    console.log(`✅ Inquilino ${idInquilino} registrado correctamente.`);
+    return { success: true, message: '✅ Registro exitoso.' };
 
   } catch (error) {
-    // Manejo de errores en consola
-    console.error('Error registrando inquilino:', error);
-    return { success: false, message: 'Error en el registro' };
+    console.error('❌ Error registrando inquilino:', error);
+    return { success: false, message: '❌ Ocurrió un error al registrar.' };
   }
 }
-console.log('Registrar inquilino script cargado correctamente.');
+
+console.log('✅ registrarInquilino.js cargado correctamente.');

@@ -1,7 +1,6 @@
-export function generarCodigoArduino(numeroDepartamento, ssid, password) {
-  return `
+
 // ============================================
-// Código para Departamento ${numeroDepartamento}
+// Código para Departamento dpto2
 // Sensores: DHT22, MQ-2, YF-S201 (flujo de agua)
 // Control de cerradura y LED de estado
 // Librería: Firebase ESP Client by Mobizt
@@ -13,8 +12,8 @@ export function generarCodigoArduino(numeroDepartamento, ssid, password) {
 #include "DHT.h"
 
 // =================== CONFIGURACIÓN ===================
-#define WIFI_SSID "${ssid}"
-#define WIFI_PASSWORD "${password}"
+#define WIFI_SSID "Totalplay-75AD"
+#define WIFI_PASSWORD "75ADFD68Mv2BxNkx"
 #define FIREBASE_HOST "mi-proyecto-iot-b161b-default-rtdb.firebaseio.com"
 #define FIREBASE_SECRET "qnb6YxukBZMFfJKgrUS5KxVwmIkQeQUPYsfbLsTR"
 
@@ -44,7 +43,7 @@ FirebaseData fbdo;
 FirebaseAuth auth;
 FirebaseConfig config;
 
-String basePath = "/departamentos/depto${numeroDepartamento}/sensores";
+String basePath = "/departamentos/deptodpto2/sensores";
 
 // =================== INTERRUPCIÓN ===================
 void IRAM_ATTR pulseCounter() {
@@ -169,6 +168,4 @@ void loop() {
       Serial.println("⚠️ No hay conexión WiFi o Firebase no está listo.");
     }
   }
-}
-`;
 }

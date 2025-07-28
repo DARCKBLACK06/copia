@@ -17,7 +17,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
   <!-- Íconos Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-  <!-- Notificaciones tipo Toast -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Proximos Pagos tipo Toast -->
 
   <!-- Scripts JS para funcionalidades -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
@@ -117,11 +118,14 @@
         </div>
         <!-- === FIN TARJETA: DATOS DE USUARIO === -->
 
-        <!-- === TARJETA: NOTIFICACIONES === -->
-        <div id="notifications" class="tarjeta-box">
-          <h5 class="fw-bold mb-3">Notificaciones</h5>
-          <div id="notifications-content"></div> <!-- Se llena dinámicamente con mensajes del sistema -->
+        <!-- === TARJETA: Próximos Pagos === -->
+        <div id="notificaciones-pagos" class="tarjeta-box">
+          <h5 class="fw-bold mb-3">Próximos Pagos</h5>
+          <div id="notifications-content">
+            <!-- Aquí se llenan dinámicamente las alertas -->
+          </div>
         </div>
+
 
         <!-- === TARJETA: DEPARTAMENTOS === -->
         <div id="departamentos" class="tarjeta-box">
@@ -135,13 +139,14 @@
           </div>
         </div>
 
+
         <!-- === TARJETA: REPORTES === -->
         <div id="reportes" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Reportes</h5>
           <!-- Aquí se pueden agregar gráficas, exportaciones o indicadores -->
         </div>
-
       </div> <!-- Fin de tarjetas -->
+
     </div>
 
 
@@ -444,7 +449,7 @@
               <div><strong>Calle:</strong> <span id="modalCalle"></span></div>
               <div><strong>Colonia:</strong> <span id="modalColonia"></span></div>
 
-              <div><strong>Departamento:</strong> <span id="modalDepartamento"></span></div>
+              <div><strong>Departamento:</strong> <span id="modalContratoDepartamento"></span></div>
               <div><strong>Fecha Inicio:</strong> <span id="modalFechaInicio"></span></div>
               <div><strong>Fecha Fin:</strong> <span id="modalFechaFin"></span></div>
 

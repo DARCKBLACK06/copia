@@ -1,78 +1,80 @@
-// === Importa función para registrar un nuevo inquilino ===
+import { cargarDeptos } from './cargarDeptos.js';
 import { registrarInquilino } from './registrarInquilino.js';
 
-// === Importa función para cargar lista de departamentos disponibles ===
-import { cargarDeptos } from './cargarDeptos.js';
-
-// === Función principal que inicializa el formulario de inquilino ===
 export async function inicializarFormulario() {
-  await cargarDeptos(); // Llena el select de departamentos disponibles al iniciar
+  await cargarDeptos();
 
   const form = document.getElementById('formulario-inquilino');
   if (!form) {
-    console.error('No se encontró el formulario con id "formulario-inquilino"');
+    console.error('❌ No se encontró el formulario');
     return;
   }
 
-  // === Calcula los días entre fechaInicio y fechaFin, y actualiza campo visible ===
+  const fechaInicioInput = form.querySelector('input[name="fechaInicio"]');
+  const fechaFinInput = form.querySelector('input[name="fechaFin"]');
+  const tiempoEstadiaInput = document.getElementById('tiempoEstadia');
+
+  // === Función para calcular y mostrar los días de estadía ===
   function calcularDiasEstadia() {
-    const inicio = form.querySelector('input[name="fechaInicio"]').value;
-    const fin = form.querySelector('input[name="fechaFin"]').value;
-    const tiempoEstadiaInput = form.querySelector('#tiempoEstadia');
+    const inicio = new Date(fechaInicioInput.value);
+    const fin = new Date(fechaFinInput.value);
 
-    if (inicio && fin) {
-      const fechaInicio = new Date(inicio);
-      const fechaFin = new Date(fin);
-      const diffTime = fechaFin - fechaInicio;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (fechaInicioInput.value && fechaFinInput.value && !isNaN(inicio) && !isNaN(fin)) {
+      const diffMs = fin - inicio;
+      const dias = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
 
-      if (diffDays >= 0) {
-        tiempoEstadiaInput.value = diffDays + (diffDays === 1 ? ' día' : ' días');
+      if (dias > 0) {
+        tiempoEstadiaInput.value = `${dias} días`;
       } else {
         tiempoEstadiaInput.value = '';
+        Toastify({
+          text: '⚠️ La fecha final debe ser posterior a la inicial.',
+          duration: 3000,
+          style: { background: "orange" }
+        }).showToast();
       }
     } else {
       tiempoEstadiaInput.value = '';
     }
   }
 
-  // === Listeners para recalcular días automáticamente cuando cambien las fechas ===
-  form.querySelector('input[name="fechaInicio"]').addEventListener('change', calcularDiasEstadia);
-  form.querySelector('input[name="fechaFin"]').addEventListener('change', calcularDiasEstadia);
+  // === Listeners para actualizar el campo de días ===
+  fechaInicioInput.addEventListener('change', calcularDiasEstadia);
+  fechaFinInput.addEventListener('change', calcularDiasEstadia);
 
   // === Envío del formulario ===
   form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita que se recargue la página
-    const formData = new FormData(form); // Captura todos los datos del formulario
+    e.preventDefault();
 
-    const resultado = await registrarInquilino(formData); // Llama a función de registro
+    const formData = new FormData(form);
 
-    if(resultado.success){
-      // Notificación verde de éxito
+    // ✅ Validación de fecha de pago
+    const fechaPago = formData.get('fechaPago');
+    if (!fechaPago) {
       Toastify({
-        text: resultado.message,
+        text: '⚠️ Debes seleccionar una fecha de pago.',
         duration: 3000,
-        gravity: "top",
-        position: "right",
-        style: { background: "green" }
+        style: { background: "orange" }
       }).showToast();
+      return;
+    }
 
-      // Limpiar formulario tras registro exitoso
+    const resultado = await registrarInquilino(formData);
+
+    Toastify({
+      text: resultado.message,
+      duration: 3000,
+      gravity: "top",
+      position: "right",
+      style: { background: resultado.success ? "green" : "red" }
+    }).showToast();
+
+    if (resultado.success) {
       form.reset();
-      form.querySelector('#tiempoEstadia').value = '';
-
-    } else {
-      // Notificación roja de error
-      Toastify({
-        text: resultado.message,
-        duration: 3000,
-        gravity: "top",
-        position: "right",
-        style: { background: "red" }
-      }).showToast();
+      tiempoEstadiaInput.value = '';
+      await cargarDeptos();
     }
   });
 }
 
-// === Mensaje de verificación en consola ===
-console.log('Inicializando formulario...');
+console.log('📄 formularioinit.js cargado');

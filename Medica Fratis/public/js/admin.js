@@ -8,9 +8,10 @@ import { showMessage } from '../app/showMessage.js'; // Mostrar mensajes de erro
 // === FUNCIONALIDADES PRINCIPALES DEL DASHBOARD ===
 import { inicializarRegistroDepartamento } from './registrarDepartamento.js'; // Modal de registrar deptos
 import { mostrarUsuariosBasicos } from './usuariosCard.js';                   // Visualización básica de inquilinos
-import { cargarNotificaciones } from './notifications.js';                   // Alertas de pagos próximos
+import { mostrarNotificacionesPago } from './notifications.js';                   // Alertas de pagos próximos
 import { listarDepartamentosSinSensor } from './modalRegistroSensor.js';    // Para modal de sensores
-import { limpiarModal } from './modalDetalles.js';                           // Limpieza del modal detalles
+import { limpiarModal } from './modalDetalles.js';
+// Limpieza del modal detalles
 
 // === PRIMER BLOQUE DOMContentLoaded ===
 document.addEventListener('DOMContentLoaded', () => {
@@ -21,17 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
   modalElement.addEventListener('hidden.bs.modal', () => {
     limpiarModal();
   });
-
-  console.log("¡Bienvenido al panel de administración!");
 });
 
 // === SEGUNDO BLOQUE DOMContentLoaded (duplicado, pero funcionalmente separado) ===
 document.addEventListener('DOMContentLoaded', () => {
   // Inicializaciones generales
   listarDepartamentosSinSensor();     // Llena dropdown del modal de sensor
-  cargarNotificaciones();             // Carga alertas de pagos próximos
+  mostrarNotificacionesPago();             // Carga alertas de pagos próximos
   inicializarRegistroDepartamento();  // Genera botones de dptos disponibles
   mostrarUsuariosBasicos();           // Refresca info de tarjetas
+  setInterval(mostrarNotificacionesPago, 5 * 60 * 1000); // Repite cada 5 min
 
   // Evento para abrir modal de sensor desde algún botón (por si se habilita en el futuro)
   const btnModalSensor = document.getElementById('btnAbrirModalRegistroSensor');
