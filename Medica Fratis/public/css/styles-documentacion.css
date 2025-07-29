@@ -1,0 +1,84 @@
+/* Estilo base del sitio */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #d8d8d8;
+  color: #1c1c1c;
+}
+
+/* Contenido centrado */
+.contenido {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+/* Encabezados */
+h1 {
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Secciones como tarjetas */
+section {
+  background-color: #ffffff;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+/* Listas */
+ul {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+/* Código tipo etiqueta */
+code {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 0.2rem 0.5rem;
+  font-family: monospace;
+  font-size: 0.9rem;
+  border-radius: 4px;
+}
+
+/* Tabla profesional */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+th, td {
+  border: 1px solid #c2c2c2;
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+th {
+  background-color: #c9d6e0;
+  color: #111;
+  font-weight: bold;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #bfbfbf;
+  font-size: 0.9rem;
+  border-top: 1px solid #999;
+  margin-top: 2rem;
+}
