@@ -111,10 +111,10 @@ export async function initModoControl(idInquilino) {
   const mostrarOpcionesDesdeFirestore = async () => {
     const snap = await getDoc(docRef);
     const datos = snap.data() || {};
-    const modoFirestore = datos.modoControl || 'automatico';
+    const modoFirestore = datos.statusControl?.modoControl || 'automatico';
 
     mostrarOpciones(modoFirestore);
-    actualizarEstadoDelModoUI(modoFirestore, datos.manualExpira);
+    actualizarEstadoDelModoUI(modoFirestore, datos.statusControl?.manualExpira);
     // Solo habilita la cerradura en modo manual
     setCerraduraEnabled(modoFirestore === 'manual');
   };
@@ -171,8 +171,8 @@ export async function initModoControl(idInquilino) {
   btnGuardarModo.onclick = async () => {
     const updates = {};
     if (modoSeleccionado === 'manual-indefinido') {
-      updates.modoControl = 'manual';
-      updates.manualExpira = null;
+      updates["statusControl.modoControl"] = 'manual';
+      updates["statusControl.manualExpira"] = null;
       showMessage('Has activado el modo manual indefinido', 'error');
     }
     if (modoSeleccionado === 'manual-personalizado') {
@@ -180,13 +180,13 @@ export async function initModoControl(idInquilino) {
       const [h, m] = hora.split(':');
       const ahora = new Date();
       const fecha = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), +h, +m);
-      updates.modoControl = 'manual';
-      updates.manualExpira = fecha.toISOString();
+      updates["statusControl.modoControl"] = 'manual';
+      updates["statusControl.manualExpira"] = fecha.toISOString();
       showMessage('Has activado el modo manual por tiempo', 'warning');
     }
     if (modoSeleccionado === 'automatico') {
-      updates.modoControl = 'automatico';
-      updates.manualExpira = null;
+      updates["statusControl.modoControl"] = 'automatico';
+      updates["statusControl.manualExpira"] = null;
       showMessage('Has cambiado al modo automático', 'success');
     }
 
@@ -230,6 +230,9 @@ export async function initModoControl(idInquilino) {
     if (depto) {
       const path = `/departamentos/depto${depto}/sensores/telemetria_actual/cerradura`;
       await set(ref(dbRealtime, path), nuevoEstado);
+      await updateDoc(docRef, {
+        'statusControl.cerradura': nuevoEstado
+      });
     }
 
     // -----------------------------

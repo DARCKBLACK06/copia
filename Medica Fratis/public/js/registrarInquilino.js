@@ -75,6 +75,7 @@ export async function registrarInquilino(formData) {
         estadoPago: "pagado",
         modoControl: "automatico",
         manualExpira: null,
+        cerradura: "encendido",
         creadoEn: new Date().toISOString(),
         sensores: {
           aguaMax: { valor: 0, fecha: null },
