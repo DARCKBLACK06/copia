@@ -10,7 +10,7 @@ export async function mostrarEstadoPago(inquilinoId) {
   try {
     const docRef = doc(db, 'inquilinos', inquilinoId); // ✅ Consultamos directamente al inquilino
     const docSnap = await getDoc(docRef);
-
+    console.log("Estado de pago consultado para:", inquilinoId);
     if (!docSnap.exists()) {
       texto.textContent = 'Sin datos';
       foco.style.backgroundColor = 'gray';
@@ -24,7 +24,7 @@ export async function mostrarEstadoPago(inquilinoId) {
         texto.textContent = 'Pagado';
         foco.style.backgroundColor = '#28a745'; // verde
         break;
-      case 'proximo a pagar':
+      case 'pendiente':
         texto.textContent = 'Próximo a pagar';
         foco.style.backgroundColor = '#ffc107'; // amarillo
         break;
@@ -42,4 +42,5 @@ export async function mostrarEstadoPago(inquilinoId) {
     texto.textContent = 'Error';
     foco.style.backgroundColor = 'gray';
   }
-}
+  }
+

@@ -1,0 +1,8 @@
+{
+    "vscode-pets.theme": "none",
+    "vscode-pets.throwBallWithMouse": true,
+    "vscode-pets.position": "explorer",
+    "vscode-pets.petSize": "large",
+    "vscode-pets.petColor": "black",
+    "vscode-pets.disableEffects": false
+}
