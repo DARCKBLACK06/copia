@@ -1,34 +1,47 @@
-// =============================
-// FUNCIONES PARA GMAI
-// gmail.gs
-// =============================
-
 /**
- * Devuelve un array de los mensajes que coinciden como comprobante de pago.
- * Cada elemento es { from: string, date: Date }.
+ * gmail.gs 
+ * obtenerCorreosDePago
+ * 
+ * Busca en Gmail los correos enviados por el inquilino en un rango de ±5 días
+ * de la fecha de pago, filtrando por palabras clave comunes de comprobantes.
+ * 
+ * @param {string} nombre - Nombre del inquilino (solo para el log)
+ * @param {string} correo - Correo del inquilino (para el filtro de Gmail)
+ * @param {string} fechaPago - Fecha esperada de pago (YYYY-MM-DD)
+ * @returns {Object[]} Arreglo de correos encontrados con from, date, subject
  */
 function obtenerCorreosDePago(nombre, correo, fechaPago) {
   const resultados = [];
-  const rangoDias  = 5;
-  const pagoDate   = new Date(fechaPago + "T00:00:00");
-  const inicio     = new Date(pagoDate); inicio.setDate(inicio.getDate() - rangoDias);
-  const fin        = new Date(pagoDate); fin   .setDate(fin.getDate() + rangoDias);
+  const diasMargen = 5;
+  const fechaBase = new Date(`${fechaPago}T00:00:00`);
 
-  const fIni = `${inicio.getFullYear()}/${inicio.getMonth()+1}/${inicio.getDate()}`;
-  const fFin = `${fin.getFullYear()}/${fin.getMonth()+1}/${fin.getDate()+1}`;
+  // Rango de búsqueda: desde 5 días antes hasta 5 días después
+  const inicio = new Date(fechaBase);
+  const fin    = new Date(fechaBase);
+  inicio.setDate(inicio.getDate() - diasMargen);
+  fin.setDate(fin.getDate() + diasMargen + 1); // Gmail 'before' es no-inclusivo
+
+  const fIni = `${inicio.getFullYear()}/${inicio.getMonth() + 1}/${inicio.getDate()}`;
+  const fFin = `${fin.getFullYear()}/${fin.getMonth() + 1}/${fin.getDate()}`;
   const query = `after:${fIni} before:${fFin} from:(${correo})`;
 
-  const threads  = GmailApp.search(query);
-  const keywords = ['pago','renta','comprobante','depósito','transferencia'];
+  const hilos = GmailApp.search(query);
+  const palabrasClave = ["pago", "renta", "comprobante", "depósito", "transferencia"];
 
-  for (let th of threads) {
-    for (let msg of th.getMessages()) {
-      const subj = msg.getSubject().toLowerCase();
-      const body = msg.getPlainBody().toLowerCase();
-      if (keywords.some(k => subj.includes(k) || body.includes(k))) {
+  for (let hilo of hilos) {
+    const mensajes = hilo.getMessages();
+    for (let msg of mensajes) {
+      const asunto = msg.getSubject().toLowerCase();
+      const cuerpo = msg.getPlainBody().toLowerCase();
+      const contieneClave = palabrasClave.some(palabra =>
+        asunto.includes(palabra) || cuerpo.includes(palabra)
+      );
+
+      if (contieneClave) {
         resultados.push({
           from: msg.getFrom(),
-          date: msg.getDate()
+          date: msg.getDate(),
+          subject: msg.getSubject()
         });
       }
     }

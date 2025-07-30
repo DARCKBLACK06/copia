@@ -104,9 +104,6 @@ export function cargarGraficasSensor(departamentoId) {
   // Referencias a la base de datos
   console.log(`🔗 Conectando a Firebase Realtime Database en ruta: ${rutaSensor}`);
 
-  
-
-
   const sensorRef = ref(dbRealtime, rutaSensor);
   const cerraduraRef = ref(dbRealtime, rutaEstadoCerradura);
 

@@ -1,13 +1,5 @@
 // === Importaciones necesarias ===
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
-
+import { collection,query,where,getDocs,doc,updateDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 import { db } from "../app/firebase.js"; // Conexión a Firestore
 import { generarCodigoArduino } from "./registrarSensor.js"; // Función que genera código .ino personalizado
 import { showMessage } from '../app/showMessage.js'; // Para mostrar mensajes tipo Toast

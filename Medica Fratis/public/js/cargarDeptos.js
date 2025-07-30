@@ -1,16 +1,16 @@
 // === Importa Firestore ===
-import { db } from '../app/firebase.js';
+import { db } from "../app/firebase.js";
 import {
   collection,
   query,
   where,
-  getDocs
+  getDocs,
 } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 // === Función: Cargar departamentos disponibles en el formulario ===
 export async function cargarDeptos() {
   try {
-    const select = document.getElementById('departamentoSelect');
+    const select = document.getElementById("departamentoSelect");
     if (!select) {
       console.error('❌ No se encontró el select con id "departamentoSelect"');
       return;
@@ -20,22 +20,25 @@ export async function cargarDeptos() {
     select.length = 1;
 
     // Consulta departamentos disponibles
-    const departamentosRef = collection(db, 'departamentos');
-    const disponiblesQuery = query(departamentosRef, where('disponible', '==', true));
+    const departamentosRef = collection(db, "departamentos");
+    const disponiblesQuery = query(
+      departamentosRef,
+      where("disponible", "==", true)
+    );
     const snapshot = await getDocs(disponiblesQuery);
 
     if (snapshot.empty) {
-      const option = document.createElement('option');
+      const option = document.createElement("option");
       option.disabled = true;
-      option.textContent = 'No hay departamentos disponibles';
+      option.textContent = "No hay departamentos disponibles";
       select.appendChild(option);
-      console.warn('⚠️ No hay departamentos disponibles.');
+      console.warn("⚠️ No hay departamentos disponibles.");
       return;
     }
 
     // Construye arreglo de departamentos
     const departamentos = [];
-    snapshot.forEach(doc => {
+    snapshot.forEach((doc) => {
       const data = doc.data();
       departamentos.push({ id: doc.id, ...data });
     });
@@ -48,18 +51,18 @@ export async function cargarDeptos() {
     });
 
     // Llena el select con los departamentos ordenados
-    departamentos.forEach(dep => {
-      const option = document.createElement('option');
+    departamentos.forEach((dep) => {
+      const option = document.createElement("option");
       option.value = dep.id;
-      const piso = dep.nivel ? ` - Piso ${dep.nivel}` : '';
-      option.textContent = `Departamento ${dep.numero || dep.id}${piso}`;
+      const piso = dep.nivel ? ` - Piso ${dep.nivel}` : "";
+      option.textContent = `Departamento ${String(dep.numero).padStart(2, "0")}${piso}`;
       select.appendChild(option);
     });
 
-    console.log('✅ Departamentos disponibles cargados correctamente.');
+    console.log("✅ Departamentos disponibles cargados correctamente.");
   } catch (error) {
-    console.error('❌ Error al cargar departamentos:', error);
+    console.error("❌ Error al cargar departamentos:", error);
   }
 }
 
-console.log('Modulo cargado');
+console.log("Modulo cargado");

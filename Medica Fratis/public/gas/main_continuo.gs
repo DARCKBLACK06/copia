@@ -1,71 +1,113 @@
-function verificarPagosContinuo() {
-  logInfo("▶️  Inicio verificarPagosContinuo");
-  limpiarCache();
+function mostrarListaInquilinos() {
+  limpiarCache();  // Limpia cache al inicio
 
-  verificarExpiracionModoManual();  // Importante: puede devolver a automático
+  const inquilinos = obtenerDatosBasicosInquilinos();
 
-  const inquilinos = obtenerInquilinos();
   if (!inquilinos.length) {
-    logInfo("ℹ️  No se encontraron inquilinos.");
+    Logger.log("No hay inquilinos registrados.");
     return;
   }
 
-  inquilinos.forEach(doc => {
-    const f = doc.fields;
-    const nombre = f.nombre.stringValue;
-    const correo = f.correo.stringValue;
-    const depto = f.departamentoId.stringValue;
-    const fechaPago = f.fechaPago.stringValue;
-    const docName = doc.name;
-    const dias = diasRestantes(fechaPago);
-    const modoControl = f.modoControl ? f.modoControl.stringValue : 'automatico';
+  Logger.log(`Total de inquilinos encontrados: ${inquilinos.length}`);
 
-    if (dias > 5) return;
+  inquilinos.forEach((inquilino, index) => {
+    const dias = diasRestantes(inquilino.fechaPago);
+    const comprobantes = obtenerCorreosDePago(inquilino.nombre, inquilino.correo, inquilino.fechaPago);
+    const tieneComprobante = comprobantes.length > 0;
 
-    // Obtener correos comprobantes
-    const comprobantes = obtenerCorreosDePago(nombre, correo, fechaPago);
-    logInfo(`📧 ${nombre} (Depto ${depto}): Correos encontrados: ${comprobantes.length}`);
-    comprobantes.forEach(c => {
-      logInfo(`   • Correo de: ${c.from} | Fecha: ${c.date.toLocaleString()}`);
+    let estadoCalculado;
+    if (dias === 0) {
+      estadoCalculado = "Hoy vence";
+    } else if (dias > 0) {
+      estadoCalculado = `Faltan ${dias} día(s)`;
+    } else {
+      estadoCalculado = `Vencido hace ${Math.abs(dias)} día(s)`;
+    }
+
+    let tieneExpiracion = false;
+    let yaExpirado = false;
+    let fechaExpiraTexto = "no aplica";
+
+    if (inquilino.manualExpira) {
+      const ahora = new Date();
+      const fechaExpira = new Date(inquilino.manualExpira);
+      tieneExpiracion = true;
+      yaExpirado = ahora > fechaExpira;
+      fechaExpiraTexto = fechaExpira.toLocaleString();
+    }
+
+    Logger.log(` 👤 \nInquilino ${index + 1}`);
+    Logger.log(`  ID:               ${inquilino.id}`);
+    Logger.log(`  Nombre:           ${inquilino.nombre}`);
+    Logger.log(`  Correo:           ${inquilino.correo}`);
+    Logger.log(`  Teléfono:         ${inquilino.telefono}`);
+    Logger.log(`  Departamento:     ${inquilino.departamento}`);
+    Logger.log(`  Fecha de pago:    ${inquilino.fechaPago}`);
+    Logger.log(`  Estado actual:    ${inquilino.estadoPago}`);
+    Logger.log(`  Expira manual:    ${tieneExpiracion ? fechaExpiraTexto : "no aplica"}`);
+    if (tieneExpiracion) {
+     
+    }
+    Logger.log(`  Días restantes:   ${estadoCalculado}`);
+
+    comprobantes.forEach((c, i) => {
+      Logger.log(`     ${i + 1}. De: ${c.from} | Fecha: ${c.date.toLocaleString()} | Asunto: ${c.subject}`);
     });
 
-    if (modoControl === 'automatico') {
-      if (comprobantes.length > 0) {
-        // Estado pagado
-        actualizarEstadoPago(docName, 'pagado');
-        actualizarEstadoCerradura(docName, 'encendido');
-        const path = `/departamentos/deptodpto${depto}/sensores/datos_completos/cerradura`;
+    if (inquilino.modoControl === "automatico") {
+      if (tieneComprobante) {
+        Logger.log(`  → Acción: marcar como PAGADO`);
+        actualizarEstadoPago(inquilino.id, "pagado");
+        actualizarEstadoCerradura(inquilino.id, inquilino.departamento, "encendido");
 
-
-        actualizarRTDB(path, 'encendido');
-        logInfo(`✅ ${nombre}: estadoPago=PAGADO, cerradura=ENCENDIDO`);
       } else if (dias >= 0 && dias <= 5) {
-        // Pendiente
-        actualizarEstadoPago(docName, 'pendiente');
-        actualizarEstadoCerradura(docName, 'encendido');
-        const path = `/departamentos/depto${depto}/sensores/datos_completos/cerradura`;
-        actualizarRTDB(path, 'encendido');
-        logInfo(`⌛ ${nombre}: faltan ${dias} días → estado=pendiente, cerradura=ENCENDIDO`);
-      } else if (dias < 0) {
-        // No pagado
-        actualizarEstadoPago(docName, 'no pagado');
-        actualizarEstadoCerradura(docName, 'apagado');
-        const path = `/departamentos/depto${depto}/sensores/datos_completos/cerradura`;
-        actualizarRTDB(path, 'apagado');
-        logInfo(`⚠️ ${nombre}: vencido hace ${-dias} días → estado=NO PAGADO, cerradura=APAGADO`);
-      }
-    } else {
-      logInfo(`🔒 ${nombre}: En modo MANUAL, NO se actualiza la cerradura.`);
+        Logger.log(`  → Acción: marcar como PENDIENTE`);
+        actualizarEstadoPago(inquilino.id, "pendiente");
+        actualizarEstadoCerradura(inquilino.id, inquilino.departamento, "encendido");
 
-      // Pero sí puede actualizar estado de pago
-      if (comprobantes.length > 0) {
-        actualizarEstadoPago(docName, 'pagado');
-        logInfo(`✅ ${nombre}: comprobante encontrado → estadoPago=PAGADO`);
+      } else if (dias < 0 && !tieneComprobante) {
+        Logger.log(`  → Acción: marcar como NO PAGADO`);
+        actualizarEstadoPago(inquilino.id, "no pagado");
+        actualizarEstadoCerradura(inquilino.id, inquilino.departamento, "apagado");
+
+      } else {
+        Logger.log(`  → Sin acción: fuera de ventana o ya pagado`);
+      }
+
+    } else if (inquilino.modoControl === "manual") {
+      
+      if (tieneComprobante) {
+        Logger.log(`     Se puede marcar como PAGADO`);
+        actualizarEstadoPago(inquilino.id, "pagado");
+      }
+
+      if (tieneExpiracion && yaExpirado) {
+        Logger.log(`  Modo manual expiró. Cambiando a AUTOMÁTICO...`);
+        actualizarModoControl(inquilino.id);
+
+        // Refrescar localmente
+        inquilino.modoControl = "automatico";
+        inquilino.manualExpira = null;
+
+        // Ejecutar lógica automática de inmediato
+        if (tieneComprobante) {
+          Logger.log(`  → Acción inmediata: marcar como PAGADO`);
+          actualizarEstadoPago(inquilino.id, "pagado");
+          actualizarEstadoCerradura(inquilino.id, inquilino.departamento, "encendido");
+
+        } else if (dias >= 0 && dias <= 5) {
+          Logger.log(`  → Acción inmediata: marcar como PENDIENTE`);
+          actualizarEstadoPago(inquilino.id, "pendiente");
+          actualizarEstadoCerradura(inquilino.id, inquilino.departamento, "encendido");
+
+        } else if (dias < 0) {
+          Logger.log(`  → Acción inmediata: marcar como NO PAGADO`);
+          actualizarEstadoPago(inquilino.id, "no pagado");
+          actualizarEstadoCerradura(inquilino.id, inquilino.departamento, "apagado");
+        }
       }
     }
   });
 
-  logInfo("✅  Fin verificarPagosContinuo");
-  limpiarCache();
-  logInfo("🗑️  Caché limpiada al finalizar verificarPagosContinuo");
+  Logger.log("Finalizó la ejecución de mostrarListaInquilinos");
 }

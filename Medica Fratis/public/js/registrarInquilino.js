@@ -1,10 +1,5 @@
 import { db } from '../app/firebase.js';
-import {
-  collection,
-  doc,
-  setDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+import { collection,doc,setDoc,updateDoc } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
 
 // === Función para calcular días entre fechas ===
 function calcularDias(fechaInicioStr, fechaFinStr) {
@@ -22,7 +17,8 @@ function calcularDias(fechaInicioStr, fechaFinStr) {
 export async function registrarInquilino(formData) {
   try {
     const departamento = formData.get('departamento')?.trim();
-    const idInquilino = `inquilino${departamento}`;
+    const idInquilino = `inquilino${departamento.padStart(5, '0')}`;
+
 
     const fechaInicio = formData.get('fechaInicio');
     const fechaFin = formData.get('fechaFin');
