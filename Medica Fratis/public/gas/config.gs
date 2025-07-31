@@ -22,7 +22,7 @@ const COLECCION_DEPARTAMENTOS = 'departamentos';
 
 // === 🗂️ ID del Google Sheet (usar para pagos o reportes) ===
 // Define esto si lo necesitas en módulos como mensualStats
-// const SHEET_ID_CONSUMO = 'TU_SHEET_ID_AQUI';
+const SHEET_ID_CONSUMO = '1O0LiKCGgzR0N_UUQAv3BePktS5rSjd9kWF-ch9uBsbM';
 
 // === ⏱️ Intervalos para temporizadores automáticos ===
 const INTERVALO_REVISION_CONTINUA = 10; // Minutos (por si usas triggers cada X min)

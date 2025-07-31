@@ -204,3 +204,234 @@ function actualizarEstadoPago(idInquilino, nuevoEstado) {
     return null;
   }
 }
+
+
+/**
+ * actualizarMaximosDesdeRTDB
+ *
+ * Recorre todos los departamentos en Realtime Database y extrae los valores
+ * máximos del día desde:
+ *   departamentos/deptodptoXX/sensores/telemetria_actual/maximos
+ *
+ * Luego actualiza esos datos en Firestore bajo el documento correspondiente
+ * del inquilino:
+ *   inquilinos/inquilinodptoXX/statusControl/sensores/{xxxMax}
+ *
+ * Cada campo incluye:
+ *   - valor: numérico
+ *   - fecha: timestamp en ISO (fecha de recolección)
+ */
+function actualizarMaximosDesdeRTDB() {
+  const rtdbUrl = `${RTDB_BASE_URL}/departamentos.json`;
+
+  try {
+    const respuesta = UrlFetchApp.fetch(rtdbUrl);
+    const data = JSON.parse(respuesta.getContentText());
+
+    if (!data) {
+      Logger.log("⚠️ No se encontraron departamentos en RTDB.");
+      return;
+    }
+
+    const fechaActual = new Date().toISOString();
+
+    for (const deptoKey in data) {
+      const sensores = data[deptoKey]?.sensores?.telemetria_actual?.maximos;
+      if (!sensores) {
+        Logger.log(`⏭️ ${deptoKey} sin datos de maximos.`);
+        continue;
+      }
+
+      // Obtener ID numérico desde "deptodptoXX"
+      const match = deptoKey.match(/dpto(\d{2})$/i);
+      if (!match) {
+        Logger.log(`⚠️ Formato de ID inválido: ${deptoKey}`);
+        continue;
+      }
+
+      const numero = match[1];
+      const idInquilino = `inquilinodpto${numero}`;
+
+      // Preparar payload Firestore
+      const payload = {
+        fields: {
+          statusControl: {
+            mapValue: {
+              fields: {
+                sensores: {
+                  mapValue: {
+                    fields: {
+                      aguaMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: sensores.agua || 0 },
+                            fecha: { stringValue: fechaActual }
+                          }
+                        }
+                      },
+                      humedadMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: sensores.humedad || 0 },
+                            fecha: { stringValue: fechaActual }
+                          }
+                        }
+                      },
+                      humoMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: sensores.humo || 0 },
+                            fecha: { stringValue: fechaActual }
+                          }
+                        }
+                      },
+                      temperaturaMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: sensores.temperatura || 0 },
+                            fecha: { stringValue: fechaActual }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const firestoreUrl = `${FIRESTORE_BASE_URL}/inquilinos/${idInquilino}?key=${API_KEY}&updateMask.fieldPaths=statusControl.sensores.aguaMax&updateMask.fieldPaths=statusControl.sensores.humedadMax&updateMask.fieldPaths=statusControl.sensores.humoMax&updateMask.fieldPaths=statusControl.sensores.temperaturaMax`;
+
+      const opciones = {
+        method: "PATCH",
+        contentType: "application/json",
+        payload: JSON.stringify(payload)
+      };
+
+      try {
+        UrlFetchApp.fetch(firestoreUrl, opciones);
+        Logger.log(`📊 Información recopilada de sensores en ${deptoKey} → Firestore actualizado para ${idInquilino}`);
+      } catch (e) {
+        Logger.log(`❌ Error al actualizar Firestore para ${idInquilino}: ${e}`);
+      }
+    }
+
+  } catch (error) {
+    Logger.log(`❌ Error al consultar RTDB: ${error}`);
+  }
+}
+
+/**
+ * respaldarYLimpiarConsumoDiario
+ *
+ * Lee de Firestore los valores máximos del día por inquilino,
+ * guarda en Sheets, y luego limpia los campos en Firestore y RTDB.
+ */
+function respaldarYLimpiarConsumoDiario() {
+  const inquilinos = obtenerDatosBasicosInquilinos();
+  if (!inquilinos.length) {
+    Logger.log("⚠️ No hay inquilinos registrados.");
+    return;
+  }
+
+  inquilinos.forEach(inq => {
+    const url = `${FIRESTORE_BASE_URL}/inquilinos/${inq.id}?key=${API_KEY}`;
+
+    try {
+      const response = UrlFetchApp.fetch(url);
+      const data = JSON.parse(response.getContentText());
+      const sensores = data?.fields?.statusControl?.mapValue?.fields?.sensores?.mapValue?.fields;
+
+      if (!sensores) return;
+
+      const agua = parseFloat(sensores?.aguaMax?.mapValue?.fields?.valor?.doubleValue || 0);
+      const humedad = parseFloat(sensores?.humedadMax?.mapValue?.fields?.valor?.doubleValue || 0);
+      const humo = parseFloat(sensores?.humoMax?.mapValue?.fields?.valor?.doubleValue || 0);
+      const temperatura = parseFloat(sensores?.temperaturaMax?.mapValue?.fields?.valor?.doubleValue || 0);
+
+      registrarConsumoEnSheet(inq.id, inq.nombre, { agua, humedad, humo, temperatura });
+
+      // 🔁 Limpiar Firestore (maximos = 0)
+      const payloadReset = {
+        fields: {
+          statusControl: {
+            mapValue: {
+              fields: {
+                sensores: {
+                  mapValue: {
+                    fields: {
+                      aguaMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: 0 },
+                            fecha: { nullValue: null }
+                          }
+                        }
+                      },
+                      humedadMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: 0 },
+                            fecha: { nullValue: null }
+                          }
+                        }
+                      },
+                      humoMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: 0 },
+                            fecha: { nullValue: null }
+                          }
+                        }
+                      },
+                      temperaturaMax: {
+                        mapValue: {
+                          fields: {
+                            valor: { doubleValue: 0 },
+                            fecha: { nullValue: null }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
+
+      const resetUrl = `${FIRESTORE_BASE_URL}/inquilinos/${inq.id}?key=${API_KEY}&updateMask.fieldPaths=statusControl.sensores.aguaMax&updateMask.fieldPaths=statusControl.sensores.humedadMax&updateMask.fieldPaths=statusControl.sensores.humoMax&updateMask.fieldPaths=statusControl.sensores.temperaturaMax`;
+
+      UrlFetchApp.fetch(resetUrl, {
+        method: "PATCH",
+        contentType: "application/json",
+        payload: JSON.stringify(payloadReset)
+      });
+
+      // 🔁 Limpiar valores en RTDB (sin eliminar el nodo 'maximos')
+      const idDepto = 'depto' + inq.departamento; // Ej: dpto02 → deptodpto02
+      const rtdbMaximosPath = `${RTDB_BASE_URL}/departamentos/${idDepto}/sensores/telemetria_actual/maximos.json`;
+      const payloadResetRTDB = JSON.stringify({
+        agua: 0,
+        humedad: 0,
+        humo: 0,
+        temperatura: 0
+      });
+
+      UrlFetchApp.fetch(rtdbMaximosPath, {
+        method: "PATCH",
+        contentType: "application/json",
+        payload: payloadResetRTDB
+      });
+
+      Logger.log(`📁 Datos respaldados de ${inq.id}`);
+
+    } catch (e) {
+      Logger.log(`❌ Error al procesar ${inq.id}: ${e}`);
+    }
+  });
+}
+
