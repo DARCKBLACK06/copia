@@ -119,15 +119,15 @@
         <!-- === FIN TARJETA: DATOS DE USUARIO === -->
 
         <!-- === TARJETA: Próximos Pagos === -->
-<div id="notificaciones-pagos" class="tarjeta-box">
-  <h5 class="fw-bold mb-3">Próximos Pagos</h5>
-  <div id="notifications-content">
-    <!-- Aquí se llenan dinámicamente las alertas -->
-  </div>
-</div>
+        <div id="notificaciones-pagos" class="tarjeta-box">
+          <h5 class="fw-bold mb-3">Próximos Pagos</h5>
+          <div id="notifications-content">
+            <!-- Aquí se llenan dinámicamente las alertas -->
+          </div>
+        </div>
 
         <!-- === TARJETA: DEPARTAMENTOS === -->
- <div id="departamentos" class="tarjeta-box">
+        <div id="departamentos" class="tarjeta-box">
           <h5 class="fw-bold mb-3">Departamentos</h5>
           <div class="d-flex flex-wrap gap-2">
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalDepartamento">➕ Registrar
@@ -135,99 +135,98 @@
             <a href="formulario-inquilino.html" class="btn btn-success">👤 Registrar Usuario</a>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistroSensor">🤖 Registrar
               Sensor</button>
-               <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalTipoEliminacion">
-      🗑️ Eliminar
-    </button>
-  </div>
-</div>
-<!-- Modal para elegir tipo de eliminación -->
-<div class="modal fade" id="modalTipoEliminacion" tabindex="-1" aria-labelledby="modalTipoEliminacionLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content text-center">
-      <div class="modal-header">
-        <h5 class="modal-title">¿Qué tipo de eliminación deseas hacer?</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>Selecciona una opción:</p>
-        <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary" onclick="abrirModalFinal('individual')">Eliminar individual</button>
-          <button class="btn btn-outline-danger" onclick="abrirModalFinal('grupal')">Eliminar grupal</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Modal dinámico final -->
-<div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Eliminar elementos</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-        <form id="formEliminar">
-
-          <!-- Eliminación individual -->
-          <div id="formIndividual" style="display:none">
-            <div class="mb-3">
-              <label class="form-label">Usuario a eliminar</label>
-              <select class="form-select" id="usuarioInd"></select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Departamento a liberar</label>
-              <select class="form-select" id="departamentoInd"></select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Sensor a eliminar</label>
-              <select class="form-select" id="sensorInd"></select>
-            </div>
-          </div>
-
-          <!-- Eliminación grupal -->
-          <div id="formGrupal" style="display:none">
-            <div class="mb-3">
-              <label class="form-label">Usuario</label>
-              <select class="form-select" id="usuarioGrp"></select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Departamento</label>
-              <select class="form-select" id="departamentoGrp"></select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Sensores</label>
-              <select class="form-select" id="sensorGrp" multiple></select>
-              <small>Usa Ctrl/Cmd para seleccionar varios</small>
-            </div>
-          </div>
-
-        </form>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-danger" onclick="procesarEliminacion()">Eliminar seleccionado(s)</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalTipoEliminacion">
+              🗑️ Eliminar
+            </button>
           </div>
         </div>
-    
-        <!-- === TARJETA: REPORTES === -->
-        <div id="reportes" class="tarjeta-box">
-          <h5 class="fw-bold mb-3">Reportes</h5>
-         
-    
+        <!-- Modal para elegir tipo de eliminación -->
+        <div class="modal fade" id="modalTipoEliminacion" tabindex="-1" aria-labelledby="modalTipoEliminacionLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+              <div class="modal-header">
+                <h5 class="modal-title">¿Qué tipo de eliminación deseas hacer?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <p>Selecciona una opción:</p>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-primary" onclick="abrirModalFinal('individual')">Eliminar
+                    individual</button>
+                  <button class="btn btn-outline-danger" onclick="abrirModalFinal('grupal')">Eliminar grupal</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div> <!-- Fin de tarjetas -->
+        <!-- Modal dinámico final -->
+        <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarLabel"
+          aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
 
-    </div>
+              <div class="modal-header">
+                <h5 class="modal-title">Eliminar elementos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+
+              <div class="modal-body">
+                <form id="formEliminar">
+
+                  <!-- Eliminación individual -->
+                  <div id="formIndividual" style="display:none">
+                    <div class="mb-3">
+                      <label class="form-label">Usuario a eliminar</label>
+                      <select class="form-select" id="usuarioInd"></select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Departamento a liberar</label>
+                      <select class="form-select" id="departamentoInd"></select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Sensor a eliminar</label>
+                      <select class="form-select" id="sensorInd"></select>
+                    </div>
+                  </div>
+
+                  <!-- Eliminación grupal -->
+                  <div id="formGrupal" style="display:none">
+                    <div class="mb-3">
+                      <label class="form-label">Usuario</label>
+                      <select class="form-select" id="usuarioGrp"></select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Departamento</label>
+                      <select class="form-select" id="departamentoGrp"></select>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Sensores</label>
+                      <select class="form-select" id="sensorGrp" multiple></select>
+                      <small>Usa Ctrl/Cmd para seleccionar varios</small>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-danger" onclick="procesarEliminacion()">Eliminar seleccionado(s)</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === TARJETA: REPORTES === -->
+      <div id="reportes" class="tarjeta-box">
+        <h5 class="fw-bold mb-3">Reportes</h5>
+      </div>
+    </div> <!-- Fin de tarjetas -->
+
+  </div> <!-- Fin del contenedor principal -->
 
     <!-- === MODAL: REGISTRAR SENSOR === -->
     <div class="modal fade" id="modalRegistroSensor" tabindex="-1" aria-labelledby="modalSensorLabel"
@@ -549,93 +548,93 @@
       </div>
     </div>
     <!-- === FIN MODAL DETALLES === -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const usuarios = [
-    { id: 1, nombre: 'Usuario 1' },
-    { id: 2, nombre: 'Usuario 2' }
-  ];
-  const departamentos = [
-    { id: 'A', nombre: 'Departamento A' },
-    { id: 'B', nombre: 'Departamento B' }
-  ];
-  const sensores = [
-    { id: 101, nombre: 'Sensor 101' },
-    { id: 102, nombre: 'Sensor 102' }
-  ];
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const usuarios = [
+        { id: 1, nombre: 'Usuario 1' },
+        { id: 2, nombre: 'Usuario 2' }
+      ];
+      const departamentos = [
+        { id: 'A', nombre: 'Departamento A' },
+        { id: 'B', nombre: 'Departamento B' }
+      ];
+      const sensores = [
+        { id: 101, nombre: 'Sensor 101' },
+        { id: 102, nombre: 'Sensor 102' }
+      ];
 
-  function poblarSelect(id, datos) {
-    const select = document.getElementById(id);
-    select.innerHTML = '<option value="">-- ninguno --</option>';
-    datos.forEach(obj => {
-      const o = document.createElement('option');
-      o.value = obj.id;
-      o.textContent = obj.nombre;
-      select.appendChild(o);
-    });
-  }
+      function poblarSelect(id, datos) {
+        const select = document.getElementById(id);
+        select.innerHTML = '<option value="">-- ninguno --</option>';
+        datos.forEach(obj => {
+          const o = document.createElement('option');
+          o.value = obj.id;
+          o.textContent = obj.nombre;
+          select.appendChild(o);
+        });
+      }
 
-  function abrirModalFinal(tipo) {
-    // Cierra el primer modal
-    const modal1 = bootstrap.Modal.getInstance(document.getElementById('modalTipoEliminacion'));
-    modal1.hide();
+      function abrirModalFinal(tipo) {
+        // Cierra el primer modal
+        const modal1 = bootstrap.Modal.getInstance(document.getElementById('modalTipoEliminacion'));
+        modal1.hide();
 
-    // Prepara el segundo
-    document.getElementById('formIndividual').style.display = tipo === 'individual' ? 'block' : 'none';
-    document.getElementById('formGrupal').style.display = tipo === 'grupal' ? 'block' : 'none';
+        // Prepara el segundo
+        document.getElementById('formIndividual').style.display = tipo === 'individual' ? 'block' : 'none';
+        document.getElementById('formGrupal').style.display = tipo === 'grupal' ? 'block' : 'none';
 
-    poblarSelect('usuarioInd', usuarios);
-    poblarSelect('departamentoInd', departamentos);
-    poblarSelect('sensorInd', sensores);
+        poblarSelect('usuarioInd', usuarios);
+        poblarSelect('departamentoInd', departamentos);
+        poblarSelect('sensorInd', sensores);
 
-    poblarSelect('usuarioGrp', usuarios);
-    poblarSelect('departamentoGrp', departamentos);
-    poblarSelect('sensorGrp', sensores);
+        poblarSelect('usuarioGrp', usuarios);
+        poblarSelect('departamentoGrp', departamentos);
+        poblarSelect('sensorGrp', sensores);
 
-    // Abre el modal final
-    new bootstrap.Modal(document.getElementById('modalEliminar')).show();
-  }
+        // Abre el modal final
+        new bootstrap.Modal(document.getElementById('modalEliminar')).show();
+      }
 
-  function procesarEliminacion() {
-    const tipo = document.getElementById('formIndividual').style.display === 'block' ? 'individual' : 'grupal';
+      function procesarEliminacion() {
+        const tipo = document.getElementById('formIndividual').style.display === 'block' ? 'individual' : 'grupal';
 
-    let usuarioId = "", departamentoId = "", sensorIds = [];
+        let usuarioId = "", departamentoId = "", sensorIds = [];
 
-    if (tipo === 'individual') {
-      usuarioId = document.getElementById('usuarioInd').value;
-      departamentoId = document.getElementById('departamentoInd').value;
-      const s = document.getElementById('sensorInd').value;
-      if (s) sensorIds.push(s);
-    } else {
-      usuarioId = document.getElementById('usuarioGrp').value;
-      departamentoId = document.getElementById('departamentoGrp').value;
-      sensorIds = Array.from(document.getElementById('sensorGrp').selectedOptions).map(o => o.value);
-    }
+        if (tipo === 'individual') {
+          usuarioId = document.getElementById('usuarioInd').value;
+          departamentoId = document.getElementById('departamentoInd').value;
+          const s = document.getElementById('sensorInd').value;
+          if (s) sensorIds.push(s);
+        } else {
+          usuarioId = document.getElementById('usuarioGrp').value;
+          departamentoId = document.getElementById('departamentoGrp').value;
+          sensorIds = Array.from(document.getElementById('sensorGrp').selectedOptions).map(o => o.value);
+        }
 
-    if (!usuarioId && !departamentoId && sensorIds.length === 0) {
-      alert('Selecciona al menos un elemento.');
-      return;
-    }
+        if (!usuarioId && !departamentoId && sensorIds.length === 0) {
+          alert('Selecciona al menos un elemento.');
+          return;
+        }
 
-    if (!confirm('¿Deseas eliminar los elementos seleccionados?')) return;
+        if (!confirm('¿Deseas eliminar los elementos seleccionados?')) return;
 
-    if (usuarioId) fetch('/api/usuarios/' + usuarioId, { method: 'DELETE' });
-    if (departamentoId) {
-      fetch('/api/departamentos/' + departamentoId, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ disponible: true })
-      });
-    }
-    sensorIds.forEach(id => {
-      fetch('/api/sensores/' + id, { method: 'DELETE' });
-    });
+        if (usuarioId) fetch('/api/usuarios/' + usuarioId, { method: 'DELETE' });
+        if (departamentoId) {
+          fetch('/api/departamentos/' + departamentoId, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ disponible: true })
+          });
+        }
+        sensorIds.forEach(id => {
+          fetch('/api/sensores/' + id, { method: 'DELETE' });
+        });
 
-    alert("Operación enviada correctamente.");
-    bootstrap.Modal.getInstance(document.getElementById('modalEliminar')).hide();
-    document.getElementById('formEliminar').reset();
-  }
-</script>
+        alert("Operación enviada correctamente.");
+        bootstrap.Modal.getInstance(document.getElementById('modalEliminar')).hide();
+        document.getElementById('formEliminar').reset();
+      }
+    </script>
 
 </body>
 
