@@ -1,50 +1,63 @@
 /**
- * gmail.gs 
- * obtenerCorreosDePago
- * 
- * Busca en Gmail los correos enviados por el inquilino en un rango de ±5 días
- * de la fecha de pago, filtrando por palabras clave comunes de comprobantes.
- * 
- * @param {string} nombre - Nombre del inquilino (solo para el log)
- * @param {string} correo - Correo del inquilino (para el filtro de Gmail)
- * @param {string} fechaPago - Fecha esperada de pago (YYYY-MM-DD)
- * @returns {Object[]} Arreglo de correos encontrados con from, date, subject
+ * gmail.gs
+ * enviarCorreoAdvertencia
+ *
+ * Envía un correo de advertencia al inquilino según su estado de pago.
+ * Si la fecha aún no vence → recordatorio
+ * Si ya venció → aviso urgente
+ *
+ * @param {string} nombre - Nombre del inquilino
+ * @param {string} correo - Correo del inquilino
+ * @param {string} fechaPago - Fecha límite de pago (YYYY-MM-DD)
+ * @param {number} dias - Días restantes (negativo si ya venció)
  */
-function obtenerCorreosDePago(nombre, correo, fechaPago) {
-  const resultados = [];
-  const diasMargen = 5;
-  const fechaBase = new Date(`${fechaPago}T00:00:00`);
+function enviarCorreoAdvertencia(nombre, correo, fechaPago, dias) {
+  const hoyTexto = new Date().toLocaleDateString("es-MX");
+  let asunto, cuerpo;
 
-  // Rango de búsqueda: desde 5 días antes hasta 5 días después
-  const inicio = new Date(fechaBase);
-  const fin    = new Date(fechaBase);
-  inicio.setDate(inicio.getDate() - diasMargen);
-  fin.setDate(fin.getDate() + diasMargen + 1); // Gmail 'before' es no-inclusivo
-
-  const fIni = `${inicio.getFullYear()}/${inicio.getMonth() + 1}/${inicio.getDate()}`;
-  const fFin = `${fin.getFullYear()}/${fin.getMonth() + 1}/${fin.getDate()}`;
-  const query = `after:${fIni} before:${fFin} from:(${correo})`;
-
-  const hilos = GmailApp.search(query);
-  const palabrasClave = ["pago", "renta", "comprobante", "depósito", "transferencia"];
-
-  for (let hilo of hilos) {
-    const mensajes = hilo.getMessages();
-    for (let msg of mensajes) {
-      const asunto = msg.getSubject().toLowerCase();
-      const cuerpo = msg.getPlainBody().toLowerCase();
-      const contieneClave = palabrasClave.some(palabra =>
-        asunto.includes(palabra) || cuerpo.includes(palabra)
-      );
-
-      if (contieneClave) {
-        resultados.push({
-          from: msg.getFrom(),
-          date: msg.getDate(),
-          subject: msg.getSubject()
-        });
-      }
-    }
+  if (dias >= 0) {
+    asunto = "📅 Recordatorio de pago";
+    cuerpo = `Hola ${nombre},\n\nTe recordamos que tu fecha de corte es el ${fechaPago}.\nAún tienes ${dias} día(s) para realizar tu pago.\n\nGracias por tu atención.\n\nFecha actual: ${hoyTexto}`;
+  } else {
+    asunto = "⚠️ URGENTE – Tu pago está vencido";
+    cuerpo = `Hola ${nombre},\n\nTu pago debió realizarse el ${fechaPago}.\nHan pasado ${Math.abs(dias)} día(s).\nTu acceso puede ser restringido si no regularizas tu situación.\n\nFecha actual: ${hoyTexto}`;
   }
-  return resultados;
+
+  GmailApp.sendEmail(correo, asunto, cuerpo);
+  Logger.log(`✉️ Correo enviado a ${correo} | Asunto: ${asunto}`);
+}
+
+
+/**
+ * borrarCorreosAntiguos
+ * 
+ * Busca en Gmail todos los correos con el asunto que indica comprobante de pago
+ * y elimina aquellos cuya fecha de recepción sea mayor a 30 días.
+ * 
+ * Este paso se ejecuta solo desde main.gs (una vez por día).
+ * 
+ * 🔍 Criterio: 
+ * Asunto debe contener "Comprobante de pago - Departamento dpto"
+ * 
+ * 🗑️ Acción:
+ * Si han pasado más de 30 días → se mueve el hilo a la papelera.
+ */
+function borrarCorreosAntiguos() {
+  const threads = GmailApp.search('subject:"Comprobante de pago"');
+  const hoy = new Date();
+  let eliminados = 0;
+
+  threads.forEach(thread => {
+    const mensajes = thread.getMessages();
+    const mensaje = mensajes[0]; // Primer mensaje del hilo
+    const fecha = mensaje.getDate();
+    const dias = Math.floor((hoy - fecha) / (1000 * 60 * 60 * 24));
+
+    if (dias >= 1) { // 🧪 Prueba: eliminar si tiene al menos 1 día
+      thread.moveToTrash();
+      eliminados++;
+    }
+  });
+
+  Logger.log(`🗑️ Correos antiguos eliminados: ${eliminados}`);
 }

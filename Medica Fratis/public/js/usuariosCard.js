@@ -39,8 +39,8 @@ function mostrarUsuario(i) {
 
   // Inserta la información en el contenedor HTML
   document.getElementById('datosUsuario').innerHTML = `
-    <p><strong>Nombre:</strong> ${usuario.infoPersonal.nombre || "Sin nombre"}</p>
-    <p><strong>Teléfono:</strong> ${usuario.infoPersonal.telefono || "Sin teléfono"}</p>
+    <p><strong>Nombre:</strong> ${usuario.infoPersonal?.nombre || "Sin nombre"}</p>
+    <p><strong>Teléfono:</strong> ${usuario.infoPersonal?.telefono || "Sin teléfono"}</p>
     <p><strong>Departamento:</strong> ${usuario.contrato?.departamento || "No asignado"}</p>
   `;
 }
