@@ -550,19 +550,67 @@
     </div>
     <!-- === FIN MODAL DETALLES === -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const usuarios = [
-    { id: 1, nombre: 'Usuario 1' },
-    { id: 2, nombre: 'Usuario 2' }
-  ];
-  const departamentos = [
-    { id: 'A', nombre: 'Departamento A' },
-    { id: 'B', nombre: 'Departamento B' }
-  ];
-  const sensores = [
-    { id: 101, nombre: 'Sensor 101' },
-    { id: 102, nombre: 'Sensor 102' }
-  ];
+<script type="module">
+  import { db } from './app/firebase.js';
+  import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js";
+
+  // Variables para almacenar los datos obtenidos de Firebase
+  let usuarios = [];
+  let departamentos = [];
+  let sensores = [];
+
+  // Función para obtener usuarios reales de Firebase
+  async function obtenerUsuarios() {
+    try {
+      const inquilinosSnapshot = await getDocs(collection(db, 'inquilinos'));
+      usuarios = [];
+      inquilinosSnapshot.forEach(doc => {
+        const data = doc.data();
+        usuarios.push({ 
+          id: doc.id, 
+          nombre: data.infoPersonal?.nombre || 'Sin nombre'
+        });
+      });
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+    }
+  }
+
+  // Función para obtener departamentos reales de Firebase
+  async function obtenerDepartamentos() {
+    try {
+      const departamentosSnapshot = await getDocs(collection(db, 'departamentos'));
+      departamentos = [];
+      departamentosSnapshot.forEach(doc => {
+        const data = doc.data();
+        departamentos.push({ 
+          id: doc.id, 
+          nombre: `Departamento ${data.numero} - Nivel ${data.nivel}`
+        });
+      });
+    } catch (error) {
+      console.error('Error al obtener departamentos:', error);
+    }
+  }
+
+  // Función para obtener sensores reales de Firebase
+  async function obtenerSensores() {
+    try {
+      const departamentosConSensorSnapshot = await getDocs(
+        query(collection(db, 'departamentos'), where('tieneSensores', '==', true))
+      );
+      sensores = [];
+      departamentosConSensorSnapshot.forEach(doc => {
+        const data = doc.data();
+        sensores.push({ 
+          id: doc.id, 
+          nombre: `Sensor Depto ${data.numero}`
+        });
+      });
+    } catch (error) {
+      console.error('Error al obtener sensores:', error);
+    }
+  }
 
   function poblarSelect(id, datos) {
     const select = document.getElementById(id);
@@ -575,26 +623,60 @@
     });
   }
 
-  function abrirModalFinal(tipo) {
-    // Cierra el primer modal
+  async function abrirModalFinal(tipo) {
+    // Cierra el primer modal y espera a que se complete
     const modal1 = bootstrap.Modal.getInstance(document.getElementById('modalTipoEliminacion'));
+    
+    // Usar evento para asegurar que el modal se cierre completamente
+    const modalElement1 = document.getElementById('modalTipoEliminacion');
+    
+    modalElement1.addEventListener('hidden.bs.modal', async function handler() {
+      // Remover el event listener para evitar múltiples ejecuciones
+      modalElement1.removeEventListener('hidden.bs.modal', handler);
+      
+      // Carga los datos más recientes de Firebase
+      await cargarDatosFirebase();
+
+      // Prepara el segundo modal
+      document.getElementById('formIndividual').style.display = tipo === 'individual' ? 'block' : 'none';
+      document.getElementById('formGrupal').style.display = tipo === 'grupal' ? 'block' : 'none';
+
+      poblarSelect('usuarioInd', usuarios);
+      poblarSelect('departamentoInd', departamentos);
+      poblarSelect('sensorInd', sensores);
+
+      poblarSelect('usuarioGrp', usuarios);
+      poblarSelect('departamentoGrp', departamentos);
+      poblarSelect('sensorGrp', sensores);
+
+      // Abre el modal final después de un pequeño delay
+      setTimeout(() => {
+        new bootstrap.Modal(document.getElementById('modalEliminar')).show();
+      }, 100);
+    });
+    
+    // Cierra el primer modal
     modal1.hide();
-
-    // Prepara el segundo
-    document.getElementById('formIndividual').style.display = tipo === 'individual' ? 'block' : 'none';
-    document.getElementById('formGrupal').style.display = tipo === 'grupal' ? 'block' : 'none';
-
-    poblarSelect('usuarioInd', usuarios);
-    poblarSelect('departamentoInd', departamentos);
-    poblarSelect('sensorInd', sensores);
-
-    poblarSelect('usuarioGrp', usuarios);
-    poblarSelect('departamentoGrp', departamentos);
-    poblarSelect('sensorGrp', sensores);
-
-    // Abre el modal final
-    new bootstrap.Modal(document.getElementById('modalEliminar')).show();
   }
+
+  // Función para cargar todos los datos de Firebase
+  async function cargarDatosFirebase() {
+    await Promise.all([
+      obtenerUsuarios(),
+      obtenerDepartamentos(),
+      obtenerSensores()
+    ]);
+  }
+
+  // Inicializar datos cuando se carga la página
+  document.addEventListener('DOMContentLoaded', async () => {
+    await cargarDatosFirebase();
+    console.log('Datos cargados desde Firebase:', { usuarios, departamentos, sensores });
+  });
+
+  // Hacer las funciones globales para que puedan ser llamadas desde el HTML
+  window.abrirModalFinal = abrirModalFinal;
+  window.procesarEliminacion = procesarEliminacion;
 
   function procesarEliminacion() {
     const tipo = document.getElementById('formIndividual').style.display === 'block' ? 'individual' : 'grupal';
@@ -632,8 +714,24 @@
     });
 
     alert("Operación enviada correctamente.");
-    bootstrap.Modal.getInstance(document.getElementById('modalEliminar')).hide();
+    
+    // Cerrar modal de forma más robusta
+    const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEliminar'));
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+    
+    // Limpiar formulario
     document.getElementById('formEliminar').reset();
+    
+    // Asegurar que se limpie cualquier backdrop residual
+    setTimeout(() => {
+      const backdrops = document.querySelectorAll('.modal-backdrop');
+      backdrops.forEach(backdrop => backdrop.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }, 300);
   }
 </script>
 
