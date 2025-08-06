@@ -27,7 +27,7 @@ loginForm.addEventListener('submit', async e => {
     // Mostrar mensaje y redirigir al dashboard
     showMessage(`Bienvenido, ${credentials.user.email}`, "success");
     setTimeout(() => {
-      window.location.href = 'inicio.html';
+      window.location.href = 'dashboard.html';
     }, 1000);
 
   } catch (error) {
