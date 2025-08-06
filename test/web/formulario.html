@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Inquilino</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Formulario de Registro</h1>
+    <form id="formRegistro">
+        <label>Nombre completo:</label>
+        <input type="text" id="nombre" required><br>
+
+        <label>Correo electrónico:</label>
+        <input type="email" id="correo" required><br>
+
+        <label>Teléfono:</label>
+        <input type="tel" id="telefono"><br>
+
+        <label>Fecha inicio de estadía:</label>
+        <input type="date" id="fechaInicio" required><br>
+
+        <label>Fecha fin de estadía:</label>
+        <input type="date" id="fechaFin" required><br>
+
+        <p><strong>Días de estadía:</strong> <span id="diasEstadia">-</span></p>
+
+        <label>Fecha de pago (por ahora manual):</label>
+        <input type="datetime-local" id="fechaPago" required><br><br>
+        <label for="departamento">Departamento</label>
+        <select id="departamento" required>
+            <option value="">Selecciona un departamento</option>
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <!-- y así los que quieras -->
+        </select>
+
+        <button type="submit">Registrar</button>
+    </form>
+
+    <script type="module" src="registro.js"></script>
+</body>
+
+</html>

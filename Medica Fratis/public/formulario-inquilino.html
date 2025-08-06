@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Inquilino</title>
+
+  <!-- Estilos -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" rel="stylesheet" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- Scripts externos -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
+</head>
+
+<body class="bg-light">
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container d-flex justify-content-between align-items-center">
+      <span class="navbar-brand mb-0 h1">Registro de Inquilino</span>
+      <a href="inicio.html" class="btn btn-outline-light">
+        <i class="bi bi-house-door-fill me-1"></i> Volver al Inicio
+      </a>
+    </div>
+  </nav>
+  <div class="container py-5">
+    <h2 class="text-center mb-4">Registro de Inquilino</h2>
+
+    <form id="formulario-inquilino" class="bg-white p-4 rounded shadow-sm">
+
+      <!-- Datos personales -->
+      <h5>Datos Personales</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="form-label">Nombre completo</label>
+          <input type="text" name="nombre" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">CURP</label>
+          <input type="text" name="curp" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" name="telefono" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Correo electrónico</label>
+          <input type="email" name="correo" class="form-control" required>
+        </div>
+      </div>
+
+      <!-- Domicilio -->
+      <h5>Domicilio de Origen</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6"><label class="form-label">Calle</label><input type="text" name="calle"
+            class="form-control" required></div>
+        <div class="col-md-3"><label class="form-label">Número</label><input type="text" name="numero"
+            class="form-control" required></div>
+        <div class="col-md-3"><label class="form-label">Colonia</label><input type="text" name="colonia"
+            class="form-control" required></div>
+        <div class="col-md-4"><label class="form-label">Municipio</label><input type="text" name="municipio"
+            class="form-control" required></div>
+        <div class="col-md-4"><label class="form-label">Estado</label><input type="text" name="estado"
+            class="form-control" required></div>
+        <div class="col-md-4"><label class="form-label">Código Postal</label><input type="text" name="cp"
+            class="form-control" required></div>
+      </div>
+
+      <!-- Emergencia -->
+      <h5>Contacto de Emergencia</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6"><label class="form-label">Nombre</label><input type="text" name="nombreEmergencia"
+            class="form-control" required></div>
+        <div class="col-md-3"><label class="form-label">Parentesco</label>
+          <select name="parentesco" class="form-select" required>
+            <option selected disabled>Seleccione</option>
+            <option value="Padre/Madre">Padre/Madre</option>
+            <option value="Hermano/a">Hermano/a</option>
+            <option value="Esposo/a">Esposo/a</option>
+            <option value="Amigo/a">Amigo/a</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="col-md-3"><label class="form-label">Teléfono</label><input type="tel" name="telefonoEmergencia"
+            class="form-control" required></div>
+      </div>
+
+      <!-- Contrato -->
+      <h5>Contrato y Departamento</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label class="form-label">Departamento</label>
+          <select name="departamento" id="departamentoSelect" class="form-select" required>
+            <option selected disabled>Seleccione un departamento</option>
+          </select>
+        </div>
+        <div class="col-md-4"><label class="form-label">Fecha inicio</label><input type="date" name="fechaInicio"
+            class="form-control" required></div>
+        <div class="col-md-4"><label class="form-label">Fecha fin</label><input type="date" name="fechaFin"
+            class="form-control" required></div>
+        <div class="col-md-4"><label class="form-label">Tiempo estimado</label><input type="text" id="tiempoEstadia"
+            name="tiempoEstadia" class="form-control bg-light" readonly></div>
+        <div class="col-md-4"><label class="form-label">Cantidad de pago</label><input type="text" name="cantidadPago"
+            class="form-control" pattern="^\d+$" required></div>
+        <div class="col-md-4"><label class="form-label">Fecha de pago</label><input type="date" name="fechaPago" id="fechaPago"
+            class="form-control" required></div>
+      </div>
+
+      <!-- Identificación -->
+      <h5>Identificación Oficial</h5>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6"><label class="form-label">Tipo</label>
+          <select name="tipoIdentificacion" class="form-select" required>
+            <option selected disabled>Seleccione</option>
+            <option value="INE">INE</option>
+            <option value="Pasaporte">Pasaporte</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="col-md-6"><label class="form-label">Número</label><input type="text" name="numeroIdentificacion"
+            class="form-control" required></div>
+      </div>
+
+      <!-- Botón -->
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-lg">
+          <i class="bi bi-save2-fill me-2"></i> Registrar Inquilino
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Importa lógica -->
+  <script type="module">
+    import { inicializarFormulario } from './js/formularioinit.js';
+    inicializarFormulario();
+  </script>
+</body>
+
+</html>

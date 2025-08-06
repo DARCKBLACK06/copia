@@ -1,0 +1,53 @@
+/* ======================================
+   ESTILOS PARA LOGIN Y FONDOS PERSONALIZADOS
+====================================== */
+
+/* === 1. Fondo general con transición === */
+body {
+  background-color: #f4f4f4;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+}
+
+/* === 2. Contenedor del login con fondo difuminado === */
+#login-container {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);             /* Chrome y Edge */
+  -webkit-backdrop-filter: blur(10px);     /* Safari */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.527);
+}
+
+/* === 3. Botón flotante para personalización === */
+#floating-btn {
+  z-index: 1050;           /* Aparece sobre el modal */
+  border-radius: 50%;
+  padding: 10px 14px;
+}
+
+/* === 4. Vista previa de imágenes de fondo === */
+.background-option {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.background-option:hover {
+  transform: scale(1.05);
+}
+
+/* === 5. Subida de imagen personalizada === */
+#custom-bg-upload {
+  margin-top: 1rem;
+}
+
+/* === 6. Personalización de opacidad modal === */
+.modal-backdrop.show {
+  opacity: 0.6;
+}

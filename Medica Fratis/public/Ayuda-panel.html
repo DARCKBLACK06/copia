@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manual de Registro de Usuario</title>
+  <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="./css/styles-documentacion.css" />
+
+  <!-- SOLO para el navbar -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Encabezado fijo -->
+  <nav class="navbar navbar-dark bg-dark">
+    <div class="container d-flex justify-content-between align-items-center">
+      <span class="navbar-brand mb-0 h1">Manual de Sistema de Administración</span>
+      <a href="inicio.html" class="btn btn-outline-light">
+        <i class="bi bi-house-door-fill me-1"></i> Volver al Inicio
+      </a>
+    </div>
+  </nav>
+
+  <!-- Contenido -->
+  <main class="contenido">
+    <h1>Manual de Registro de Usuario</h1>
+
+    <section>
+      <h2>Descripción General</h2>
+      <p>Este panel permite al administrador gestionar usuarios, departamentos, sensores, pagos y visualizar reportes de estado de cerraduras y notificaciones relevantes.</p>
+    </section>
+
+    <section>
+      <h2>Estructura de la Página</h2>
+      <ul>
+        <li><strong>Menú lateral:</strong> Navegación entre vistas (<code>Inicio</code>, <code>Gráficas</code>, <code>Documentación</code>).</li>
+        <li><strong>Panel principal:</strong> Vista general de usuario y accesos rápidos.</li>
+        <li><strong>Notificaciones:</strong> Pagos próximos o alertas.</li>
+        <li><strong>Departamentos:</strong> Registro de departamentos, usuarios o sensores.</li>
+        <li><strong>Reportes:</strong> (Pendiente) estadísticas y análisis automatizado.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Funcionalidades</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Función</th>
+            <th>Descripción</th>
+            <th>Archivo Relacionado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Registrar Usuario</td>
+            <td>Abre un modal para registrar nuevo usuario.</td>
+            <td><code>registro.js</code></td>
+          </tr>
+          <tr>
+            <td>Detalles</td>
+            <td>Muestra información avanzada del usuario, gráficas, estado de cerradura, etc.</td>
+            <td><code>modalDetalles.js</code></td>
+          </tr>
+          <tr>
+            <td>Modo Manual/Automático</td>
+            <td>Permite cambiar el control de la cerradura desde el panel.</td>
+            <td><code>modoControl.js</code></td>
+          </tr>
+          <tr>
+            <td>Validación de Pagos</td>
+            <td>Consulta en Firestore y muestra estado actual del usuario.</td>
+            <td><code>estadoPago.js</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Tecnologías Usadas</h2>
+      <ul>
+        <li><strong>HTML5</strong> para estructura semántica.</li>
+        <li><strong>JavaScript</strong> puro + Firebase SDK.</li>
+        <li><strong>CSS</strong> sin Bootstrap para visual.</li>
+        <li><strong>Firestore & Realtime Database</strong> como backend.</li>
+        <li><strong>Toastify</strong> para notificaciones.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Recomendaciones</h2>
+      <ul>
+        <li>Usar IDs dinámicos correctamente.</li>
+        <li>Evitar rutas hardcodeadas.</li>
+        <li>Verificar triggers en Apps Script.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Documentación generada por SIRAOMF - Sistema Integrado de Regulación y Automatización de las Oficinas de Médica Fratis.
+  </footer>
+
+</body>
+</html>

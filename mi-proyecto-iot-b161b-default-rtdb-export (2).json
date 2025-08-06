@@ -1,0 +1,42 @@
+{
+  "departamentos": {
+        "deptodpto1": {
+      "sensores": {
+        "telemetria_actual": {
+          "agua": 0,
+          "aguaTotal": 3.51181,
+          "cerradura": "apagado",
+          "humedad": 54.8,
+          "humo": 2,
+          "maximos": {
+            "agua": 27.2,
+            "humedad": 56.5,
+            "humo": 3,
+            "temperatura": 23.2
+          },
+          "temperatura": 23.2,
+          "timestamp": 1755
+        }
+      }
+    },
+    "deptodpto2": {
+      "sensores": {
+        "telemetria_actual": {
+          "agua": 0,
+          "aguaTotal": 3.51181,
+          "cerradura": "apagado",
+          "humedad": 54.8,
+          "humo": 2,
+          "maximos": {
+            "agua": 27.2,
+            "humedad": 56.5,
+            "humo": 3,
+            "temperatura": 23.2
+          },
+          "temperatura": 23.2,
+          "timestamp": 1755
+        }
+      }
+    }
+  }
+}
