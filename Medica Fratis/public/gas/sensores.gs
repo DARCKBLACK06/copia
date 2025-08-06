@@ -93,10 +93,8 @@ function cargarMaximosDesdeRTDB() {
         }
       };
 
-      const patchUrl = `${FIRESTORE_BASE_URL}/inquilinos/${idInquilino}?key=${API_KEY}&` +
-        Object.keys(updates)
-          .map(f => `updateMask.fieldPaths=statusControl.sensores.${f}`)
-          .join("&");
+      const patchUrl = `${FIRESTORE_BASE_URL}/inquilinos/${idInquilino}?key=${API_KEY}` +
+        `&updateMask.fieldPaths=statusControl.sensores`;
 
       UrlFetchApp.fetch(patchUrl, {
         method: "PATCH",

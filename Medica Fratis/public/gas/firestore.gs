@@ -224,4 +224,48 @@ function actualizarCerradura(idInquilino, estado) {
   }
 }
 
+/**
+ * obtenerMaximosSensores (versión corregida)
+ * Lee los valores máximos desde Firestore, extrayendo el campo `.valor` de cada uno.
+ */
+function obtenerMaximosSensores(idInquilino) {
+  const url = `${FIRESTORE_BASE_URL}/inquilinos/${idInquilino}?key=${API_KEY}`;
+  const opciones = {
+    method: "get",
+    contentType: "application/json"
+  };
+
+  try {
+    const respuesta = UrlFetchApp.fetch(url, opciones);
+    const doc = JSON.parse(respuesta.getContentText());
+
+    // Detectar ubicación de sensores
+    let sensores = doc.fields?.statusControl?.mapValue?.fields?.sensores?.mapValue?.fields;
+    if (!sensores) {
+      sensores = doc.fields?.sensores?.mapValue?.fields || {};
+    }
+
+    const leerValor = (campo) =>
+      sensores[campo]?.mapValue?.fields?.valor?.doubleValue ??
+      sensores[campo]?.mapValue?.fields?.valor?.integerValue ?? 0;
+
+    return {
+      temperaturaMax: leerValor("temperaturaMax"),
+      humedadMax: leerValor("humedadMax"),humoMax: leerValor("humoMax"),
+      aguaMax: leerValor("aguaMax")
+    };
+
+  } catch (error) {
+    Logger.log(`❌ Error al obtener sensores de ${idInquilino}: ${error}`);
+    return {
+      temperaturaMax: 0,
+      humedadMax: 0,
+      humoMax: 0,
+      aguaMax: 0
+    };
+  }
+}
+
+
+
 

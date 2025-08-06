@@ -8,8 +8,8 @@ Este documento describe paso a paso la lógica general del script `main_continuo
 
 ### Inicio (trigger cada 30 min)
 
-* `limpiarCache()` → limpia temporales (Gmail)
-* `obtenerDatosBasicosInquilinos()` → carga los 41 inquilinos
+* `limpiarCache` → limpia temporales (Gmail)
+* `obtenerDatosBasicosInquilinos` → carga los 41 inquilinos
 
 ### Filtrar inquilinos, conservar solo si cumple alguna de estas:
 
@@ -187,4 +187,55 @@ RTDB: agua = 135 L, Firestore: agua = 120 L
 * Respaldar y limpiar datos de sensores en Sheets
 * Borrar correos antiguos (mayores a 30 días)
 * Generar estadísticas mensuales
+
+flowchart TD
+  Start([INICIO main_continuo])
+
+  Start --> limpiarCache[1. limpiarCache]
+  limpiarCache --> obtenerInquilinos[2. obtenerDatosBasicosInquilinos]
+  obtenerInquilinos --> filtrarActivos{¿FechaPago ≤ 7 días o modo personalizado válido?}
+
+  filtrarActivos -- No --> Omitir[⏩ Inquilino omitido] --> Siguiente
+  filtrarActivos -- Sí --> Procesar[Pasar a evaluación]
+
+  %% === EVALUAR MODO DE CONTROL ===
+  Procesar --> modoManualPersonalizado{¿Modo = manual_personalizado?}
+  modoManualPersonalizado -- Sí --> expiroManual{¿manualExpira vencido?}
+  expiroManual -- Sí --> cambiarAutomatico[→ Cambiar a automático\ny eliminar manualExpira]
+  cambiarAutomatico --> evaluarPago
+
+  expiroManual -- No --> FinInquilino1[❌ Esperar expiración]
+
+  modoManualPersonalizado -- No --> modoIndefinido{¿Modo = manual_indefinido?}
+  modoIndefinido -- Sí --> FinInquilino2[❌ No hacer nada]
+
+  modoIndefinido -- No --> evaluarPago
+
+  %% === EVALUAR ESTADO DE PAGO ===
+  evaluarPago --> buscarComprobante[Buscar comprobante en Gmail]
+  buscarComprobante --> comprobanteValido{¿Comprobante válido?}
+
+  comprobanteValido -- Sí --> marcarPagado[
+    estadoPago = pagado\ncerradura = encendido\nfechaPago += 1 mes
+  ]
+  marcarPagado --> FinInquilino3
+
+  comprobanteValido -- No --> diasRestantes{¿Faltan ≤ 7 días?}
+  diasRestantes -- Sí --> marcarPendiente[
+    estadoPago = pendiente\ncerradura = encendido
+  ] --> FinInquilino4
+
+  diasRestantes -- No (fecha vencida) --> marcarNoPagado[
+    estadoPago = no pagado\ncerradura = apagado
+  ] --> FinInquilino5
+
+  %% === SENSORES ===
+  FinInquilino3 --> cargarSensores[5. cargarMaximosDesdeRTD]
+  FinInquilino4 --> cargarSensores
+  FinInquilino5 --> cargarSensores
+  FinInquilino1 --> cargarSensores
+  FinInquilino2 --> cargarSensores
+
+  cargarSensores --> limpiarFinal[6. limpiarCache]
+  limpiarFinal --> END([FIN])
 
