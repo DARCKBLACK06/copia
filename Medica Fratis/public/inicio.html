@@ -678,7 +678,7 @@
   window.abrirModalFinal = abrirModalFinal;
   window.procesarEliminacion = procesarEliminacion;
 
-  function procesarEliminacion() {
+  async function procesarEliminacion() {
     const tipo = document.getElementById('formIndividual').style.display === 'block' ? 'individual' : 'grupal';
 
     let usuarioId = "", departamentoId = "", sensorIds = [];
@@ -701,19 +701,63 @@
 
     if (!confirm('¿Deseas eliminar los elementos seleccionados?')) return;
 
-    if (usuarioId) fetch('/api/usuarios/' + usuarioId, { method: 'DELETE' });
-    if (departamentoId) {
-      fetch('/api/departamentos/' + departamentoId, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ disponible: true })
-      });
-    }
-    sensorIds.forEach(id => {
-      fetch('/api/sensores/' + id, { method: 'DELETE' });
-    });
+    try {
+      // Importar funciones de Firebase necesarias para eliminación
+      const { deleteDoc, doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/11.8.0/firebase-firestore.js");
+      
+      let operacionesExitosas = [];
+      let operacionesFallidas = [];
 
-    alert("Operación enviada correctamente.");
+      // Eliminar usuario (inquilino) de Firestore
+      if (usuarioId) {
+        try {
+          await deleteDoc(doc(db, 'inquilinos', usuarioId));
+          operacionesExitosas.push('Usuario eliminado');
+        } catch (error) {
+          console.error('Error al eliminar usuario:', error);
+          operacionesFallidas.push('Error al eliminar usuario');
+        }
+      }
+
+      // Liberar departamento (eliminar el documento en Firestore)
+      if (departamentoId) {
+        try {
+          await deleteDoc(doc(db, 'departamentos', departamentoId));
+          operacionesExitosas.push('Departamento eliminado');
+        } catch (error) {
+          console.error('Error al eliminar departamento:', error);
+          operacionesFallidas.push('Error al eliminar departamento');
+        }
+      }
+
+      // Eliminar sensores (marcar departamentos como sin sensores)
+      for (const sensorId of sensorIds) {
+        try {
+          await updateDoc(doc(db, 'departamentos', sensorId), {
+            tieneSensores: false
+          });
+          operacionesExitosas.push(`Sensor del departamento ${sensorId} eliminado`);
+        } catch (error) {
+          console.error('Error al eliminar sensor:', error);
+          operacionesFallidas.push(`Error al eliminar sensor del departamento ${sensorId}`);
+        }
+      }
+
+      // Mostrar resultado de las operaciones
+      if (operacionesExitosas.length > 0) {
+        alert(`Operaciones exitosas:\n${operacionesExitosas.join('\n')}`);
+      }
+      if (operacionesFallidas.length > 0) {
+        alert(`Operaciones fallidas:\n${operacionesFallidas.join('\n')}`);
+      }
+      
+      // Recargar datos para actualizar las listas
+      await cargarDatosFirebase();
+      
+    } catch (error) {
+      console.error('Error general en procesarEliminacion:', error);
+      alert('Error al procesar la eliminación. Revisa la consola para más detalles.');
+    }
     
     // Cerrar modal de forma más robusta
     const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEliminar'));
